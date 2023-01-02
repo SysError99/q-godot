@@ -110,6 +110,8 @@ func bind_to_iterator(entity: Node, query_name: String, component_names: Array) 
 			system.set("root", root)
 		if "shared" in system:
 			system.set("shared", system_ref[_SHARED_VAR])
+		if system.has("_create"):
+			system.call("_create")
 		for component_ref in binds:
 			var component := component_ref as Node
 			var bind_name := regex.sub(component.name, "_$1", true).to_lower()
