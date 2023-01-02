@@ -10,15 +10,6 @@ class ScnTestSystem extends Node:
 
 	var parent: KinematicBody2D
 	var node: Node
-	var root: Viewport
-
-
-	var current_scene: Node2D
-	var velocity := Vector2.ZERO
-
-
-	func _create():
-		current_scene = root.get_tree().current_scene
 
 
 	func _process(_delta: float) -> void:
@@ -29,8 +20,7 @@ class ScnTestSystem extends Node:
 
 func _ready() -> void:
 	rand_seed(814995)
-	# for e in Groups.query("test_primary_group", ["Node", "Node", "Node2D"]):
-	# 	print(e)
+
 
 	var current_scene := get_tree().current_scene
 	for x in 10000:
