@@ -75,6 +75,8 @@ func bind_to_iterators(entity: Node):
 		for query_name in template:
 			bind_to_iterator(entity, query_name, template[query_name])
 	for template_name in templates:
+		if not entity.is_in_group(template_name):
+			continue
 		var template := templates[template_name] as Dictionary
 		for query_name in template:
 			bind_to_iterator(entity, query_name, template[query_name])
