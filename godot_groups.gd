@@ -10,9 +10,6 @@ const _SHARED_VAR = 1
 
 class Iterator extends Node:
 	var subscribed_systems := []
-	signal process_signal()
-	func _process(_delta: float) -> void:
-		emit_signal("process_signal")
 
 
 var regex := RegEx.new()
