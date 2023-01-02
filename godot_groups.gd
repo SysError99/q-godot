@@ -4,8 +4,8 @@ class_name GodotGroups
 
 const _COMPONENT = "__component__"
 const _REGISTERED_SCENE = "__registered_scene__"
-const _SYSTEM_CLASS = 0
-const _SHARED_VAR = 1
+const _SYSTEM_CLASS = "0"
+const _SHARED_VAR = "1"
 
 
 class Iterator extends Node:
@@ -95,7 +95,6 @@ func bind_to_iterator(entity: Node, query_name: String, component_names: Array) 
 		for component_ref in children:
 			var component := component_ref as Node
 			if component.name == component_name:
-				
 				children.erase(component)
 				binds.push_back(component)
 				break
