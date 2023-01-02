@@ -88,7 +88,7 @@ func bind_to_iterator(entity: Node, query_name: String, component_names: Array) 
 		return
 	if entity.get_class() != component_names[0]:
 		return
-	var binds := [ entity ]
+	var binds := []
 	var children := entity.get_children()
 	component_names = component_names.duplicate()
 	component_names.remove(0);
@@ -96,16 +96,15 @@ func bind_to_iterator(entity: Node, query_name: String, component_names: Array) 
 		for component_ref in children:
 			var component := component_ref as Node
 			if component.name == component_name:
-				component.add_to_group(_COMPONENT)
+				
 				children.erase(component)
 				binds.push_back(component)
 				break
-	if binds.size() - 1 != component_names.size():
+	if binds.size() != component_names.size():
 		return
 	var iterator := get_iterator(query_name)
 	for system_ref in iterator.subscribed_systems:
 		var system := system_ref[_SYSTEM_CLASS].new() as Node
-		system.add_to_group(query_name)
 		system.set("parent", entity)
 		iterator.add_child(system)
 		if "root" in system:
@@ -117,6 +116,9 @@ func bind_to_iterator(entity: Node, query_name: String, component_names: Array) 
 			var bind_name := regex.sub(component.name, "_$1", true).to_lower()
 			system.set(bind_name.substr(1, bind_name.length()), component_ref)
 			component.connect("tree_exited", self, "_entity_component_removed", [ component_ref, system ], CONNECT_ONESHOT)
+			if not component.is_in_group(_COMPONENT):
+				component.add_to_group(_COMPONENT)
+				system.add_to_group(query_name)
 
 
 # API
