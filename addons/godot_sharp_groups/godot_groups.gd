@@ -17,6 +17,7 @@ class Iterator extends Node:
 	var subscribed_systems := []
 
 
+var nogroup_templates := {}
 var regex := RegEx.new()
 var tree: SceneTree
 var templates := {}
@@ -52,16 +53,17 @@ func bind_query(group_name: String, component_names: Array, system: Object, shar
 		_SYSTEM_CLASS: system,
 		_SHARED_VAR: shared,
 	})
-	if not templates.has(group_name):
-		templates[group_name] = { query_name: component_names, }
-	else:
-		templates[group_name][query_name] = component_names
 	if group_name == "":
+		nogroup_templates[query_name] = component_names
 		for scene_ref in registered_scenes:
 			var scene := scene_ref as Node
 			for entity in scene.get_children():
 				bind_to_iterator(entity, query_name, component_names, iterator)
 	else:
+		if not templates.has(group_name):
+			templates[group_name] = { query_name: component_names, }
+		else:
+			templates[group_name][query_name] = component_names
 		for scene_ref in registered_scenes:
 			var scene := scene_ref as Node
 			for entity_ref in scene.get_children():
@@ -72,10 +74,8 @@ func bind_query(group_name: String, component_names: Array, system: Object, shar
 
 
 func bind_to_iterators(entity: Node):
-	if templates.has(""):
-		var template := templates[""] as Dictionary
-		for query_name in template:
-			bind_to_iterator(entity, query_name, template[query_name], get_iterator(query_name))
+	for query_name in nogroup_templates:	
+		bind_to_iterator(entity, query_name, nogroup_templates[query_name], get_iterator(query_name))
 	for template_name in templates:
 		if not entity.is_in_group(template_name):
 			continue
