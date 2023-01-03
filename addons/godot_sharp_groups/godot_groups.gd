@@ -186,4 +186,3 @@ func _init() -> void:
 func _enter_tree() -> void:
 	tree = get_tree()
 	register_as_scene(tree.current_scene)
-	
