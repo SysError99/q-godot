@@ -119,8 +119,6 @@ func bind_to_iterator(entity: Node, query_name: String, component_names: Array) 
 			iterator.add_child(system)
 		if "parent" in system:
 			system.set("parent", entity)
-		if "root" in system:
-			system.set("root", root)
 		if "shared" in system:
 			system.set("shared", system_ref[_SHARED_VAR])
 		if system.has_method("_create"):
