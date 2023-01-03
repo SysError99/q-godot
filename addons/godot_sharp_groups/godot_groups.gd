@@ -114,6 +114,7 @@ func bind_to_iterator(entity: Node, query_name: String, component_names: Array, 
 			continue
 		var system := ref.new() as Object
 		if system is Node:
+			system.name = "#"
 			iterator.add_child(system)
 		if "parent" in system:
 			system.set("parent", entity)
