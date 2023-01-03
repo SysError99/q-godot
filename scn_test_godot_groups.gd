@@ -1,6 +1,12 @@
 extends Node2D
 
 
+const TARGET = Vector2(512, 300)
+
+
+var tween = Tween.new()
+
+
 onready var label := $CanvasLayer/Label as Label
 
 
@@ -31,6 +37,7 @@ class ScnTestSystem extends Node:
 
 
 func _ready() -> void:
+	add_child(tween)
 	rand_seed(814995)
 
 
@@ -46,16 +53,30 @@ func _ready() -> void:
 		current_scene.add_child(clone)
 
 
-	# var tween = Tween.new()
-	# add_child(tween)
-
-
 	Groups.bind_query(
 		"",
 		["KinematicBody2D", "Sprite"],
-		ScnTestSystem#,
-		# {"tween": tween,}
+		ScnTestSystem,
+		{"tween": tween,}
 	)
+
+
+# 	Groups.bind_query(
+# 		"",
+# 		["KinematicBody2D", "Sprite"],
+# 		self,
+# 		"_entity_entered"
+# 	)
+
+
+# func _entity_entered(parent: KinematicBody2D, sprite: Sprite) -> void:
+# 	tween.interpolate_property(
+# 		parent, "position",
+# 		parent.position, TARGET,
+# 		100
+# 	)
+# 	tween.start()
+# 	parent.look_at(TARGET)
 
 
 func _process(_delta: float) -> void:
