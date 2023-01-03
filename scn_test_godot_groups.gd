@@ -60,6 +60,9 @@ func _ready() -> void:
 		{"tween": tween,}
 	)
 
+	# var query := yield(Groups.query("", ["KinematicBody2D", "Sprite"]), "completed") as Array
+	# print(query.size())
+
 
 func _process(_delta: float) -> void:
 	label.text = "FPS: %f" % Engine.get_frames_per_second()
