@@ -16,6 +16,10 @@ class Iterator extends Node:
 	var subscribed_systems := []
 
 
+class QueryYielder extends Object:
+	signal completed(array)
+
+
 var nogroup_templates := {}
 var regex := RegEx.new()
 var tree: SceneTree
@@ -46,16 +50,20 @@ func bind_query(group_name: String, component_names: Array, system: Object, shar
 	assert(system.has_method("new"), "'system' requires 'new()' in order to instantiate!")
 	assert(component_names.size() > 0, COMP_ZERO_ERR)
 	yield(tree, "idle_frame")
-	var registered_scenes := tree.get_nodes_in_group(_REGISTERED_SCENE)
 	var query_name := get_query_name(group_name, component_names)
 	var iterator := get_iterator(query_name)
 	iterator.subscribed_systems.push_back([system, shared])
+	build_query(group_name, query_name, component_names, iterator)
+	
+
+func build_query(group_name: String, query_name: String, component_names: Array, iterator: Object, dry_run = false) -> void:
+	var registered_scenes := tree.get_nodes_in_group(_REGISTERED_SCENE)
 	if group_name == "":
 		nogroup_templates[query_name] = component_names
 		for scene_ref in registered_scenes:
 			var scene := scene_ref as Node
 			for entity in scene.get_children():
-				bind_to_iterator(entity, query_name, component_names, iterator)
+				bind_to_iterator(entity, query_name, component_names, iterator, dry_run)
 	else:
 		if not templates.has(group_name):
 			templates[group_name] = { query_name: component_names, }
@@ -67,7 +75,7 @@ func bind_query(group_name: String, component_names: Array, system: Object, shar
 				var entity := entity_ref as Node
 				if not entity.is_in_group(group_name):
 					continue
-				bind_to_iterator(entity, query_name, component_names, iterator)
+				bind_to_iterator(entity, query_name, component_names, iterator, dry_run)
 
 
 func bind_to_iterators(entity: Node):
@@ -81,7 +89,7 @@ func bind_to_iterators(entity: Node):
 			bind_to_iterator(entity, query_name, template[query_name], get_iterator(query_name))
 
 
-func bind_to_iterator(entity: Node, query_name: String, component_names: Array, iterator: Iterator) -> void:
+func bind_to_iterator(entity: Node, query_name: String, component_names: Array, iterator: Iterator, dry_run = false) -> void:
 	if entity.is_in_group(_REGISTERED_SCENE) or entity.get_class() != component_names[0]:
 		return
 	var binds := entity.get_meta(query_name, []) as Array
@@ -103,6 +111,8 @@ func bind_to_iterator(entity: Node, query_name: String, component_names: Array, 
 	var systems := []
 	entity.add_to_group(query_name)
 	entity.set_meta(query_name, binds)
+	if dry_run:
+		return
 	for system_ref in iterator.subscribed_systems:
 		var system := system_ref[_SYSTEM_CLASS].new() as Object
 		systems.push_back(system)
@@ -121,13 +131,21 @@ func bind_to_iterator(entity: Node, query_name: String, component_names: Array, 
 
 
 # API
-func query(group_name: String, component_names: Array) -> Array:
+func query(group_name: String, component_names: Array) -> QueryYielder:
 	assert(component_names.size() > 0, COMP_ZERO_ERR)
-	var list := []
+	var yielder := QueryYielder.new()
+	_yield_query(group_name, component_names, yielder)
+	return yielder
+
+
+func _yield_query(group_name: String, component_names: Array, yielder: QueryYielder) -> void:
 	var query_name := get_query_name(group_name, component_names)
+	build_query(group_name, query_name, component_names, get_iterator(query_name))
+	yield(tree, "idle_frame")
+	var list := []
 	for entity in tree.get_nodes_in_group(query_name):
 		list.push_back(entity.get_meta(query_name))
-	return list
+	yielder.emit_signal("completed", list)
 
 
 # API
