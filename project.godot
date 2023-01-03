@@ -12,7 +12,7 @@ _global_script_classes=[ {
 "base": "Node",
 "class": "GodotGroups",
 "language": "GDScript",
-"path": "res://godot_groups.gd"
+"path": "res://addons/godot_sharp_groups/godot_groups.gd"
 } ]
 _global_script_class_icons={
 "GodotGroups": ""
@@ -26,8 +26,8 @@ config/icon="res://icon.png"
 
 [autoload]
 
-Groups="*res://godot_groups.gd"
-SharpGroups="*res://GodotSharpGroups.cs"
+Groups="*res://addons/godot_sharp_groups/godot_groups.gd"
+SharpGroups="*res://addons/godot_sharp_groups/GodotSharpGroups.cs"
 
 [debug]
 
