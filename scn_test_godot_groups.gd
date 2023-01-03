@@ -16,7 +16,7 @@ class ScnTestSystem extends Node:
 
 	var parent: KinematicBody2D
 	# var shared: Dictionary
-	var node: Node
+	var sprite: Sprite
 
 
 	# func _create() -> void:
