@@ -2,6 +2,9 @@ extends Node
 class_name GodotGroups
 
 
+const COMP_ZERO_ERR = "'component_names' must have at least one member!"
+
+
 const _COMPONENT = "#C"
 const _COMP_NAME = "#CN"
 const _REGISTERED_SCENE = "#R"
@@ -40,6 +43,8 @@ func get_query_name(group_name: String, component_names: Array) -> String:
 
 # API
 func bind_query(group_name: String, component_names: Array, system: Object, shared = {}) -> void:
+	assert(system.has_method("new"), "System must be an instantiable object!")
+	assert(component_names.size() > 0, COMP_ZERO_ERR)
 	var query_name := get_query_name(group_name, component_names)
 	yield(tree, "idle_frame")
 	var iterator := get_iterator(query_name)
@@ -132,6 +137,7 @@ func bind_to_iterator(entity: Node, query_name: String, component_names: Array) 
 
 # API
 func query(group_name: String, component_names: Array) -> Array:
+	assert(component_names.size() > 0, COMP_ZERO_ERR)
 	return tree.get_nodes_in_group(get_query_name(group_name, component_names))
 
 
