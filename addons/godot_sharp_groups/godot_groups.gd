@@ -42,21 +42,16 @@ func get_query_name(group_name: String, component_names: Array) -> String:
 
 
 # API
-func bind_query(group_name: String, component_names: Array, system: Object, shared = {}) -> void:
-	assert(system.has_method("new"), "System must be an instantiable object!")
+func bind_query(group_name: String, component_names: Array, system: Object, shared = null) -> void:
 	assert(component_names.size() > 0, COMP_ZERO_ERR)
-	var query_name := get_query_name(group_name, component_names)
 	yield(tree, "idle_frame")
+	var registered_scenes := tree.get_nodes_in_group(_REGISTERED_SCENE)
+	var query_name := get_query_name(group_name, component_names)
 	var iterator := get_iterator(query_name)
 	iterator.subscribed_systems.push_back({
 		_SYSTEM_CLASS: system,
 		_SHARED_VAR: shared,
 	})
-	build_query(group_name, query_name, component_names)
-
-
-func build_query(group_name: String, query_name: String, component_names: Array) -> void:
-	var registered_scenes := tree.get_nodes_in_group(_REGISTERED_SCENE)
 	if not templates.has(group_name):
 		templates[group_name] = { query_name: component_names, }
 	else:
@@ -65,7 +60,7 @@ func build_query(group_name: String, query_name: String, component_names: Array)
 		for scene_ref in registered_scenes:
 			var scene := scene_ref as Node
 			for entity in scene.get_children():
-				bind_to_iterator(entity, query_name, component_names)
+				bind_to_iterator(entity, query_name, component_names, iterator)
 	else:
 		for scene_ref in registered_scenes:
 			var scene := scene_ref as Node
@@ -73,26 +68,24 @@ func build_query(group_name: String, query_name: String, component_names: Array)
 				var entity := entity_ref as Node
 				if not entity.is_in_group(group_name):
 					continue
-				bind_to_iterator(entity, query_name, component_names)
+				bind_to_iterator(entity, query_name, component_names, iterator)
 
 
 func bind_to_iterators(entity: Node):
 	if templates.has(""):
 		var template := templates[""] as Dictionary
 		for query_name in template:
-			bind_to_iterator(entity, query_name, template[query_name])
+			bind_to_iterator(entity, query_name, template[query_name], get_iterator(query_name))
 	for template_name in templates:
 		if not entity.is_in_group(template_name):
 			continue
 		var template := templates[template_name] as Dictionary
 		for query_name in template:
-			bind_to_iterator(entity, query_name, template[query_name])
+			bind_to_iterator(entity, query_name, template[query_name], get_iterator(query_name))
 
 
-func bind_to_iterator(entity: Node, query_name: String, component_names: Array) -> void:
-	if entity.is_in_group(_REGISTERED_SCENE):
-		return
-	if entity.get_class() != component_names[0]:
+func bind_to_iterator(entity: Node, query_name: String, component_names: Array, iterator: Iterator) -> void:
+	if entity.is_in_group(_REGISTERED_SCENE) or entity.get_class() != component_names[0]:
 		return
 	var binds := entity.get_meta(query_name, []) as Array
 	if binds.size() == 0:
@@ -112,9 +105,14 @@ func bind_to_iterator(entity: Node, query_name: String, component_names: Array) 
 			binds.clear()
 			return
 	entity.set_meta(query_name, binds)
-	var iterator := get_iterator(query_name)
 	for system_ref in iterator.subscribed_systems:
-		var system := system_ref[_SYSTEM_CLASS].new() as Object
+		var ref := system_ref[_SYSTEM_CLASS] as Object
+		if not ref.has_method("new"):
+			binds = binds.duplicate()
+			binds.push_front(entity)
+			ref.callv(system_ref[_SHARED_VAR], binds)
+			continue
+		var system := ref.new() as Object
 		if system is Node:
 			iterator.add_child(system)
 		if "parent" in system:
