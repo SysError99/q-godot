@@ -27,6 +27,8 @@ namespace SysError99
         private static Dictionary<string, List<GroupObject16>> Groups16 = new();
         private static Dictionary<string, Dictionary<string, List<string>>> Templates = new();
 
+        #region Query
+
         public static IEnumerable<T> Query<T>(string name = "")
             where T : Object
         {
@@ -769,6 +771,8 @@ namespace SysError99
             yield break;
         }
 
+        #endregion
+
         public static void ChangeScene(string path)
         {
             var tree = Self.GetTree();
@@ -865,6 +869,7 @@ namespace SysError99
             }
             if (binds.Count - 1 != componentNames.Count) return;
             GroupObject groupObject = new GroupObject();
+            # region Save Query
             switch (binds.Count)
             {
                 case 1:
@@ -1158,6 +1163,7 @@ namespace SysError99
                     }
                     break;
             }
+            #endregion
             binds.RemoveAt(0);
             foreach (var component in binds)
             {
@@ -1231,6 +1237,8 @@ namespace SysError99
         }
         #endregion
     }
+
+    #region Query Class
 
     internal class GroupObject : Object
     {
@@ -1816,4 +1824,6 @@ namespace SysError99
                 _obj16 as T16
             );
     }
+
+    #endregion
 }
