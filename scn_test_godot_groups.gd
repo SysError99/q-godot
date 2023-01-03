@@ -9,7 +9,19 @@ class ScnTestSystem extends Node:
 
 
 	var parent: KinematicBody2D
+	# var shared: Dictionary
 	var node: Node
+
+
+	# func _create() -> void:
+	# 	var tween := shared.tween as Tween
+	# 	tween.interpolate_property(
+	# 		parent, "position",
+	# 		parent.position, TARGET,
+	# 		100
+	# 	)
+	# 	tween.start()
+	# 	parent.look_at(TARGET)
 
 
 	func _process(_delta: float) -> void:
@@ -34,10 +46,15 @@ func _ready() -> void:
 		current_scene.add_child(clone)
 
 
+	# var tween = Tween.new()
+	# add_child(tween)
+
+
 	Groups.bind_query(
 		"",
 		["KinematicBody2D", "Sprite"],
-		ScnTestSystem
+		ScnTestSystem#,
+		# {"tween": tween,}
 	)
 
 
