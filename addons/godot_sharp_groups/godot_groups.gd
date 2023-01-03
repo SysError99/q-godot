@@ -43,6 +43,7 @@ func get_query_name(group_name: String, component_names: Array) -> String:
 
 # API
 func bind_query(group_name: String, component_names: Array, system: Object, shared = null) -> void:
+	assert(system.has_method("new"), "'system' requires 'new()' in order to instantiate!")
 	assert(component_names.size() > 0, COMP_ZERO_ERR)
 	yield(tree, "idle_frame")
 	var registered_scenes := tree.get_nodes_in_group(_REGISTERED_SCENE)
@@ -98,28 +99,25 @@ func bind_to_iterator(entity: Node, query_name: String, component_names: Array, 
 					binds.push_back(component)
 					break
 		if binds.size() != component_names.size():
-			binds.clear()
 			return
+	var systems := []
 	entity.add_to_group(query_name)
 	entity.set_meta(query_name, binds)
 	for system_ref in iterator.subscribed_systems:
-		var ref := system_ref[_SYSTEM_CLASS] as Object
-		if ref.has_method("new"):
-			var system := ref.new() as Object
-			if system is Node:
-				iterator.add_child(system)
-			system.set("parent", entity)
-			system.set("shared", system_ref[_SHARED_VAR])
-			if system.has_method("_create"):
-				system.call("_create")
-			for component_ref in binds:
-				var component := component_ref as Node
-				system.set(component.get_meta(_COMP_NAME), component_ref)
-				component.connect("tree_exited", self, "_entity_component_removed", [ entity, query_name, system, binds ], CONNECT_ONESHOT)
-		else:
-			binds = binds.duplicate()
-			binds.push_front(entity)
-			ref.callv(system_ref[_SHARED_VAR], binds)
+		var system := system_ref[_SYSTEM_CLASS].new() as Object
+		systems.push_back(system)
+		system.set("parent", entity)
+		system.set("shared", system_ref[_SHARED_VAR])
+		if system is Node:
+			iterator.add_child(system)
+		if system.has_method("_create"):
+			system.call("_create")
+		for component_ref in binds:
+			var component := component_ref as Node
+			system.set(component.get_meta(_COMP_NAME), component_ref)
+	for component_ref in binds:
+		var component := component_ref as Node
+		component.connect("tree_exited", self, "_entity_component_removed", [ entity, query_name, systems ], CONNECT_ONESHOT)
 
 
 # API
@@ -165,13 +163,17 @@ func _entity_component_added(_new_component: Node, entity) -> void:
 	bind_to_iterators(entity)
 
 
-func _entity_component_removed(entity: Node, query_name: String, system: Object, binds: Array) -> void:
-	binds.clear()
+func _entity_component_removed(entity: Node, query_name: String, systems: Object) -> void:
+	if entity.has_meta(query_name):
+		entity.remove_meta(query_name)
 	if entity.is_in_group(query_name):
 		entity.remove_from_group(query_name)
-	if is_instance_valid(system):
-		if system.has_method("queue_free"): system.call("queue_free")
-		else: system.free()
+	for system in systems:
+		if system is Node:
+			system.queue_free()
+		else:
+			system.free()
+	systems.clear()
 
 
 func _init() -> void:
