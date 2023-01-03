@@ -162,8 +162,7 @@ func _entity_entered_tree(entity: Node) -> void:
 func _entity_exiting_tree(entity: Node) -> void:
 	for component_ref in entity.get_children():
 		var component := component_ref as Node
-		if component.is_in_group(_COMPONENT):
-			component.emit_signal("tree_exited")
+		component.emit_signal("tree_exited")
 
 
 func _entity_component_added(_new_component: Node, entity) -> void:
