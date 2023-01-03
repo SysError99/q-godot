@@ -61,23 +61,5 @@ func _ready() -> void:
 	)
 
 
-# 	Groups.bind_query(
-# 		"",
-# 		["KinematicBody2D", "Sprite"],
-# 		self,
-# 		"_entity_entered"
-# 	)
-
-
-# func _entity_entered(parent: KinematicBody2D, sprite: Sprite) -> void:
-# 	tween.interpolate_property(
-# 		parent, "position",
-# 		parent.position, TARGET,
-# 		100
-# 	)
-# 	tween.start()
-# 	parent.look_at(TARGET)
-
-
 func _process(_delta: float) -> void:
 	label.text = "FPS: %f" % Engine.get_frames_per_second()
