@@ -74,7 +74,7 @@ func bind_query(group_name: String, component_names: Array, system: Object, shar
 
 
 func bind_to_iterators(entity: Node):
-	for query_name in nogroup_templates:	
+	for query_name in nogroup_templates:
 		bind_to_iterator(entity, query_name, nogroup_templates[query_name], get_iterator(query_name))
 	for template_name in templates:
 		if not entity.is_in_group(template_name):
