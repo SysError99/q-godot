@@ -102,9 +102,11 @@ func bind_to_iterator(entity: Node, query_name: String, component_names: Array) 
 		return
 	var iterator := get_iterator(query_name)
 	for system_ref in iterator.subscribed_systems:
-		var system := system_ref[_SYSTEM_CLASS].new() as Node
-		system.set("parent", entity)
-		iterator.add_child(system)
+		var system := system_ref[_SYSTEM_CLASS].new() as Object
+		if system is Node:
+			iterator.add_child(system)
+		if "parent" in system:
+			system.set("parent", entity)
 		if "root" in system:
 			system.set("root", root)
 		if "shared" in system:
@@ -118,7 +120,8 @@ func bind_to_iterator(entity: Node, query_name: String, component_names: Array) 
 			component.connect("tree_exited", self, "_entity_component_removed", [ component_ref, system ], CONNECT_ONESHOT)
 			if not component.is_in_group(_COMPONENT):
 				component.add_to_group(_COMPONENT)
-				system.add_to_group(query_name)
+				if system is Node:
+					system.add_to_group(query_name)
 
 
 # API
