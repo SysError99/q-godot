@@ -2,10 +2,11 @@ extends Node
 class_name GodotGroups
 
 
-const _COMPONENT = "__component__"
-const _REGISTERED_SCENE = "__registered_scene__"
-const _SYSTEM_CLASS = "0"
-const _SHARED_VAR = "1"
+const _COMPONENT = "#C"
+const _REGISTERED_SCENE = "#R"
+const _QUERY = "#Q"
+const _SHARED_VAR = "#V"
+const _SYSTEM_CLASS = "#S"
 
 
 class Iterator extends Node:
@@ -30,9 +31,9 @@ func get_iterator(query_name: String) -> Iterator:
 
 
 func get_query_name(group_name: String, component_names: Array) -> String:
-	var query_name = "__query__" + group_name + "__"
+	var query_name = _QUERY + group_name
 	for name in component_names:
-		query_name += name + "__"
+		query_name += "_" + name
 	return query_name
 
 
