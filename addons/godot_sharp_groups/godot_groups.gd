@@ -5,12 +5,11 @@ class_name GodotGroups
 const COMP_ZERO_ERR = "'component_names' must have at least one member!"
 
 
-const _COMPONENT = "#C"
 const _COMP_NAME = "#CN"
 const _REGISTERED_SCENE = "#R"
 const _QUERY = "#Q"
-const _SHARED_VAR = "#V"
-const _SYSTEM_CLASS = "#S"
+const _SHARED_VAR = 1
+const _SYSTEM_CLASS = 0
 
 
 class Iterator extends Node:
@@ -49,10 +48,7 @@ func bind_query(group_name: String, component_names: Array, system: Object, shar
 	var registered_scenes := tree.get_nodes_in_group(_REGISTERED_SCENE)
 	var query_name := get_query_name(group_name, component_names)
 	var iterator := get_iterator(query_name)
-	iterator.subscribed_systems.push_back({
-		_SYSTEM_CLASS: system,
-		_SHARED_VAR: shared,
-	})
+	iterator.subscribed_systems.push_back([system, shared])
 	if group_name == "":
 		nogroup_templates[query_name] = component_names
 		for scene_ref in registered_scenes:
@@ -104,37 +100,36 @@ func bind_to_iterator(entity: Node, query_name: String, component_names: Array, 
 		if binds.size() != component_names.size():
 			binds.clear()
 			return
+	entity.add_to_group(query_name)
 	entity.set_meta(query_name, binds)
 	for system_ref in iterator.subscribed_systems:
 		var ref := system_ref[_SYSTEM_CLASS] as Object
-		if not ref.has_method("new"):
+		if ref.has_method("new"):
+			var system := ref.new() as Object
+			if system is Node:
+				iterator.add_child(system)
+			system.set("parent", entity)
+			system.set("shared", system_ref[_SHARED_VAR])
+			if system.has_method("_create"):
+				system.call("_create")
+			for component_ref in binds:
+				var component := component_ref as Node
+				system.set(component.get_meta(_COMP_NAME), component_ref)
+				component.connect("tree_exited", self, "_entity_component_removed", [ entity, query_name, system, binds ], CONNECT_ONESHOT)
+		else:
 			binds = binds.duplicate()
 			binds.push_front(entity)
 			ref.callv(system_ref[_SHARED_VAR], binds)
-			continue
-		var system := ref.new() as Object
-		if system is Node:
-			iterator.add_child(system)
-		if "parent" in system:
-			system.set("parent", entity)
-		if "shared" in system:
-			system.set("shared", system_ref[_SHARED_VAR])
-		if system.has_method("_create"):
-			system.call("_create")
-		for component_ref in binds:
-			var component := component_ref as Node
-			system.set(component.get_meta(_COMP_NAME), component_ref)
-			component.connect("tree_exited", self, "_entity_component_removed", [ component_ref, system, binds ], CONNECT_ONESHOT)
-			if not component.is_in_group(_COMPONENT):
-				component.add_to_group(_COMPONENT)
-				if system is Node:
-					system.add_to_group(query_name)
 
 
 # API
 func query(group_name: String, component_names: Array) -> Array:
 	assert(component_names.size() > 0, COMP_ZERO_ERR)
-	return tree.get_nodes_in_group(get_query_name(group_name, component_names))
+	var list := []
+	var query_name := get_query_name(group_name, component_names)
+	for entity in tree.get_nodes_in_group(query_name):
+		list.push_back(entity.get_meta(query_name))
+	return list
 
 
 # API
@@ -170,12 +165,13 @@ func _entity_component_added(_new_component: Node, entity) -> void:
 	bind_to_iterators(entity)
 
 
-func _entity_component_removed(component: Node, binder: Object, binds: Array) -> void:
-	if component.is_in_group(_COMPONENT):
-		component.remove_from_group(_COMPONENT)
-	if is_instance_valid(binder):
-		binds.clear()
-		binder.free()
+func _entity_component_removed(entity: Node, query_name: String, system: Object, binds: Array) -> void:
+	binds.clear()
+	if entity.is_in_group(query_name):
+		entity.remove_from_group(query_name)
+	if is_instance_valid(system):
+		if system.has_method("queue_free"): system.call("queue_free")
+		else: system.free()
 
 
 func _init() -> void:
