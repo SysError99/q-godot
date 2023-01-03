@@ -810,7 +810,7 @@ namespace SysError99
                 {
                     foreach (Node entity in scene.GetChildren())
                     {
-                        AddToGroup(entity, queryName, componentNames);
+                        BindToGroup(entity, queryName, componentNames);
                     }
                 }
             }
@@ -821,19 +821,19 @@ namespace SysError99
                     foreach (Node entity in scene.GetChildren())
                     {
                         if (!entity.IsInGroup(groupName)) continue;
-                        AddToGroup(entity, queryName, componentNames);
+                        BindToGroup(entity, queryName, componentNames);
                     }
                 }
             }
         }
 
-        private static void AddToGroups(Node entity)
+        private static void BindToGroups(Node entity)
         {
             if (Templates.ContainsKey(""))
             {
                 foreach (var subTemplate in Templates[""])
                 {
-                    AddToGroup(entity, subTemplate.Key, subTemplate.Value);
+                    BindToGroup(entity, subTemplate.Key, subTemplate.Value);
                 }
             }
             foreach (var template in Templates)
@@ -841,12 +841,12 @@ namespace SysError99
                 if (!entity.IsInGroup(template.Key)) continue;
                 foreach (var subTemplate in template.Value)
                 {
-                    AddToGroup(entity, subTemplate.Key, subTemplate.Value);
+                    BindToGroup(entity, subTemplate.Key, subTemplate.Value);
                 }
             }
         }
 
-        private static void AddToGroup(Node entity, string queryName, List<string> componentNames)
+        private static void BindToGroup(Node entity, string queryName, List<string> componentNames)
         {
             if (entity.IsInGroup("__registered_scene__")) return;
             if (entity.GetType().Name != componentNames[0]) return;
@@ -1183,7 +1183,7 @@ namespace SysError99
         {
             await ToSignal(entity, "ready");
             entity.Connect("child_entered_tree", Self, nameof(_EntityComponentAdded), new Array { entity });
-            AddToGroups(entity);
+            BindToGroups(entity);
         }
 
         private void _EntityExitingScene(Node entity)
@@ -1200,7 +1200,7 @@ namespace SysError99
         private void _EntityComponentAdded(Node newComponent, Node entity)
         {
             _EntityExitingScene(entity);
-            AddToGroups(entity);
+            BindToGroups(entity);
         }
 
         private void _EntityComponentRemoved(Node component, GroupObject groupObject, string queryName)
