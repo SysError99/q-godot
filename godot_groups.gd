@@ -3,6 +3,7 @@ class_name GodotGroups
 
 
 const _COMPONENT = "#C"
+const _COMP_NAME = "#CN"
 const _REGISTERED_SCENE = "#R"
 const _QUERY = "#Q"
 const _SHARED_VAR = "#V"
@@ -88,19 +89,24 @@ func bind_to_iterator(entity: Node, query_name: String, component_names: Array) 
 		return
 	if entity.get_class() != component_names[0]:
 		return
-	var binds := []
-	var children := entity.get_children()
-	component_names = component_names.duplicate()
-	component_names.remove(0);
-	for component_name in component_names:
-		for component_ref in children:
-			var component := component_ref as Node
-			if component.name == component_name:
-				children.erase(component)
-				binds.push_back(component)
-				break
-	if binds.size() != component_names.size():
-		return
+	var binds := entity.get_meta(query_name, []) as Array
+	if binds.size() == 0:
+		var children := entity.get_children()
+		component_names = component_names.duplicate()
+		component_names.remove(0);
+		for component_name in component_names:
+			for component_ref in children:
+				var component := component_ref as Node
+				if component.name == component_name:
+					var bind_name := regex.sub(component_name, "_$1", true).to_lower()
+					component.set_meta(_COMP_NAME, bind_name.substr(1, bind_name.length()))
+					children.erase(component)
+					binds.push_back(component)
+					break
+		if binds.size() != component_names.size():
+			binds.clear()
+			return
+	entity.set_meta(query_name, binds)
 	var iterator := get_iterator(query_name)
 	for system_ref in iterator.subscribed_systems:
 		var system := system_ref[_SYSTEM_CLASS].new() as Object
@@ -116,9 +122,8 @@ func bind_to_iterator(entity: Node, query_name: String, component_names: Array) 
 			system.call("_create")
 		for component_ref in binds:
 			var component := component_ref as Node
-			var bind_name := regex.sub(component.name, "_$1", true).to_lower()
-			system.set(bind_name.substr(1, bind_name.length()), component_ref)
-			component.connect("tree_exited", self, "_entity_component_removed", [ component_ref, system ], CONNECT_ONESHOT)
+			system.set(component.get_meta(_COMP_NAME), component_ref)
+			component.connect("tree_exited", self, "_entity_component_removed", [ component_ref, system, binds ], CONNECT_ONESHOT)
 			if not component.is_in_group(_COMPONENT):
 				component.add_to_group(_COMPONENT)
 				if system is Node:
@@ -164,10 +169,11 @@ func _entity_component_added(_new_component: Node, entity) -> void:
 	bind_to_iterators(entity)
 
 
-func _entity_component_removed(component: Node, binder: Object) -> void:
+func _entity_component_removed(component: Node, binder: Object, binds: Array) -> void:
 	if component.is_in_group(_COMPONENT):
 		component.remove_from_group(_COMPONENT)
 	if is_instance_valid(binder):
+		binds.clear()
 		binder.free()
 
 
