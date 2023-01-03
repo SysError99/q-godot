@@ -140,8 +140,8 @@ func query(group_name: String, component_names: Array) -> QueryYielder:
 
 func _yield_query(group_name: String, component_names: Array, yielder: QueryYielder) -> void:
 	var query_name := get_query_name(group_name, component_names)
-	build_query(group_name, query_name, component_names, get_iterator(query_name))
 	yield(tree, "idle_frame")
+	build_query(group_name, query_name, component_names, get_iterator(query_name))
 	var list := []
 	for entity in tree.get_nodes_in_group(query_name):
 		list.push_back(entity.get_meta(query_name))
@@ -181,7 +181,7 @@ func _entity_component_added(_new_component: Node, entity) -> void:
 	bind_to_iterators(entity)
 
 
-func _entity_component_removed(entity: Node, query_name: String, systems: Object) -> void:
+func _entity_component_removed(entity: Node, query_name: String, systems: Array) -> void:
 	if entity.has_meta(query_name):
 		entity.remove_meta(query_name)
 	if entity.is_in_group(query_name):
