@@ -168,23 +168,23 @@ func change_scene(path: String) -> void:
 # API
 func register_as_scene(node: Node) -> void:
 	node.add_to_group(_REGISTERED_SCENE)
-	node.connect("child_entered_tree", self, "_entity_entered_tree")
+	node.connect("child_entered_tree", self, "_entity_entered_scene")
 
 
-func _entity_entered_tree(entity: Node) -> void:
+func _entity_entered_scene(entity: Node) -> void:
 	yield(entity, "ready")
 	entity.connect("child_entered_tree", self, "_entity_component_added", [ entity ])
 	bind_to_iterators(entity)
 
 
-func _entity_exiting_tree(entity: Node) -> void:
+func _entity_exiting_scene(entity: Node) -> void:
 	for component_ref in entity.get_children():
 		var component := component_ref as Node
 		component.emit_signal("tree_exited")
 
 
 func _entity_component_added(_new_component: Node, entity) -> void:
-	_entity_exiting_tree(entity)
+	_entity_exiting_scene(entity)
 	bind_to_iterators(entity)
 
 
