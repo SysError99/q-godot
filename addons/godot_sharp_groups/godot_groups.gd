@@ -182,16 +182,17 @@ func _entity_component_added(_new_component: Node, entity) -> void:
 
 
 func _entity_component_removed(entity: Node, query_name: String, systems: Array) -> void:
-	if entity.has_meta(query_name):
-		entity.remove_meta(query_name)
-	if entity.is_in_group(query_name):
-		entity.remove_from_group(query_name)
-	for system in systems:
-		if system is Node:
-			system.queue_free()
-		else:
-			system.free()
-	systems.clear()
+	if systems.size() > 0:
+		if entity.has_meta(query_name):
+			entity.remove_meta(query_name)
+		if entity.is_in_group(query_name):
+			entity.remove_from_group(query_name)
+		for system in systems:
+			if system is Node:
+				system.queue_free()
+			else:
+				system.free()
+		systems.clear()
 
 
 func _init() -> void:
