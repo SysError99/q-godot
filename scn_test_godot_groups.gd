@@ -51,7 +51,7 @@ func _ready() -> void:
 
 
 	var current_scene := get_tree().current_scene
-	for x in 10:
+	for x in 10000:
 		var clone := KinematicBody2D.new()
 		var sprite := Sprite.new()
 		clone.name = "Icon%d" % x
