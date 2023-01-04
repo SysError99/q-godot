@@ -122,13 +122,13 @@ func bind_to_iterator(entity: Node, query_name: String, component_names: Array, 
 		systems.push_back(system)
 		system.set("parent", entity)
 		system.set("shared", system_ref[_SHARED_VAR])
+		for component_ref in binds:
+			var component := component_ref as Node
+			system.set(component.get_meta(_COMP_NAME), component_ref)
 		if system is Node:
 			iterator.add_child(system)
 		if system.has_method("_create"):
 			system.call("_create")
-		for component_ref in binds:
-			var component := component_ref as Node
-			system.set(component.get_meta(_COMP_NAME), component_ref)
 
 
 # API
