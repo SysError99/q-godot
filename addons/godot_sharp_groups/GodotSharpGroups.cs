@@ -848,26 +848,32 @@ namespace SysError99
 
         private static void BindToGroup(Node entity, string queryName, List<string> componentNames)
         {
-            if (entity.IsInGroup("__registered_scene__")) return;
-            if (entity.GetType().Name != componentNames[0]) return;
-            var binds = new List<Node>() { entity };
-            var children = entity.GetChildren();
-            componentNames = new List<string>(componentNames);
-            componentNames.RemoveAt(0);
-            foreach (var componentName in componentNames)
+            if (entity.IsInGroup("__registered_scene__") || entity.GetType().Name != componentNames[0]) return;
+            var binds = entity.GetMeta(queryName, new List<Node>()) as List<Node>;
+            if (binds.Count == 0)
             {
-                foreach (Node component in children)
+                var children = entity.GetChildren();
+                componentNames = new List<string>(componentNames);
+                componentNames.RemoveAt(0);
+                foreach (var componentName in componentNames)
                 {
-                    if (component.GetType().Name == componentName)
+                    foreach (Node component in children)
                     {
-                        component.AddToGroup("__component__");
-                        children.Remove(component);
-                        binds.Add(component);
-                        break;
+                        if (component.GetType().Name == componentName)
+                        {
+                            component.AddToGroup("__component__");
+                            children.Remove(component);
+                            binds.Add(component);
+                            break;
+                        }
                     }
                 }
+                if (binds.Count == componentNames.Count)
+                {
+                    entity.SetMeta(queryName, binds);
+                }
             }
-            if (binds.Count - 1 != componentNames.Count) return;
+            binds.Insert(0, entity);
             GroupObject groupObject = new GroupObject();
             # region Save Query
             switch (binds.Count)
@@ -1167,7 +1173,7 @@ namespace SysError99
             binds.RemoveAt(0);
             foreach (var component in binds)
             {
-                component.Connect("tree_exited", Self, nameof(_EntityComponentRemoved), new Array { component, groupObject, queryName }, (uint)ConnectFlags.Oneshot);
+                component.Connect("tree_exited", Self, nameof(_EntityComponentRemoved), new Array { entity, component, groupObject, queryName }, (uint)ConnectFlags.Oneshot);
             }
         }
 
@@ -1203,8 +1209,9 @@ namespace SysError99
             BindToGroups(entity);
         }
 
-        private void _EntityComponentRemoved(Node component, GroupObject groupObject, string queryName)
+        private void _EntityComponentRemoved(Node entity, Node component, GroupObject groupObject, string queryName)
         {
+            entity.RemoveMeta(queryName);
             if (!Object.IsInstanceValid(groupObject)) return;
             component.RemoveFromGroup("__component__");
             switch (groupObject)
@@ -1229,13 +1236,6 @@ namespace SysError99
             }
             groupObject.Free();
         }
-
-        #region GDScript Interface
-        private void change_scene(string path)
-        {
-            ChangeScene(path);
-        }
-        #endregion
     }
 
     #region Query Class
