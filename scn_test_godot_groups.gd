@@ -10,7 +10,7 @@ var tween = Tween.new()
 onready var label := $CanvasLayer/Label as Label
 
 
-class ScnTestSystem extends Node:
+class MoveTowardsCenterSystem extends Node:
 	const TARGET = Vector2(512, 300)
 
 
@@ -36,13 +36,22 @@ class ScnTestSystem extends Node:
 		parent.look_at(TARGET)
 
 
+# class ShakeSystem extends Node:
+# 	const TARGET = Vector2(512, 300)
+
+# 	var parent: KinematicBody2D
+
+# 	func _process(_delta: float) -> void:
+# 		parent.position += Vector2(randi() % 3 - 1, randi() % 3 - 1)
+
+
 func _ready() -> void:
 	add_child(tween)
 	rand_seed(814995)
 
 
 	var current_scene := get_tree().current_scene
-	for x in 10000:
+	for x in 10:
 		var clone := KinematicBody2D.new()
 		var sprite := Sprite.new()
 		clone.name = "Icon%d" % x
@@ -56,9 +65,15 @@ func _ready() -> void:
 	Groups.bind_query(
 		"",
 		["KinematicBody2D", "Sprite"],
-		ScnTestSystem,
-		{"tween": tween,}
+		MoveTowardsCenterSystem,
+		self
 	)
+	# Groups.bind_query(
+	# 	"",
+	# 	["KinematicBody2D", "Sprite"],
+	# 	ShakeSystem,
+	# 	self
+	# )
 
 	# var query := yield(Groups.query("", ["KinematicBody2D", "Sprite"]), "completed") as Array
 	# print(query.size())
