@@ -47,7 +47,6 @@ func get_query_name(group_name: String, component_names: Array) -> String:
 
 # API
 func bind_query(group_name: String, component_names: Array, system: Object, shared = null) -> void:
-	assert(system.has_method("new"), "'system' requires 'new()' in order to instantiate!")
 	assert(component_names.size() > 0, COMP_ZERO_ERR)
 	yield(tree, "idle_frame")
 	var query_name := get_query_name(group_name, component_names)
@@ -118,7 +117,13 @@ func bind_to_iterator(entity: Node, query_name: String, component_names: Array, 
 				var component := component_ref as Node
 				component.connect("tree_exited", self, "_entity_component_removed", [ entity, query_name, systems ], CONNECT_ONESHOT)
 	for system_ref in subscribers:
-		var system := system_ref[_SYSTEM_CLASS].new() as Object
+		var system := system_ref[_SYSTEM_CLASS] as Object
+		if not system.has_method("new"):
+			binds = binds.duplicate()
+			binds.push_front(entity)
+			system.callv(system_ref[_SHARED_VAR], binds)
+			continue
+		system = system.new() as Object
 		systems.push_back(system)
 		system.set("parent", entity)
 		system.set("shared", system_ref[_SHARED_VAR])
