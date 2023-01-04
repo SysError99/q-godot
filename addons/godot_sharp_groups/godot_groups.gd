@@ -13,7 +13,7 @@ const _SYSTEM_CLASS = 0
 
 
 class Iterator extends Node:
-	var subscribed_systems := []
+	var subscribers := []
 
 
 class QueryYielder extends Object:
@@ -52,18 +52,19 @@ func bind_query(group_name: String, component_names: Array, system: Object, shar
 	yield(tree, "idle_frame")
 	var query_name := get_query_name(group_name, component_names)
 	var iterator := get_iterator(query_name)
-	iterator.subscribed_systems.push_back([system, shared])
-	build_query(group_name, query_name, component_names, iterator)
+	var new_subscriber := [[system, shared]]
+	iterator.subscribers.push_back(new_subscriber)
+	build_query(group_name, query_name, component_names, iterator, new_subscriber)
 	
 
-func build_query(group_name: String, query_name: String, component_names: Array, iterator: Object, dry_run = false) -> void:
+func build_query(group_name: String, query_name: String, component_names: Array, iterator: Object, subscribers: Array) -> void:
 	var registered_scenes := tree.get_nodes_in_group(_REGISTERED_SCENE)
 	if group_name == "":
 		nogroup_templates[query_name] = component_names
 		for scene_ref in registered_scenes:
 			var scene := scene_ref as Node
 			for entity in scene.get_children():
-				bind_to_iterator(entity, query_name, component_names, iterator, dry_run)
+				bind_to_iterator(entity, query_name, component_names, iterator, subscribers)
 	else:
 		if not templates.has(group_name):
 			templates[group_name] = { query_name: component_names, }
@@ -75,24 +76,27 @@ func build_query(group_name: String, query_name: String, component_names: Array,
 				var entity := entity_ref as Node
 				if not entity.is_in_group(group_name):
 					continue
-				bind_to_iterator(entity, query_name, component_names, iterator, dry_run)
+				bind_to_iterator(entity, query_name, component_names, iterator, subscribers)
 
 
 func bind_to_iterators(entity: Node):
 	for query_name in nogroup_templates:
-		bind_to_iterator(entity, query_name, nogroup_templates[query_name], get_iterator(query_name))
+		var iterator := get_iterator(query_name)
+		bind_to_iterator(entity, query_name, nogroup_templates[query_name], iterator, iterator.subscribers)
 	for template_name in templates:
 		if not entity.is_in_group(template_name):
 			continue
 		var template := templates[template_name] as Dictionary
 		for query_name in template:
-			bind_to_iterator(entity, query_name, template[query_name], get_iterator(query_name))
+			var iterator := get_iterator(query_name)
+			bind_to_iterator(entity, query_name, template[query_name], iterator, iterator.subscribers)
 
 
-func bind_to_iterator(entity: Node, query_name: String, component_names: Array, iterator: Iterator, dry_run = false) -> void:
+func bind_to_iterator(entity: Node, query_name: String, component_names: Array, iterator: Iterator, subscribers: Array) -> void:
 	if entity.is_in_group(_REGISTERED_SCENE) or entity.get_class() != component_names[0]:
 		return
 	var binds := entity.get_meta(query_name, []) as Array
+	var systems := entity.get_meta(query_name + "$", []) as Array
 	if binds.size() == 0:
 		var children := entity.get_children()
 		component_names = component_names.duplicate()
@@ -106,14 +110,14 @@ func bind_to_iterator(entity: Node, query_name: String, component_names: Array, 
 					children.erase(component)
 					binds.push_back(component)
 					break
-		if binds.size() != component_names.size():
-			return
-	var systems := []
-	entity.add_to_group(query_name)
-	entity.set_meta(query_name, binds)
-	if dry_run:
-		return
-	for system_ref in iterator.subscribed_systems:
+		if binds.size() == component_names.size():
+			entity.add_to_group(query_name)
+			entity.set_meta(query_name, binds)
+			entity.set_meta(query_name + "$", systems)
+			for component_ref in binds:
+				var component := component_ref as Node
+				component.connect("tree_exited", self, "_entity_component_removed", [ entity, query_name, systems ], CONNECT_ONESHOT)
+	for system_ref in subscribers:
 		var system := system_ref[_SYSTEM_CLASS].new() as Object
 		systems.push_back(system)
 		system.set("parent", entity)
@@ -125,9 +129,6 @@ func bind_to_iterator(entity: Node, query_name: String, component_names: Array, 
 		for component_ref in binds:
 			var component := component_ref as Node
 			system.set(component.get_meta(_COMP_NAME), component_ref)
-	for component_ref in binds:
-		var component := component_ref as Node
-		component.connect("tree_exited", self, "_entity_component_removed", [ entity, query_name, systems ], CONNECT_ONESHOT)
 
 
 # API
@@ -141,7 +142,8 @@ func query(group_name: String, component_names: Array) -> QueryYielder:
 func _yield_query(group_name: String, component_names: Array, yielder: QueryYielder) -> void:
 	var query_name := get_query_name(group_name, component_names)
 	yield(tree, "idle_frame")
-	build_query(group_name, query_name, component_names, get_iterator(query_name))
+	var iterator := get_iterator(query_name)
+	build_query(group_name, query_name, component_names, iterator, [])
 	var list := []
 	for entity in tree.get_nodes_in_group(query_name):
 		list.push_back(entity.get_meta(query_name))
