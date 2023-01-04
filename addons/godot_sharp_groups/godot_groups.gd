@@ -189,9 +189,9 @@ func _entity_component_removed(entity: Node, query_name: String, systems: Array)
 			entity.remove_from_group(query_name)
 		for system in systems:
 			if system is Node:
-				system.queue_free()
+				system.call_deferred("queue_free")
 			else:
-				system.free()
+				system.call_deferred("free")
 		systems.clear()
 
 
