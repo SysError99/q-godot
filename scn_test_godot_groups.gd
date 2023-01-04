@@ -45,6 +45,24 @@ class MoveTowardsCenterSystem extends Node:
 # 		parent.position += Vector2(randi() % 3 - 1, randi() % 3 - 1)
 
 
+# class BlinkSystem extends Node:
+# 	var fade_in := true
+# 	var sprite: Sprite
+
+# 	func _create() -> void:
+# 		sprite.modulate.a = 0
+
+# 	func _process(delta: float) -> void:
+# 		if fade_in:
+# 			sprite.modulate.a += delta
+# 			if sprite.modulate.a > 1:
+# 				fade_in = false
+# 		else:
+# 			sprite.modulate.a -= delta
+# 			if sprite.modulate.a < 0:
+# 				fade_in = true
+
+
 func _ready() -> void:
 	add_child(tween)
 	rand_seed(814995)
@@ -72,6 +90,12 @@ func _ready() -> void:
 	# 	"",
 	# 	["KinematicBody2D", "Sprite"],
 	# 	ShakeSystem,
+	# 	self
+	# )
+	# Groups.bind_query(
+	# 	"",
+	# 	["KinematicBody2D", "Sprite"],
+	# 	BlinkSystem,
 	# 	self
 	# )
 
