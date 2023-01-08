@@ -169,7 +169,7 @@ func change_scene(path: String) -> void:
 func register_as_scene(node: Node) -> void:
 	node.add_to_group(_REGISTERED_SCENE)
 	node.connect("child_entered_tree", self, "_entity_entered_scene")
-	node.connect("child_exiting_scene", self, "_entity_exiting_scene")
+	node.connect("child_exiting_tree", self, "_entity_exiting_scene")
 
 
 func _entity_entered_scene(entity: Node) -> void:
