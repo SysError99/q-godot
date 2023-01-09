@@ -153,6 +153,7 @@ func _yield_query(group_name: String, component_names: Array, yielder: QueryYiel
 	for entity in tree.get_nodes_in_group(query_name):
 		list.push_back(entity.get_meta(query_name))
 	yielder.emit_signal("completed", list)
+	yielder.free()
 
 
 # API
