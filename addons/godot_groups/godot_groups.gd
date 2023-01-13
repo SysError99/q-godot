@@ -6,6 +6,7 @@ const COMP_ZERO_ERR = "'component_names' must have at least one member!"
 
 
 const _COMP_NAME = "#CN"
+const _CURRENT_SCENE_ONLY = "#CS"
 const _REGISTERED_SCENE = "registered_scene"
 const _QUERY = "#Q"
 const _SHARED_VAR = 1
@@ -29,14 +30,12 @@ var templates := {}
 onready var root := tree.root
 
 
-func get_iterator(query_name: String, current_scene: bool = false) -> Iterator:
+func get_iterator(query_name: String) -> Iterator:
 	var iterator := root.get_node_or_null(query_name) as Iterator
 	if not is_instance_valid(iterator):
 		iterator = Iterator.new()
 		iterator.name = query_name
 		root.add_child(iterator)
-		if current_scene:
-			tree.current_scene.connect("tree_exiting", iterator, "queue_free")
 	return iterator
 
 
@@ -48,11 +47,11 @@ func get_query_name(group_name: String, component_names: Array) -> String:
 
 
 # API
-func bind_query(group_name: String, component_names: Array, system: Object, shared = null, to_current_scene: bool = false) -> void:
+func bind_query(group_name: String, component_names: Array, system: Object, shared = null) -> void:
 	assert(component_names.size() > 0, COMP_ZERO_ERR)
 	yield(tree, "idle_frame")
 	var query_name := get_query_name(group_name, component_names)
-	var iterator := get_iterator(query_name, to_current_scene)
+	var iterator := get_iterator(query_name)
 	var new_subscriber := [[system, shared]]
 	iterator.subscribers.push_back(new_subscriber)
 	build_query(group_name, query_name, component_names, iterator, new_subscriber)
@@ -60,7 +59,8 @@ func bind_query(group_name: String, component_names: Array, system: Object, shar
 
 # API
 func bind_query_to_current_scene(group_name: String, component_names: Array, system: Object, shared = null) -> void:
-	bind_query(group_name, component_names, system, shared, true)
+	system.set_meta(_CURRENT_SCENE_ONLY, true)
+	bind_query(group_name, component_names, system, shared)
 
 
 func build_query(group_name: String, query_name: String, component_names: Array, iterator: Object, subscribers: Array) -> void:
@@ -125,6 +125,7 @@ func bind_to_iterator(entity: Node, query_name: String, component_names: Array, 
 				component.connect("tree_exited", self, "_entity_component_removed", [ entity, query_name, systems ], CONNECT_ONESHOT)
 	for system_ref in subscribers:
 		var system := system_ref[_SYSTEM_CLASS] as Object
+		var current_scene_only := system.get_meta(_CURRENT_SCENE_ONLY, false) as bool
 		if not system.has_method("new"):
 			binds = binds.duplicate()
 			binds.push_front(entity)
@@ -139,6 +140,8 @@ func bind_to_iterator(entity: Node, query_name: String, component_names: Array, 
 			system.set(component.get_meta(_COMP_NAME), component_ref)
 		if system is Node:
 			iterator.add_child(system)
+			if current_scene_only:
+				tree.current_scene.connect("tree_exiting", system, "queue_free")
 		if system.has_method("_create"):
 			system.call("_create")
 
