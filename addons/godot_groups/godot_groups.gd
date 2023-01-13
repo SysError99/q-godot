@@ -22,7 +22,7 @@ class Iterator extends Node:
 	func remove_current_scene_subscribers() -> void:
 		for element in current_scene_subscribers:
 			var system_ref := element as Array
-			subscribers.erase(system_ref[_SYSTEM_CLASS])
+			subscribers.erase(element)
 		current_scene_subscribers.clear()
 
 
@@ -56,21 +56,21 @@ func get_query_name(group_name: String, component_names: Array) -> String:
 
 
 # API
-func bind_query(group_name: String, component_names: Array, system: Object, shared = null) -> void:
+func bind_query(group_name: String, component_names: Array, system: Object, shared = null, to_current_scene: bool = false) -> void:
 	yield(tree, "idle_frame")
 	assert(component_names.size() > 0, COMP_ZERO_ERR)
 	var query_name := get_query_name(group_name, component_names)
 	var iterator := get_iterator(query_name)
 	var new_subscriber := [system, shared]
 	iterator.subscribers.push_back(new_subscriber)
+	iterator.current_scene_subscribers.push_back(new_subscriber)
 	build_query(group_name, query_name, component_names, iterator, [new_subscriber])
 
 
 # API
 func bind_query_to_current_scene(group_name: String, component_names: Array, system: Object, shared = null) -> void:
 	yield(tree, "idle_frame")
-	get_iterator(get_query_name(group_name, component_names)).current_scene_subscribers.push_back(system)
-	bind_query(group_name, component_names, system, shared)
+	bind_query(group_name, component_names, system, shared, true)
 
 
 func build_query(group_name: String, query_name: String, component_names: Array, iterator: Object, subscribers: Array) -> void:
@@ -181,9 +181,10 @@ func change_scene(path: String) -> void:
 		iterator.call("remove_current_scene_subscribers")
 	if is_instance_valid(current_scene):
 		current_scene.queue_free()
-	tree.current_scene = inst
-	register_as_scene(inst)
 	root.add_child(inst)
+	tree.current_scene = inst
+	yield(inst, "ready")
+	register_as_scene(inst)
 
 
 # API
