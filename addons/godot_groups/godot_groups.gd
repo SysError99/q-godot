@@ -180,8 +180,8 @@ func change_scene(path: String) -> void:
 	if is_instance_valid(current_scene):
 		current_scene.queue_free()
 	tree.current_scene = inst
-	register_as_scene(inst);
-	root.add_child(inst);
+	register_as_scene(inst)
+	root.add_child(inst)
 
 
 # API
