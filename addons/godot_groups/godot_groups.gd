@@ -57,8 +57,8 @@ func get_query_name(group_name: String, component_names: Array) -> String:
 
 # API
 func bind_query(group_name: String, component_names: Array, system: Object, shared = null) -> void:
-	assert(component_names.size() > 0, COMP_ZERO_ERR)
 	yield(tree, "idle_frame")
+	assert(component_names.size() > 0, COMP_ZERO_ERR)
 	var query_name := get_query_name(group_name, component_names)
 	var iterator := get_iterator(query_name)
 	var new_subscriber := [system, shared]
@@ -68,6 +68,7 @@ func bind_query(group_name: String, component_names: Array, system: Object, shar
 
 # API
 func bind_query_to_current_scene(group_name: String, component_names: Array, system: Object, shared = null) -> void:
+	yield(tree, "idle_frame")
 	get_iterator(get_query_name(group_name, component_names)).current_scene_subscribers.push_back(system)
 	bind_query(group_name, component_names, system, shared)
 
