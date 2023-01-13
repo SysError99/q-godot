@@ -61,9 +61,9 @@ func bind_query(group_name: String, component_names: Array, system: Object, shar
 	yield(tree, "idle_frame")
 	var query_name := get_query_name(group_name, component_names)
 	var iterator := get_iterator(query_name)
-	var new_subscriber := [[system, shared]]
+	var new_subscriber := [system, shared]
 	iterator.subscribers.push_back(new_subscriber)
-	build_query(group_name, query_name, component_names, iterator, new_subscriber)
+	build_query(group_name, query_name, component_names, iterator, [new_subscriber])
 
 
 # API
