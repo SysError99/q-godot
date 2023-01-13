@@ -6,7 +6,7 @@ const COMP_ZERO_ERR = "'component_names' must have at least one member!"
 
 
 const _COMP_NAME = "#CN"
-const _REGISTERED_SCENE = "#R"
+const _REGISTERED_SCENE = "registered_scene"
 const _QUERY = "#Q"
 const _SHARED_VAR = 1
 const _SYSTEM_CLASS = 0
@@ -171,12 +171,18 @@ func register_as_scene(node: Node) -> void:
 	node.add_to_group(_REGISTERED_SCENE)
 	node.connect("child_entered_tree", self, "_entity_entered_scene")
 	node.connect("child_exiting_tree", self, "_entity_exiting_scene")
+	for child_ref in node.get_children():
+		register_entity(child_ref)
+
+
+func register_entity(entity: Node) -> void:
+	entity.connect("child_entered_tree", self, "_entity_component_added", [ entity ])
+	bind_to_iterators(entity)
 
 
 func _entity_entered_scene(entity: Node) -> void:
 	yield(entity, "ready")
-	entity.connect("child_entered_tree", self, "_entity_component_added", [ entity ])
-	bind_to_iterators(entity)
+	register_entity(entity)
 
 
 func _entity_exiting_scene(entity: Node) -> void:
@@ -210,4 +216,7 @@ func _init() -> void:
 
 func _enter_tree() -> void:
 	tree = get_tree()
+
+
+func _ready() -> void:
 	register_as_scene(tree.current_scene)
