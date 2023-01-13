@@ -169,6 +169,7 @@ func change_scene(path: String) -> void:
 	var inst := (load(path) as PackedScene).instance()
 	if is_instance_valid(current_scene):
 		current_scene.queue_free()
+	tree.current_scene = inst
 	register_as_scene(inst);
 	root.add_child(inst);
 
