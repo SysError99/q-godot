@@ -7,6 +7,7 @@ const COMP_ZERO_ERR = "'component_names' must have at least one member!"
 
 const _COMP_NAME = "#CN"
 const _CURRENT_SCENE_ONLY = "#CS"
+const _ITERATOR = "#I"
 const _REGISTERED_SCENE = "registered_scene"
 const _QUERY = "#Q"
 const _SHARED_VAR = 1
@@ -14,7 +15,14 @@ const _SYSTEM_CLASS = 0
 
 
 class Iterator extends Node:
+	var current_scene_subscribers := []
 	var subscribers := []
+	func _init() -> void:
+		add_to_group(_ITERATOR)
+	func remove_current_scene_subscribers() -> void:
+		for element in current_scene_subscribers:
+			subscribers.erase(element)
+		current_scene_subscribers.clear()
 
 
 class QueryYielder extends Object:
@@ -59,7 +67,7 @@ func bind_query(group_name: String, component_names: Array, system: Object, shar
 
 # API
 func bind_query_to_current_scene(group_name: String, component_names: Array, system: Object, shared = null) -> void:
-	system.set_meta(_CURRENT_SCENE_ONLY, true)
+	get_iterator(get_query_name(group_name, component_names)).current_scene_subscribers.push_back(system)
 	bind_query(group_name, component_names, system, shared)
 
 
@@ -125,7 +133,6 @@ func bind_to_iterator(entity: Node, query_name: String, component_names: Array, 
 				component.connect("tree_exited", self, "_entity_component_removed", [ entity, query_name, systems ], CONNECT_ONESHOT)
 	for system_ref in subscribers:
 		var system := system_ref[_SYSTEM_CLASS] as Object
-		var current_scene_only := system.get_meta(_CURRENT_SCENE_ONLY, false) as bool
 		if not system.has_method("new"):
 			binds = binds.duplicate()
 			binds.push_front(entity)
@@ -140,8 +147,6 @@ func bind_to_iterator(entity: Node, query_name: String, component_names: Array, 
 			system.set(component.get_meta(_COMP_NAME), component_ref)
 		if system is Node:
 			iterator.add_child(system)
-			if current_scene_only:
-				tree.current_scene.connect("tree_exiting", system, "queue_free")
 		if system.has_method("_create"):
 			system.call("_create")
 
@@ -170,6 +175,8 @@ func _yield_query(group_name: String, component_names: Array, yielder: QueryYiel
 func change_scene(path: String) -> void:
 	var current_scene := tree.current_scene
 	var inst := (load(path) as PackedScene).instance()
+	for iterator in tree.get_nodes_in_group(_ITERATOR):
+		iterator.call("remove_current_scene_subscribers")
 	if is_instance_valid(current_scene):
 		current_scene.queue_free()
 	tree.current_scene = inst
