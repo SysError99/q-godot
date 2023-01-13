@@ -21,7 +21,8 @@ class Iterator extends Node:
 		add_to_group(_ITERATOR)
 	func remove_current_scene_subscribers() -> void:
 		for element in current_scene_subscribers:
-			subscribers.erase(element)
+			var system_ref := element as Array
+			subscribers.erase(system_ref[_SYSTEM_CLASS])
 		current_scene_subscribers.clear()
 
 
