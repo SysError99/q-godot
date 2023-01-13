@@ -1,0 +1,18 @@
+[gd_scene format=2]
+
+[node name="ScnNext" type="Node2D"]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
+margin_right = 440.0
+margin_bottom = 69.0
+
+[node name="Label" type="Label" parent="CanvasLayer"]
+margin_left = 17.0
+margin_top = 17.0
+margin_right = 93.0
+margin_bottom = 34.0
+rect_scale = Vector2( 3, 3 )
+custom_colors/font_color = Color( 1, 0, 0, 1 )
+text = "Next Scene"

@@ -80,7 +80,7 @@ func _ready() -> void:
 		current_scene.add_child(clone)
 
 
-	Groups.bind_query(
+	Groups.bind_query_to_current_scene(
 		"",
 		["KinematicBody2D", "Sprite"],
 		MoveTowardsCenterSystem,
@@ -105,3 +105,8 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	label.text = "FPS: %f" % Engine.get_frames_per_second()
+
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_home"):
+		Groups.change_scene("res://scn_next.tscn")
