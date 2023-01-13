@@ -29,12 +29,14 @@ var templates := {}
 onready var root := tree.root
 
 
-func get_iterator(query_name: String) -> Iterator:
+func get_iterator(query_name: String, current_scene: bool = false) -> Iterator:
 	var iterator := root.get_node_or_null(query_name) as Iterator
 	if not is_instance_valid(iterator):
 		iterator = Iterator.new()
 		iterator.name = query_name
 		root.add_child(iterator)
+		if current_scene:
+			tree.current_scene.connect("tree_exiting", iterator, "queue_free")
 	return iterator
 
 
@@ -46,15 +48,20 @@ func get_query_name(group_name: String, component_names: Array) -> String:
 
 
 # API
-func bind_query(group_name: String, component_names: Array, system: Object, shared = null) -> void:
+func bind_query(group_name: String, component_names: Array, system: Object, shared = null, to_current_scene: bool = false) -> void:
 	assert(component_names.size() > 0, COMP_ZERO_ERR)
 	yield(tree, "idle_frame")
 	var query_name := get_query_name(group_name, component_names)
-	var iterator := get_iterator(query_name)
+	var iterator := get_iterator(query_name, to_current_scene)
 	var new_subscriber := [[system, shared]]
 	iterator.subscribers.push_back(new_subscriber)
 	build_query(group_name, query_name, component_names, iterator, new_subscriber)
-	
+
+
+# API
+func bind_query_to_current_scene(group_name: String, component_names: Array, system: Object, shared = null) -> void:
+	bind_query(group_name, component_names, system, shared, true)
+
 
 func build_query(group_name: String, query_name: String, component_names: Array, iterator: Object, subscribers: Array) -> void:
 	var registered_scenes := tree.get_nodes_in_group(_REGISTERED_SCENE)
