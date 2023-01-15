@@ -1,5 +1,4 @@
 extends Node
-class_name GodotGroups
 
 
 const COMP_ZERO_ERR = "'component_names' must have at least one member!"

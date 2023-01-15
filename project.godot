@@ -8,16 +8,6 @@
 
 config_version=4
 
-_global_script_classes=[ {
-"base": "Node",
-"class": "GodotGroups",
-"language": "GDScript",
-"path": "res://addons/godot_groups/godot_groups.gd"
-} ]
-_global_script_class_icons={
-"GodotGroups": ""
-}
-
 [application]
 
 config/name="GodotSharpGroup"
