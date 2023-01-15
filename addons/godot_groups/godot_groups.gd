@@ -8,10 +8,11 @@ const COMP_ZERO_ERR = "'component_names' must have at least one member!"
 const _COMP_NAME = "#CN"
 const _CURRENT_SCENE_ONLY = "#CS"
 const _ITERATOR = "#I"
-const _REGISTERED_SCENE = "registered_scene"
+const _REGISTERED_SCENE = "#RS"
 const _QUERY = "#Q"
 const _SHARED_VAR = 1
 const _SYSTEM_CLASS = 0
+const _UNREGISTERED_SCENE = "registered_scene"
 
 
 class Iterator extends Node:
@@ -184,7 +185,18 @@ func change_scene(path: String) -> void:
 	root.add_child(inst)
 	tree.current_scene = inst
 	yield(inst, "ready")
-	register_as_scene(inst)
+	post_change_scene()
+
+
+func post_change_scene() -> void:
+	var registered_scenes := tree.get_nodes_in_group(_UNREGISTERED_SCENE)
+	if registered_scenes.size() > 0:
+		for scn_ref in registered_scenes:
+			var scn := scn_ref as Node
+			scn.remove_from_group(_UNREGISTERED_SCENE)
+			register_as_scene(scn)
+	else:
+		register_as_scene(tree.current_scene)
 
 
 # API
@@ -240,4 +252,4 @@ func _enter_tree() -> void:
 
 
 func _ready() -> void:
-	register_as_scene(tree.current_scene)
+	post_change_scene()
