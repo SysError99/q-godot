@@ -6,7 +6,12 @@ namespace SysError99
 {
     public class GodotSharpGroups : Node
     {
+        private const string _Component = "#C";
+        private const string _RegisteredScene = "#RS";
+        private const string _UnregisteredScene = "registered_scene";
+
         private static Viewport Root;
+        private static SceneTree MainTree;
         private static GodotSharpGroups Self;
         private static Dictionary<string, List<GroupObject0>> Groups0 = new();
         private static Dictionary<string, List<GroupObject1>> Groups1 = new();
@@ -773,7 +778,7 @@ namespace SysError99
 
         #endregion
 
-        public static void ChangeScene(string path)
+        public static async void ChangeScene(string path)
         {
             var tree = Self.GetTree();
             var currentScene = tree.CurrentScene;
@@ -782,20 +787,49 @@ namespace SysError99
             {
                 currentScene.QueueFree();
             }
-            RegisterScene(inst);
             Root.AddChild(inst);
+            MainTree.CurrentScene = inst;
+            await Self.ToSignal(inst, "ready");
+            PostChangeScene();
         }
 
-        private static void RegisterScene(Node scene)
+        private static void PostChangeScene()
         {
-            scene.AddToGroup("__registered_scene__");
+            var registeredScenes = MainTree.GetNodesInGroup(_UnregisteredScene);
+            if (registeredScenes.Count > 0)
+            {
+                foreach (Node scene in registeredScenes)
+                {
+                    scene.RemoveFromGroup(_UnregisteredScene);
+                    RegisterAsScene(scene);
+                }
+            }
+            else
+            {
+                RegisterAsScene(MainTree.CurrentScene);
+            }
+        }
+
+        private static void RegisterAsScene(Node scene)
+        {
+            scene.AddToGroup(_RegisteredScene);
             scene.Connect("child_entered_tree", Self, nameof(_EntityEnteredScene));
             scene.Connect("child_exiting_tree", Self, nameof(_EntityExitingScene));
+            foreach (Node child in scene.GetChildren())
+            {
+                RegisterEntity(child);
+            }
+        }
+
+        private static void RegisterEntity(Node entity)
+        {
+            entity.Connect("child_entered_tree", Self, nameof(_EntityComponentAdded), new Array { entity });
+            BindToGroups(entity);
         }
 
         private static void BuildQuery(string groupName, string queryName, in List<string> componentNames)
         {
-            var registeredScenes = Self.GetTree().GetNodesInGroup("__registered_scene__");
+            var registeredScenes = Self.GetTree().GetNodesInGroup(_RegisteredScene);
             if (Templates.ContainsKey(groupName))
             {
                 Templates[groupName][queryName] = componentNames;
@@ -848,8 +882,9 @@ namespace SysError99
 
         private static void BindToGroup(Node entity, string queryName, List<string> componentNames)
         {
-            if (entity.IsInGroup("__registered_scene__") || entity.GetType().Name != componentNames[0]) return;
+            if (entity.IsInGroup(_RegisteredScene) || entity.GetType().Name != componentNames[0]) return;
             var binds = entity.GetMeta(queryName, new List<Node>()) as List<Node>;
+            var groupObject = new GroupObject();
             if (binds.Count == 0)
             {
                 var children = entity.GetChildren();
@@ -861,7 +896,7 @@ namespace SysError99
                     {
                         if (component.GetType().Name == componentName)
                         {
-                            component.AddToGroup("__component__");
+                            component.AddToGroup(_Component);
                             children.Remove(component);
                             binds.Add(component);
                             break;
@@ -871,10 +906,13 @@ namespace SysError99
                 if (binds.Count == componentNames.Count)
                 {
                     entity.SetMeta(queryName, binds);
+                    foreach (var component in binds)
+                    {
+                        component.Connect("tree_exited", Self, nameof(_EntityComponentRemoved), new Array { entity, component, groupObject, queryName }, (uint)ConnectFlags.Oneshot);
+                    }
                 }
             }
             binds.Insert(0, entity);
-            GroupObject groupObject = new GroupObject();
             # region Save Query
             switch (binds.Count)
             {
@@ -1171,32 +1209,26 @@ namespace SysError99
             }
             #endregion
             binds.RemoveAt(0);
-            foreach (var component in binds)
-            {
-                component.Connect("tree_exited", Self, nameof(_EntityComponentRemoved), new Array { entity, component, groupObject, queryName }, (uint)ConnectFlags.Oneshot);
-            }
         }
 
         public override void _EnterTree()
         {
-            var tree = GetTree();
-            Root = tree.Root;
+            MainTree = GetTree();
+            Root = MainTree.Root;
             Self = this;
-            RegisterScene(tree.CurrentScene);
         }
 
         private async void _EntityEnteredScene(Node entity)
         {
             await ToSignal(entity, "ready");
-            entity.Connect("child_entered_tree", Self, nameof(_EntityComponentAdded), new Array { entity });
-            BindToGroups(entity);
+            RegisterEntity(entity);
         }
 
         private void _EntityExitingScene(Node entity)
         {
             foreach (Node component in entity.GetChildren())
             {
-                if (component.IsInGroup("__component__"))
+                if (component.IsInGroup(_Component))
                 {
                     component.EmitSignal("tree_exited");
                 }
@@ -1213,7 +1245,7 @@ namespace SysError99
         {
             entity.RemoveMeta(queryName);
             if (!Object.IsInstanceValid(groupObject)) return;
-            component.RemoveFromGroup("__component__");
+            component.RemoveFromGroup(_Component);
             switch (groupObject)
             {
                 case GroupObject0 groupObject0: Groups0[queryName].Remove(groupObject0); break;
@@ -1235,6 +1267,11 @@ namespace SysError99
                 case GroupObject16 groupObject16: Groups16[queryName].Remove(groupObject16); break;
             }
             groupObject.Free();
+        }
+
+        public override void _Ready()
+        {
+            PostChangeScene();
         }
     }
 
