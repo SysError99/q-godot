@@ -80,7 +80,7 @@ func __bind_to_iterators(entity: Node):
 
 
 func __bind_to_iterator(entity: Node, query_name: String, component_names: Array, iterator: Iterator, subscribers: Array) -> void:
-	if entity.is_in_group(_REGISTERED_SCENE) or entity.get_class() != component_names[0]:
+	if entity.is_in_group(_REGISTERED_SCENE) or not (entity.get_class() == component_names[0] or entity.is_in_group(component_names[0])):
 		return
 	var binds := entity.get_meta(query_name, []) as Array
 	var systems := entity.get_meta(query_name + "$", []) as Array
