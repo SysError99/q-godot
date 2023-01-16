@@ -68,7 +68,6 @@ func _ready() -> void:
 	rand_seed(814995)
 
 
-	var current_scene := get_tree().current_scene
 	for x in 10000:
 		var clone := KinematicBody2D.new()
 		var sprite := Sprite.new()
@@ -77,7 +76,7 @@ func _ready() -> void:
 		sprite.texture = preload("res://icon.png")
 		clone.position = Vector2(randi() % 1024, randi() % 600)
 		clone.add_child(sprite)
-		current_scene.add_child(clone)
+		add_child(clone)
 
 
 	Groups.bind_query_to_current_scene(
