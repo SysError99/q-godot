@@ -51,6 +51,10 @@ namespace SysError99
                         typeof(T).Name,
                     }
                 );
+                foreach (var obj in Query<T>())
+                {
+                    yield return obj;
+                }
             }
             yield break;
         }
@@ -78,6 +82,10 @@ namespace SysError99
                         typeof(T1).Name,
                     }
                 );
+                foreach (var obj in Query<T0, T1>())
+                {
+                    yield return obj;
+                }
             }
             yield break;
         }
@@ -108,6 +116,10 @@ namespace SysError99
                         typeof(T2).Name,
                     }
                 );
+                foreach (var obj in Query<T0, T1, T2>())
+                {
+                    yield return obj;
+                }
             }
             yield break;
         }
@@ -141,6 +153,10 @@ namespace SysError99
                         typeof(T3).Name,
                     }
                 );
+                foreach (var obj in Query<T0, T1, T2, T3>())
+                {
+                    yield return obj;
+                }
             }
             yield break;
         }
@@ -177,6 +193,10 @@ namespace SysError99
                         typeof(T4).Name,
                     }
                 );
+                foreach (var obj in Query<T0, T1, T2, T3, T4>())
+                {
+                    yield return obj;
+                }
             }
             yield break;
         }
@@ -216,6 +236,10 @@ namespace SysError99
                         typeof(T5).Name,
                     }
                 );
+                foreach (var obj in Query<T0, T1, T2, T3, T4, T5>())
+                {
+                    yield return obj;
+                }
             }
             yield break;
         }
@@ -258,6 +282,10 @@ namespace SysError99
                         typeof(T6).Name,
                     }
                 );
+                foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6>())
+                {
+                    yield return obj;
+                }
             }
             yield break;
         }
@@ -303,6 +331,10 @@ namespace SysError99
                         typeof(T7).Name,
                     }
                 );
+                foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7>())
+                {
+                    yield return obj;
+                }
             }
             yield break;
         }
@@ -351,6 +383,10 @@ namespace SysError99
                         typeof(T8).Name,
                     }
                 );
+                foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8>())
+                {
+                    yield return obj;
+                }
             }
             yield break;
         }
@@ -402,6 +438,10 @@ namespace SysError99
                         typeof(T9).Name,
                     }
                 );
+                foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>())
+                {
+                    yield return obj;
+                }
             }
             yield break;
         }
@@ -456,6 +496,10 @@ namespace SysError99
                         typeof(T10).Name,
                     }
                 );
+                foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>())
+                {
+                    yield return obj;
+                }
             }
             yield break;
         }
@@ -513,6 +557,10 @@ namespace SysError99
                         typeof(T11).Name,
                     }
                 );
+                foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>())
+                {
+                    yield return obj;
+                }
             }
             yield break;
         }
@@ -573,6 +621,10 @@ namespace SysError99
                         typeof(T12).Name,
                     }
                 );
+                foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>())
+                {
+                    yield return obj;
+                }
             }
             yield break;
         }
@@ -636,6 +688,10 @@ namespace SysError99
                         typeof(T13).Name,
                     }
                 );
+                foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>())
+                {
+                    yield return obj;
+                }
             }
             yield break;
         }
@@ -702,6 +758,10 @@ namespace SysError99
                         typeof(T14).Name,
                     }
                 );
+                foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>())
+                {
+                    yield return obj;
+                }
             }
             yield break;
         }
@@ -771,6 +831,10 @@ namespace SysError99
                         typeof(T15).Name,
                     }
                 );
+                foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>())
+                {
+                    yield return obj;
+                }
             }
             yield break;
         }
