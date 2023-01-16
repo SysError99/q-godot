@@ -70,6 +70,8 @@ func __build_query(query_name: String, component_names: Array, iterator: Object,
 	for scene_ref in registered_scenes:
 		var scene := scene_ref as Node
 		for entity in scene.get_children():
+			if entity.is_in_group(_REGISTERED_SCENE):
+				continue
 			__bind_to_iterator(entity, query_name, component_names, iterator, subscribers)
 
 
@@ -80,25 +82,23 @@ func __bind_to_iterators(entity: Node):
 
 
 func __bind_to_iterator(entity: Node, query_name: String, component_names: Array, iterator: Iterator, subscribers: Array) -> void:
-	if entity.is_in_group(_REGISTERED_SCENE) or not (entity.get_class() == component_names[0] or entity.is_in_group(component_names[0])):
+	if entity.get_class() != component_names[0]:
 		return
 	var binds := entity.get_meta(query_name, []) as Array
 	var systems := entity.get_meta(query_name + "$", []) as Array
 	if binds.size() == 0:
-		var children := entity.get_children()
 		component_names = component_names.duplicate()
-		component_names.remove(0);
+		component_names.remove(0)
 		var number_of_groups := 0
 		for component_name in component_names:
-			var component := entity.get_node_or_null(component_name) as Node
-			if not is_instance_valid(component):
-				if not entity.is_in_group(component_name):
-					return
+			if entity.is_in_group(component_name):
 				number_of_groups += 1
 				continue
+			var component := entity.get_node_or_null(component_name) as Node
+			if not is_instance_valid(component):
+				return
 			var bind_name := _regex.sub(component_name, "_$1", true).to_lower()
 			component.set_meta(_COMP_NAME, bind_name.substr(1, bind_name.length()))
-			children.erase(component)
 			binds.push_back(component)
 		if binds.size() == component_names.size() - number_of_groups:
 			entity.add_to_group(query_name)
