@@ -834,6 +834,7 @@ namespace SysError99
             {
                 foreach (Node entity in scene.GetChildren())
                 {
+                    if (entity.IsInGroup(_RegisteredScene)) continue;
                     BindToGroup(entity, queryName, componentNames);
                 }
             }
@@ -849,26 +850,18 @@ namespace SysError99
 
         private static void BindToGroup(Node entity, string queryName, List<string> componentNames)
         {
-            if (entity.IsInGroup(_RegisteredScene) || entity.GetType().Name != componentNames[0]) return;
-            var binds = entity.GetMeta(queryName, new Godot.Collections.Array() {}) as Godot.Collections.Array;
+            if (entity.GetType().Name != componentNames[0]) return;
+            var binds = entity.GetMeta(queryName, new Godot.Collections.Array()) as Godot.Collections.Array;
             var groupObject = new GroupObject();
             if (binds.Count == 0)
             {
-                var children = entity.GetChildren();
                 componentNames = new List<string>(componentNames);
                 componentNames.RemoveAt(0);
                 foreach (var componentName in componentNames)
                 {
-                    foreach (Node component in children)
-                    {
-                        if (component.GetType().Name == componentName)
-                        {
-                            component.AddToGroup(_Component);
-                            children.Remove(component);
-                            binds.Add(component);
-                            break;
-                        }
-                    }
+                    if (entity.GetNodeOrNull(componentName) is not Node component) return;
+                    component.AddToGroup(_Component);
+                    binds.Add(component);
                 }
                 if (binds.Count == componentNames.Count)
                 {
