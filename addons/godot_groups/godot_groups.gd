@@ -25,12 +25,9 @@ class Iterator extends Node:
 		current_scene_subscribers.clear()
 
 
-class QueryYielder extends Object:
-	signal completed(array)
-
-
 var _nogroup_templates := {}
 var _regex := RegEx.new()
+var _root_ready := false
 var _root: Viewport
 var _tree: SceneTree
 var _templates := {}
@@ -54,7 +51,8 @@ func __get_query_name(group_name: String, component_names: Array) -> String:
 
 # API
 func bind_query(group_name: String, component_names: Array, system: Object, shared = null, to_current_scene: bool = false) -> void:
-	yield(_tree, "idle_frame")
+	if not _root_ready:
+		yield(_root, "ready")
 	assert(component_names.size() > 0, _COMP_ZERO_ERR)
 	var query_name := __get_query_name(group_name, component_names)
 	var iterator := __get_iterator(query_name)
@@ -67,7 +65,6 @@ func bind_query(group_name: String, component_names: Array, system: Object, shar
 
 # API
 func bind_query_to_current_scene(group_name: String, component_names: Array, system: Object, shared = null) -> void:
-	yield(_tree, "idle_frame")
 	bind_query(group_name, component_names, system, shared, true)
 
 
@@ -152,23 +149,8 @@ func __bind_to_iterator(entity: Node, query_name: String, component_names: Array
 
 
 # API
-func query(group_name: String, component_names: Array) -> QueryYielder:
-	assert(component_names.size() > 0, _COMP_ZERO_ERR)
-	var yielder := QueryYielder.new()
-	__yield_query(group_name, component_names, yielder)
-	return yielder
-
-
-func __yield_query(group_name: String, component_names: Array, yielder: QueryYielder) -> void:
-	var query_name := __get_query_name(group_name, component_names)
-	yield(_tree, "idle_frame")
-	var iterator := __get_iterator(query_name)
-	__build_query(group_name, query_name, component_names, iterator, [])
-	var list := []
-	for entity in _tree.get_nodes_in_group(query_name):
-		list.push_back(entity.get_meta(query_name))
-	yielder.emit_signal("completed", list)
-	yielder.free()
+func query(group_name: String, component_names: Array) -> Array:
+	return _tree.get_nodes_in_group(__get_query_name(group_name, component_names))
 
 
 # API
@@ -249,4 +231,6 @@ func _enter_tree() -> void:
 
 
 func _ready() -> void:
+	yield(_root, "ready")
+	_root_ready = true
 	__post_change_scene(_tree.current_scene)
