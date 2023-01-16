@@ -40,6 +40,7 @@ class MoveTowardsCenterSystem extends Node:
 # 	const TARGET = Vector2(512, 300)
 
 # 	var parent: KinematicBody2D
+# 	var sprite: Sprite
 
 # 	func _process(_delta: float) -> void:
 # 		parent.position += Vector2(randi() % 3 - 1, randi() % 3 - 1)
@@ -66,7 +67,6 @@ class MoveTowardsCenterSystem extends Node:
 func _ready() -> void:
 	add_child(tween)
 	rand_seed(814995)
-
 
 	for x in 10000:
 		var clone := KinematicBody2D.new()
