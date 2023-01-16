@@ -88,16 +88,19 @@ func __bind_to_iterator(entity: Node, query_name: String, component_names: Array
 		var children := entity.get_children()
 		component_names = component_names.duplicate()
 		component_names.remove(0);
+		var number_of_groups := 0
 		for component_name in component_names:
-			for component_ref in children:
-				var component := component_ref as Node
-				if component.name == component_name:
-					var bind_name := _regex.sub(component_name, "_$1", true).to_lower()
-					component.set_meta(_COMP_NAME, bind_name.substr(1, bind_name.length()))
-					children.erase(component)
-					binds.push_back(component)
-					break
-		if binds.size() == component_names.size():
+			var component := entity.get_node_or_null(component_name) as Node
+			if not is_instance_valid(component):
+				if not entity.is_in_group(component_name):
+					return
+				number_of_groups += 1
+				continue
+			var bind_name := _regex.sub(component_name, "_$1", true).to_lower()
+			component.set_meta(_COMP_NAME, bind_name.substr(1, bind_name.length()))
+			children.erase(component)
+			binds.push_back(component)
+		if binds.size() == component_names.size() - number_of_groups:
 			entity.add_to_group(query_name)
 			entity.set_meta(query_name, binds)
 			entity.set_meta(query_name + "$", systems)
