@@ -187,7 +187,7 @@ func entity_entered(parent: KinematicBody2D, icon: Sprite) -> void:
 ---
 
 ## Current Scene Query Binding (GDScript Only)
-Sometimes, you don't really want all systems in the game to run all the time in all scenes. You can instaed bind query using `bind_query_to_current_scene()`:
+Sometimes, you don't really want all systems in the game to run all the time in all scenes. You can instead bind query using `bind_query_to_current_scene()`:
 
 ```gdscript
 QGodot.bind_query_to_current_scene(
