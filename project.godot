@@ -11,13 +11,13 @@ config_version=4
 [application]
 
 config/name="GodotSharpGroup"
-run/main_scene="res://scn_test_godot_groups.tscn"
+run/main_scene="res://scn_test_q_godot.tscn"
 config/icon="res://icon.png"
 
 [autoload]
 
-QGodot="*res://addons/godot_groups/q_godot.gd"
-QGodotSharp="*res://addons/godot_groups/QGodotSharp.cs"
+QGodot="*res://addons/q_godot/q_godot.gd"
+QGodotSharp="*res://addons/q_godot/QGodotSharp.cs"
 
 [debug]
 
