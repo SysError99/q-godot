@@ -1267,9 +1267,9 @@ namespace SysError99
 
         private void _EntityComponentRemoved(Node entity, Node component, GroupObject groupObject, string queryName)
         {
-            entity.RemoveMeta(queryName);
             if (!Object.IsInstanceValid(groupObject)) return;
             component.RemoveFromGroup(_Component);
+            entity.RemoveMeta(queryName);
             switch (groupObject)
             {
                 case GroupObject0 groupObject0: Groups0[queryName].Remove(groupObject0); break;
