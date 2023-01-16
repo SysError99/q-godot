@@ -16,8 +16,8 @@ config/icon="res://icon.png"
 
 [autoload]
 
-Groups="*res://addons/godot_groups/q_godot.gd"
-SharpGroups="*res://addons/godot_groups/QGodotSharp.cs"
+QGodot="*res://addons/godot_groups/q_godot.gd"
+QGodotSharp="*res://addons/godot_groups/QGodotSharp.cs"
 
 [debug]
 

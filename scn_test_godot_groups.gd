@@ -68,23 +68,23 @@ func _ready() -> void:
 	add_child(tween)
 	rand_seed(814995)
 
-	Groups.bind_query_to_current_scene(
+	QGodot.bind_query_to_current_scene(
 		["KinematicBody2D", "Sprite"],
 		MoveTowardsCenterSystem,
 		self
 	)
-	# Groups.bind_query(
+	# QGodot.bind_query(
 	# 	["KinematicBody2D", "Sprite"],
 	# 	ShakeSystem,
 	# 	self
 	# )
-	# Groups.bind_query(
+	# QGodot.bind_query(
 	# 	["KinematicBody2D", "Sprite"],
 	# 	BlinkSystem,
 	# 	self
 	# )
 
-	# var query := Groups.query(["KinematicBody2D", "Sprite"])
+	# var query := QGodot.query(["KinematicBody2D", "Sprite"])
 	# print(query.size())
 
 	for x in 10000:
@@ -104,4 +104,4 @@ func _process(_delta: float) -> void:
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_home"):
-		Groups.change_scene("res://scn_next.tscn")
+		QGodot.change_scene("res://scn_next.tscn")
