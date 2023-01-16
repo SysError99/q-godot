@@ -25,12 +25,11 @@ class Iterator extends Node:
 		current_scene_subscribers.clear()
 
 
-var _nogroup_templates := {}
 var _regex := RegEx.new()
 var _root_ready := false
 var _root: Viewport
-var _tree: SceneTree
 var _templates := {}
+var _tree: SceneTree
 
 
 func __get_iterator(query_name: String) -> Iterator:
@@ -42,65 +41,42 @@ func __get_iterator(query_name: String) -> Iterator:
 	return iterator
 
 
-func __get_query_name(group_name: String, component_names: Array) -> String:
-	var query_name = _QUERY + group_name
-	for name in component_names:
-		query_name += "_" + name
-	return query_name
+func __get_query_name(component_names: Array) -> String:
+	return _QUERY + PoolStringArray(component_names).join("_")
 
 
 # API
-func bind_query(group_name: String, component_names: Array, system: Object, shared = null, to_current_scene: bool = false) -> void:
+func bind_query(component_names: Array, system: Object, shared = null, to_current_scene: bool = false) -> void:
 	if not _root_ready:
 		yield(_root, "ready")
 	assert(component_names.size() > 0, _COMP_ZERO_ERR)
-	var query_name := __get_query_name(group_name, component_names)
+	var query_name := __get_query_name(component_names)
 	var iterator := __get_iterator(query_name)
 	var new_subscriber := [system, shared]
 	iterator.subscribers.push_back(new_subscriber)
 	if to_current_scene:
 		iterator.current_scene_subscribers.push_back(new_subscriber)
-	__build_query(group_name, query_name, component_names, iterator, [new_subscriber])
+	__build_query(query_name, component_names, iterator, [new_subscriber])
 
 
 # API
-func bind_query_to_current_scene(group_name: String, component_names: Array, system: Object, shared = null) -> void:
-	bind_query(group_name, component_names, system, shared, true)
+func bind_query_to_current_scene(component_names: Array, system: Object, shared = null) -> void:
+	bind_query(component_names, system, shared, true)
 
 
-func __build_query(group_name: String, query_name: String, component_names: Array, iterator: Object, subscribers: Array) -> void:
+func __build_query(query_name: String, component_names: Array, iterator: Object, subscribers: Array) -> void:
 	var registered_scenes := _tree.get_nodes_in_group(_REGISTERED_SCENE)
-	if group_name == "":
-		_nogroup_templates[query_name] = component_names
-		for scene_ref in registered_scenes:
-			var scene := scene_ref as Node
-			for entity in scene.get_children():
-				__bind_to_iterator(entity, query_name, component_names, iterator, subscribers)
-	else:
-		if not _templates.has(group_name):
-			_templates[group_name] = { query_name: component_names, }
-		else:
-			_templates[group_name][query_name] = component_names
-		for scene_ref in registered_scenes:
-			var scene := scene_ref as Node
-			for entity_ref in scene.get_children():
-				var entity := entity_ref as Node
-				if not entity.is_in_group(group_name):
-					continue
-				__bind_to_iterator(entity, query_name, component_names, iterator, subscribers)
+	_templates[query_name] = component_names
+	for scene_ref in registered_scenes:
+		var scene := scene_ref as Node
+		for entity in scene.get_children():
+			__bind_to_iterator(entity, query_name, component_names, iterator, subscribers)
 
 
 func __bind_to_iterators(entity: Node):
-	for query_name in _nogroup_templates:
+	for query_name in _templates:
 		var iterator := __get_iterator(query_name)
-		__bind_to_iterator(entity, query_name, _nogroup_templates[query_name], iterator, iterator.subscribers)
-	for template_name in _templates:
-		if not entity.is_in_group(template_name):
-			continue
-		var template := _templates[template_name] as Dictionary
-		for query_name in template:
-			var iterator := __get_iterator(query_name)
-			__bind_to_iterator(entity, query_name, template[query_name], iterator, iterator.subscribers)
+		__bind_to_iterator(entity, query_name, _templates[query_name], iterator, iterator.subscribers)
 
 
 func __bind_to_iterator(entity: Node, query_name: String, component_names: Array, iterator: Iterator, subscribers: Array) -> void:
@@ -149,8 +125,8 @@ func __bind_to_iterator(entity: Node, query_name: String, component_names: Array
 
 
 # API
-func query(group_name: String, component_names: Array) -> Array:
-	return _tree.get_nodes_in_group(__get_query_name(group_name, component_names))
+func query(component_names: Array) -> Array:
+	return _tree.get_nodes_in_group(__get_query_name(component_names))
 
 
 # API

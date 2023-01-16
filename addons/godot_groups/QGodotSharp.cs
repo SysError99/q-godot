@@ -1,5 +1,4 @@
 using Godot;
-using Array = Godot.Collections.Array;
 using System.Collections.Generic;
 
 namespace SysError99
@@ -30,14 +29,14 @@ namespace SysError99
         private static Dictionary<string, List<GroupObject14>> Groups14 = new();
         private static Dictionary<string, List<GroupObject15>> Groups15 = new();
         private static Dictionary<string, List<GroupObject16>> Groups16 = new();
-        private static Dictionary<string, Dictionary<string, List<string>>> Templates = new();
+        private static Dictionary<string, List<string>> Templates = new();
 
         #region Query
 
-        public static IEnumerable<T> Query<T>(string name = "")
+        public static IEnumerable<T> Query<T>()
             where T : Object
         {
-            var queryName = name + typeof(T).Name;
+            var queryName =  typeof(T).Name;
             if (Groups0.ContainsKey(queryName))
             {
                 foreach (var obj in Groups0[queryName])
@@ -46,7 +45,7 @@ namespace SysError99
             else
             {
                 BuildQuery(
-                    name, queryName,
+                    queryName,
                     new List<string>
                     {
                         typeof(T).Name,
@@ -56,11 +55,11 @@ namespace SysError99
             yield break;
         }
 
-        public static IEnumerable<(T0, T1)> Query<T0, T1>(string name = "")
+        public static IEnumerable<(T0, T1)> Query<T0, T1>()
             where T0 : Object
             where T1 : Object
         {
-            var queryName = name +
+            var queryName = 
                 typeof(T0).Name +
                 typeof(T1).Name
             ;
@@ -72,7 +71,7 @@ namespace SysError99
             else
             {
                 BuildQuery(
-                    name, queryName,
+                    queryName,
                     new List<string>
                     {
                         typeof(T0).Name,
@@ -83,12 +82,12 @@ namespace SysError99
             yield break;
         }
 
-        public static IEnumerable<(T0, T1, T2)> Query<T0, T1, T2>(string name = "")
+        public static IEnumerable<(T0, T1, T2)> Query<T0, T1, T2>()
             where T0 : Object
             where T1 : Object
             where T2 : Object
         {
-            var queryName = name +
+            var queryName = 
                 typeof(T0).Name +
                 typeof(T1).Name +
                 typeof(T2).Name
@@ -101,7 +100,7 @@ namespace SysError99
             else
             {
                 BuildQuery(
-                    name, queryName,
+                    queryName,
                     new List<string>
                     {
                         typeof(T0).Name,
@@ -113,13 +112,13 @@ namespace SysError99
             yield break;
         }
 
-        public static IEnumerable<(T0, T1, T2, T3)> Query<T0, T1, T2, T3>(string name = "")
+        public static IEnumerable<(T0, T1, T2, T3)> Query<T0, T1, T2, T3>()
             where T0 : Object
             where T1 : Object
             where T2 : Object
             where T3 : Object
         {
-            var queryName = name +
+            var queryName = 
                 typeof(T0).Name +
                 typeof(T1).Name +
                 typeof(T2).Name +
@@ -133,7 +132,7 @@ namespace SysError99
             else
             {
                 BuildQuery(
-                    name, queryName,
+                    queryName,
                     new List<string>
                     {
                         typeof(T0).Name,
@@ -146,14 +145,14 @@ namespace SysError99
             yield break;
         }
 
-        public static IEnumerable<(T0, T1, T2, T3, T4)> Query<T0, T1, T2, T3, T4>(string name = "")
+        public static IEnumerable<(T0, T1, T2, T3, T4)> Query<T0, T1, T2, T3, T4>()
             where T0 : Object
             where T1 : Object
             where T2 : Object
             where T3 : Object
             where T4 : Object
         {
-            var queryName = name +
+            var queryName = 
                 typeof(T0).Name +
                 typeof(T1).Name +
                 typeof(T2).Name +
@@ -168,7 +167,7 @@ namespace SysError99
             else
             {
                 BuildQuery(
-                    name, queryName,
+                    queryName,
                     new List<string>
                     {
                         typeof(T0).Name,
@@ -182,7 +181,7 @@ namespace SysError99
             yield break;
         }
 
-        public static IEnumerable<(T0, T1, T2, T3, T4, T5)> Query<T0, T1, T2, T3, T4, T5>(string name = "")
+        public static IEnumerable<(T0, T1, T2, T3, T4, T5)> Query<T0, T1, T2, T3, T4, T5>()
             where T0 : Object
             where T1 : Object
             where T2 : Object
@@ -190,7 +189,7 @@ namespace SysError99
             where T4 : Object
             where T5 : Object
         {
-            var queryName = name +
+            var queryName = 
                 typeof(T0).Name +
                 typeof(T1).Name +
                 typeof(T2).Name +
@@ -206,7 +205,7 @@ namespace SysError99
             else
             {
                 BuildQuery(
-                    name, queryName,
+                    queryName,
                     new List<string>
                     {
                         typeof(T0).Name,
@@ -221,7 +220,7 @@ namespace SysError99
             yield break;
         }
 
-        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6)> Query<T0, T1, T2, T3, T4, T5, T6>(string name = "")
+        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6)> Query<T0, T1, T2, T3, T4, T5, T6>()
             where T0 : Object
             where T1 : Object
             where T2 : Object
@@ -230,7 +229,7 @@ namespace SysError99
             where T5 : Object
             where T6 : Object
         {
-            var queryName = name +
+            var queryName = 
                 typeof(T0).Name +
                 typeof(T1).Name +
                 typeof(T2).Name +
@@ -247,7 +246,7 @@ namespace SysError99
             else
             {
                 BuildQuery(
-                    name, queryName,
+                    queryName,
                     new List<string>
                     {
                         typeof(T0).Name,
@@ -263,7 +262,7 @@ namespace SysError99
             yield break;
         }
 
-        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7)> Query<T0, T1, T2, T3, T4, T5, T6, T7>(string name = "")
+        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7)> Query<T0, T1, T2, T3, T4, T5, T6, T7>()
             where T0 : Object
             where T1 : Object
             where T2 : Object
@@ -273,7 +272,7 @@ namespace SysError99
             where T6 : Object
             where T7 : Object
         {
-            var queryName = name +
+            var queryName = 
                 typeof(T0).Name +
                 typeof(T1).Name +
                 typeof(T2).Name +
@@ -291,7 +290,7 @@ namespace SysError99
             else
             {
                 BuildQuery(
-                    name, queryName,
+                    queryName,
                     new List<string>
                     {
                         typeof(T0).Name,
@@ -308,7 +307,7 @@ namespace SysError99
             yield break;
         }
 
-        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8)> Query<T0, T1, T2, T3, T4, T5, T6, T7, T8>(string name = "")
+        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8)> Query<T0, T1, T2, T3, T4, T5, T6, T7, T8>()
             where T0 : Object
             where T1 : Object
             where T2 : Object
@@ -319,7 +318,7 @@ namespace SysError99
             where T7 : Object
             where T8 : Object
         {
-            var queryName = name +
+            var queryName = 
                 typeof(T0).Name +
                 typeof(T1).Name +
                 typeof(T2).Name +
@@ -338,7 +337,7 @@ namespace SysError99
             else
             {
                 BuildQuery(
-                    name, queryName,
+                    queryName,
                     new List<string>
                     {
                         typeof(T0).Name,
@@ -356,7 +355,7 @@ namespace SysError99
             yield break;
         }
 
-        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9)> Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>(string name = "")
+        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9)> Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>()
             where T0 : Object
             where T1 : Object
             where T2 : Object
@@ -368,7 +367,7 @@ namespace SysError99
             where T8 : Object
             where T9 : Object
         {
-            var queryName = name +
+            var queryName = 
                 typeof(T0).Name +
                 typeof(T1).Name +
                 typeof(T2).Name +
@@ -388,7 +387,7 @@ namespace SysError99
             else
             {
                 BuildQuery(
-                    name, queryName,
+                    queryName,
                     new List<string>
                     {
                         typeof(T0).Name,
@@ -407,7 +406,7 @@ namespace SysError99
             yield break;
         }
 
-        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)> Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(string name = "")
+        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)> Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>()
             where T0 : Object
             where T1 : Object
             where T2 : Object
@@ -420,7 +419,7 @@ namespace SysError99
             where T9 : Object
             where T10 : Object
         {
-            var queryName = name +
+            var queryName = 
                 typeof(T0).Name +
                 typeof(T1).Name +
                 typeof(T2).Name +
@@ -441,7 +440,7 @@ namespace SysError99
             else
             {
                 BuildQuery(
-                    name, queryName,
+                    queryName,
                     new List<string>
                     {
                         typeof(T0).Name,
@@ -461,7 +460,7 @@ namespace SysError99
             yield break;
         }
 
-        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11)> Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(string name = "")
+        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11)> Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>()
             where T0 : Object
             where T1 : Object
             where T2 : Object
@@ -475,7 +474,7 @@ namespace SysError99
             where T10 : Object
             where T11 : Object
         {
-            var queryName = name +
+            var queryName = 
                 typeof(T0).Name +
                 typeof(T1).Name +
                 typeof(T2).Name +
@@ -497,7 +496,7 @@ namespace SysError99
             else
             {
                 BuildQuery(
-                    name, queryName,
+                    queryName,
                     new List<string>
                     {
                         typeof(T0).Name,
@@ -518,7 +517,7 @@ namespace SysError99
             yield break;
         }
 
-        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12)> Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(string name = "")
+        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12)> Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>()
             where T0 : Object
             where T1 : Object
             where T2 : Object
@@ -533,7 +532,7 @@ namespace SysError99
             where T11 : Object
             where T12 : Object
         {
-            var queryName = name +
+            var queryName = 
                 typeof(T0).Name +
                 typeof(T1).Name +
                 typeof(T2).Name +
@@ -556,7 +555,7 @@ namespace SysError99
             else
             {
                 BuildQuery(
-                    name, queryName,
+                    queryName,
                     new List<string>
                     {
                         typeof(T0).Name,
@@ -578,7 +577,7 @@ namespace SysError99
             yield break;
         }
 
-        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13)> Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(string name = "")
+        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13)> Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>()
             where T0 : Object
             where T1 : Object
             where T2 : Object
@@ -594,7 +593,7 @@ namespace SysError99
             where T12 : Object
             where T13 : Object
         {
-            var queryName = name +
+            var queryName = 
                 typeof(T0).Name +
                 typeof(T1).Name +
                 typeof(T2).Name +
@@ -618,7 +617,7 @@ namespace SysError99
             else
             {
                 BuildQuery(
-                    name, queryName,
+                    queryName,
                     new List<string>
                     {
                         typeof(T0).Name,
@@ -641,7 +640,7 @@ namespace SysError99
             yield break;
         }
 
-        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14)> Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(string name = "")
+        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14)> Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>()
             where T0 : Object
             where T1 : Object
             where T2 : Object
@@ -658,7 +657,7 @@ namespace SysError99
             where T13 : Object
             where T14 : Object
         {
-            var queryName = name +
+            var queryName = 
                 typeof(T0).Name +
                 typeof(T1).Name +
                 typeof(T2).Name +
@@ -683,7 +682,7 @@ namespace SysError99
             else
             {
                 BuildQuery(
-                    name, queryName,
+                    queryName,
                     new List<string>
                     {
                         typeof(T0).Name,
@@ -707,7 +706,7 @@ namespace SysError99
             yield break;
         }
 
-        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15)> Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(string name = "")
+        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15)> Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>()
             where T0 : Object
             where T1 : Object
             where T2 : Object
@@ -725,7 +724,7 @@ namespace SysError99
             where T14 : Object
             where T15 : Object
         {
-            var queryName = name +
+            var queryName = 
                 typeof(T0).Name +
                 typeof(T1).Name +
                 typeof(T2).Name +
@@ -751,7 +750,7 @@ namespace SysError99
             else
             {
                 BuildQuery(
-                    name, queryName,
+                    queryName,
                     new List<string>
                     {
                         typeof(T0).Name,
@@ -823,67 +822,35 @@ namespace SysError99
 
         private static void RegisterEntity(Node entity)
         {
-            entity.Connect("child_entered_tree", Self, nameof(_EntityComponentAdded), new Array { entity });
+            entity.Connect("child_entered_tree", Self, nameof(_EntityComponentAdded), new Godot.Collections.Array { entity });
             BindToGroups(entity);
         }
 
-        private static void BuildQuery(string groupName, string queryName, in List<string> componentNames)
+        private static void BuildQuery(string queryName, in List<string> componentNames)
         {
             var registeredScenes = Self.GetTree().GetNodesInGroup(_RegisteredScene);
-            if (Templates.ContainsKey(groupName))
+            Templates[queryName] = componentNames;
+            foreach (Node scene in registeredScenes)
             {
-                Templates[groupName][queryName] = componentNames;
-            }
-            else
-            {
-                Templates.Add(groupName, new Dictionary<string, List<string>> { [queryName] = componentNames });
-            }
-            if (groupName == "")
-            {
-                foreach (Node scene in registeredScenes)
+                foreach (Node entity in scene.GetChildren())
                 {
-                    foreach (Node entity in scene.GetChildren())
-                    {
-                        BindToGroup(entity, queryName, componentNames);
-                    }
-                }
-            }
-            else
-            {
-                foreach (Node scene in registeredScenes)
-                {
-                    foreach (Node entity in scene.GetChildren())
-                    {
-                        if (!entity.IsInGroup(groupName)) continue;
-                        BindToGroup(entity, queryName, componentNames);
-                    }
+                    BindToGroup(entity, queryName, componentNames);
                 }
             }
         }
 
         private static void BindToGroups(Node entity)
         {
-            if (Templates.ContainsKey(""))
+            foreach (var subTemplate in Templates)
             {
-                foreach (var subTemplate in Templates[""])
-                {
-                    BindToGroup(entity, subTemplate.Key, subTemplate.Value);
-                }
-            }
-            foreach (var template in Templates)
-            {
-                if (!entity.IsInGroup(template.Key)) continue;
-                foreach (var subTemplate in template.Value)
-                {
-                    BindToGroup(entity, subTemplate.Key, subTemplate.Value);
-                }
+                BindToGroup(entity, subTemplate.Key, subTemplate.Value);
             }
         }
 
         private static void BindToGroup(Node entity, string queryName, List<string> componentNames)
         {
             if (entity.IsInGroup(_RegisteredScene) || entity.GetType().Name != componentNames[0]) return;
-            var binds = entity.GetMeta(queryName, new List<Node>()) as List<Node>;
+            var binds = entity.GetMeta(queryName, new Godot.Collections.Array() {}) as Godot.Collections.Array;
             var groupObject = new GroupObject();
             if (binds.Count == 0)
             {
@@ -906,9 +873,9 @@ namespace SysError99
                 if (binds.Count == componentNames.Count)
                 {
                     entity.SetMeta(queryName, binds);
-                    foreach (var component in binds)
+                    foreach (Node component in binds)
                     {
-                        component.Connect("tree_exited", Self, nameof(_EntityComponentRemoved), new Array { entity, component, groupObject, queryName }, (uint)ConnectFlags.Oneshot);
+                        component.Connect("tree_exited", Self, nameof(_EntityComponentRemoved), new Godot.Collections.Array { entity, component, groupObject, queryName }, (uint)ConnectFlags.Oneshot);
                     }
                 }
             }
@@ -920,7 +887,7 @@ namespace SysError99
                     {
                         var gObj = new GroupObject0();
                         groupObject = gObj;
-                        gObj._obj0 = binds[0];
+                        gObj._obj0 = binds[0] as Node;
                         if (Groups0.ContainsKey(queryName)) Groups0[queryName].Add(gObj);
                         else Groups0.Add(queryName, new List<GroupObject0> { gObj });
                     }
@@ -930,8 +897,8 @@ namespace SysError99
                     {
                         var gObj = new GroupObject1();
                         groupObject = gObj;
-                        gObj._obj0 = binds[0];
-                        gObj._obj1 = binds[1];
+                        gObj._obj0 = binds[0] as Node;
+                        gObj._obj1 = binds[1] as Node;
                         if (Groups1.ContainsKey(queryName)) Groups1[queryName].Add(gObj);
                         else Groups1.Add(queryName, new List<GroupObject1> { gObj });
                     }
@@ -940,9 +907,9 @@ namespace SysError99
                     {
                         var gObj = new GroupObject2();
                         groupObject = gObj;
-                        gObj._obj0 = binds[0];
-                        gObj._obj1 = binds[1];
-                        gObj._obj2 = binds[2];
+                        gObj._obj0 = binds[0] as Node;
+                        gObj._obj1 = binds[1] as Node;
+                        gObj._obj2 = binds[2] as Node;
                         if (Groups2.ContainsKey(queryName)) Groups2[queryName].Add(gObj);
                         else Groups2.Add(queryName, new List<GroupObject2> { gObj });
                     }
@@ -951,10 +918,10 @@ namespace SysError99
                     {
                         var gObj = new GroupObject3();
                         groupObject = gObj;
-                        gObj._obj0 = binds[0];
-                        gObj._obj1 = binds[1];
-                        gObj._obj2 = binds[2];
-                        gObj._obj3 = binds[3];
+                        gObj._obj0 = binds[0] as Node;
+                        gObj._obj1 = binds[1] as Node;
+                        gObj._obj2 = binds[2] as Node;
+                        gObj._obj3 = binds[3] as Node;
                         if (Groups3.ContainsKey(queryName)) Groups3[queryName].Add(gObj);
                         else Groups3.Add(queryName, new List<GroupObject3> { gObj });
                     }
@@ -963,11 +930,11 @@ namespace SysError99
                     {
                         var gObj = new GroupObject4();
                         groupObject = gObj;
-                        gObj._obj0 = binds[0];
-                        gObj._obj1 = binds[1];
-                        gObj._obj2 = binds[2];
-                        gObj._obj3 = binds[3];
-                        gObj._obj4 = binds[4];
+                        gObj._obj0 = binds[0] as Node;
+                        gObj._obj1 = binds[1] as Node;
+                        gObj._obj2 = binds[2] as Node;
+                        gObj._obj3 = binds[3] as Node;
+                        gObj._obj4 = binds[4] as Node;
                         if (Groups4.ContainsKey(queryName)) Groups4[queryName].Add(gObj);
                         else Groups4.Add(queryName, new List<GroupObject4> { gObj });
                     }
@@ -976,12 +943,12 @@ namespace SysError99
                     {
                         var gObj = new GroupObject5();
                         groupObject = gObj;
-                        gObj._obj0 = binds[0];
-                        gObj._obj1 = binds[1];
-                        gObj._obj2 = binds[2];
-                        gObj._obj3 = binds[3];
-                        gObj._obj4 = binds[4];
-                        gObj._obj5 = binds[5];
+                        gObj._obj0 = binds[0] as Node;
+                        gObj._obj1 = binds[1] as Node;
+                        gObj._obj2 = binds[2] as Node;
+                        gObj._obj3 = binds[3] as Node;
+                        gObj._obj4 = binds[4] as Node;
+                        gObj._obj5 = binds[5] as Node;
                         if (Groups5.ContainsKey(queryName)) Groups5[queryName].Add(gObj);
                         else Groups5.Add(queryName, new List<GroupObject5> { gObj });
                     }
@@ -990,13 +957,13 @@ namespace SysError99
                     {
                         var gObj = new GroupObject6();
                         groupObject = gObj;
-                        gObj._obj0 = binds[0];
-                        gObj._obj1 = binds[1];
-                        gObj._obj2 = binds[2];
-                        gObj._obj3 = binds[3];
-                        gObj._obj4 = binds[4];
-                        gObj._obj5 = binds[5];
-                        gObj._obj6 = binds[6];
+                        gObj._obj0 = binds[0] as Node;
+                        gObj._obj1 = binds[1] as Node;
+                        gObj._obj2 = binds[2] as Node;
+                        gObj._obj3 = binds[3] as Node;
+                        gObj._obj4 = binds[4] as Node;
+                        gObj._obj5 = binds[5] as Node;
+                        gObj._obj6 = binds[6] as Node;
                         if (Groups6.ContainsKey(queryName)) Groups6[queryName].Add(gObj);
                         else Groups6.Add(queryName, new List<GroupObject6> { gObj });
                     }
@@ -1005,14 +972,14 @@ namespace SysError99
                     {
                         var gObj = new GroupObject7();
                         groupObject = gObj;
-                        gObj._obj0 = binds[0];
-                        gObj._obj1 = binds[1];
-                        gObj._obj2 = binds[2];
-                        gObj._obj3 = binds[3];
-                        gObj._obj4 = binds[4];
-                        gObj._obj5 = binds[5];
-                        gObj._obj6 = binds[6];
-                        gObj._obj7 = binds[7];
+                        gObj._obj0 = binds[0] as Node;
+                        gObj._obj1 = binds[1] as Node;
+                        gObj._obj2 = binds[2] as Node;
+                        gObj._obj3 = binds[3] as Node;
+                        gObj._obj4 = binds[4] as Node;
+                        gObj._obj5 = binds[5] as Node;
+                        gObj._obj6 = binds[6] as Node;
+                        gObj._obj7 = binds[7] as Node;
                         if (Groups7.ContainsKey(queryName)) Groups7[queryName].Add(gObj);
                         else Groups7.Add(queryName, new List<GroupObject7> { gObj });
                     }
@@ -1021,15 +988,15 @@ namespace SysError99
                     {
                         var gObj = new GroupObject8();
                         groupObject = gObj;
-                        gObj._obj0 = binds[0];
-                        gObj._obj1 = binds[1];
-                        gObj._obj2 = binds[2];
-                        gObj._obj3 = binds[3];
-                        gObj._obj4 = binds[4];
-                        gObj._obj5 = binds[5];
-                        gObj._obj6 = binds[6];
-                        gObj._obj7 = binds[7];
-                        gObj._obj8 = binds[8];
+                        gObj._obj0 = binds[0] as Node;
+                        gObj._obj1 = binds[1] as Node;
+                        gObj._obj2 = binds[2] as Node;
+                        gObj._obj3 = binds[3] as Node;
+                        gObj._obj4 = binds[4] as Node;
+                        gObj._obj5 = binds[5] as Node;
+                        gObj._obj6 = binds[6] as Node;
+                        gObj._obj7 = binds[7] as Node;
+                        gObj._obj8 = binds[8] as Node;
                         if (Groups8.ContainsKey(queryName)) Groups8[queryName].Add(gObj);
                         else Groups8.Add(queryName, new List<GroupObject8> { gObj });
                     }
@@ -1038,16 +1005,16 @@ namespace SysError99
                     {
                         var gObj = new GroupObject9();
                         groupObject = gObj;
-                        gObj._obj0 = binds[0];
-                        gObj._obj1 = binds[1];
-                        gObj._obj2 = binds[2];
-                        gObj._obj3 = binds[3];
-                        gObj._obj4 = binds[4];
-                        gObj._obj5 = binds[5];
-                        gObj._obj6 = binds[6];
-                        gObj._obj7 = binds[7];
-                        gObj._obj8 = binds[8];
-                        gObj._obj9 = binds[9];
+                        gObj._obj0 = binds[0] as Node;
+                        gObj._obj1 = binds[1] as Node;
+                        gObj._obj2 = binds[2] as Node;
+                        gObj._obj3 = binds[3] as Node;
+                        gObj._obj4 = binds[4] as Node;
+                        gObj._obj5 = binds[5] as Node;
+                        gObj._obj6 = binds[6] as Node;
+                        gObj._obj7 = binds[7] as Node;
+                        gObj._obj8 = binds[8] as Node;
+                        gObj._obj9 = binds[9] as Node;
                         if (Groups9.ContainsKey(queryName)) Groups9[queryName].Add(gObj);
                         else Groups9.Add(queryName, new List<GroupObject9> { gObj });
                     }
@@ -1056,17 +1023,17 @@ namespace SysError99
                     {
                         var gObj = new GroupObject10();
                         groupObject = gObj;
-                        gObj._obj0 = binds[0];
-                        gObj._obj1 = binds[1];
-                        gObj._obj2 = binds[2];
-                        gObj._obj3 = binds[3];
-                        gObj._obj4 = binds[4];
-                        gObj._obj5 = binds[5];
-                        gObj._obj6 = binds[6];
-                        gObj._obj7 = binds[7];
-                        gObj._obj8 = binds[8];
-                        gObj._obj9 = binds[9];
-                        gObj._obj10 = binds[10];
+                        gObj._obj0 = binds[0] as Node;
+                        gObj._obj1 = binds[1] as Node;
+                        gObj._obj2 = binds[2] as Node;
+                        gObj._obj3 = binds[3] as Node;
+                        gObj._obj4 = binds[4] as Node;
+                        gObj._obj5 = binds[5] as Node;
+                        gObj._obj6 = binds[6] as Node;
+                        gObj._obj7 = binds[7] as Node;
+                        gObj._obj8 = binds[8] as Node;
+                        gObj._obj9 = binds[9] as Node;
+                        gObj._obj10 = binds[10] as Node;
                         if (Groups10.ContainsKey(queryName)) Groups10[queryName].Add(gObj);
                         else Groups10.Add(queryName, new List<GroupObject10> { gObj });
                     }
@@ -1075,18 +1042,18 @@ namespace SysError99
                     {
                         var gObj = new GroupObject11();
                         groupObject = gObj;
-                        gObj._obj0 = binds[0];
-                        gObj._obj1 = binds[1];
-                        gObj._obj2 = binds[2];
-                        gObj._obj3 = binds[3];
-                        gObj._obj4 = binds[4];
-                        gObj._obj5 = binds[5];
-                        gObj._obj6 = binds[6];
-                        gObj._obj7 = binds[7];
-                        gObj._obj8 = binds[8];
-                        gObj._obj9 = binds[9];
-                        gObj._obj10 = binds[10];
-                        gObj._obj11 = binds[11];
+                        gObj._obj0 = binds[0] as Node;
+                        gObj._obj1 = binds[1] as Node;
+                        gObj._obj2 = binds[2] as Node;
+                        gObj._obj3 = binds[3] as Node;
+                        gObj._obj4 = binds[4] as Node;
+                        gObj._obj5 = binds[5] as Node;
+                        gObj._obj6 = binds[6] as Node;
+                        gObj._obj7 = binds[7] as Node;
+                        gObj._obj8 = binds[8] as Node;
+                        gObj._obj9 = binds[9] as Node;
+                        gObj._obj10 = binds[10] as Node;
+                        gObj._obj11 = binds[11] as Node;
                         if (Groups11.ContainsKey(queryName)) Groups11[queryName].Add(gObj);
                         else Groups11.Add(queryName, new List<GroupObject11> { gObj });
                     }
@@ -1095,19 +1062,19 @@ namespace SysError99
                     {
                         var gObj = new GroupObject12();
                         groupObject = gObj;
-                        gObj._obj0 = binds[0];
-                        gObj._obj1 = binds[1];
-                        gObj._obj2 = binds[2];
-                        gObj._obj3 = binds[3];
-                        gObj._obj4 = binds[4];
-                        gObj._obj5 = binds[5];
-                        gObj._obj6 = binds[6];
-                        gObj._obj7 = binds[7];
-                        gObj._obj8 = binds[8];
-                        gObj._obj9 = binds[9];
-                        gObj._obj10 = binds[10];
-                        gObj._obj11 = binds[11];
-                        gObj._obj12 = binds[12];
+                        gObj._obj0 = binds[0] as Node;
+                        gObj._obj1 = binds[1] as Node;
+                        gObj._obj2 = binds[2] as Node;
+                        gObj._obj3 = binds[3] as Node;
+                        gObj._obj4 = binds[4] as Node;
+                        gObj._obj5 = binds[5] as Node;
+                        gObj._obj6 = binds[6] as Node;
+                        gObj._obj7 = binds[7] as Node;
+                        gObj._obj8 = binds[8] as Node;
+                        gObj._obj9 = binds[9] as Node;
+                        gObj._obj10 = binds[10] as Node;
+                        gObj._obj11 = binds[11] as Node;
+                        gObj._obj12 = binds[12] as Node;
                         if (Groups12.ContainsKey(queryName)) Groups12[queryName].Add(gObj);
                         else Groups12.Add(queryName, new List<GroupObject12> { gObj });
                     }
@@ -1116,20 +1083,20 @@ namespace SysError99
                     {
                         var gObj = new GroupObject13();
                         groupObject = gObj;
-                        gObj._obj0 = binds[0];
-                        gObj._obj1 = binds[1];
-                        gObj._obj2 = binds[2];
-                        gObj._obj3 = binds[3];
-                        gObj._obj4 = binds[4];
-                        gObj._obj5 = binds[5];
-                        gObj._obj6 = binds[6];
-                        gObj._obj7 = binds[7];
-                        gObj._obj8 = binds[8];
-                        gObj._obj9 = binds[9];
-                        gObj._obj10 = binds[10];
-                        gObj._obj11 = binds[11];
-                        gObj._obj12 = binds[12];
-                        gObj._obj13 = binds[13];
+                        gObj._obj0 = binds[0] as Node;
+                        gObj._obj1 = binds[1] as Node;
+                        gObj._obj2 = binds[2] as Node;
+                        gObj._obj3 = binds[3] as Node;
+                        gObj._obj4 = binds[4] as Node;
+                        gObj._obj5 = binds[5] as Node;
+                        gObj._obj6 = binds[6] as Node;
+                        gObj._obj7 = binds[7] as Node;
+                        gObj._obj8 = binds[8] as Node;
+                        gObj._obj9 = binds[9] as Node;
+                        gObj._obj10 = binds[10] as Node;
+                        gObj._obj11 = binds[11] as Node;
+                        gObj._obj12 = binds[12] as Node;
+                        gObj._obj13 = binds[13] as Node;
                         if (Groups13.ContainsKey(queryName)) Groups13[queryName].Add(gObj);
                         else Groups13.Add(queryName, new List<GroupObject13> { gObj });
                     }
@@ -1138,21 +1105,21 @@ namespace SysError99
                     {
                         var gObj = new GroupObject14();
                         groupObject = gObj;
-                        gObj._obj0 = binds[0];
-                        gObj._obj1 = binds[1];
-                        gObj._obj2 = binds[2];
-                        gObj._obj3 = binds[3];
-                        gObj._obj4 = binds[4];
-                        gObj._obj5 = binds[5];
-                        gObj._obj6 = binds[6];
-                        gObj._obj7 = binds[7];
-                        gObj._obj8 = binds[8];
-                        gObj._obj9 = binds[9];
-                        gObj._obj10 = binds[10];
-                        gObj._obj11 = binds[11];
-                        gObj._obj12 = binds[12];
-                        gObj._obj13 = binds[13];
-                        gObj._obj14 = binds[14];
+                        gObj._obj0 = binds[0] as Node;
+                        gObj._obj1 = binds[1] as Node;
+                        gObj._obj2 = binds[2] as Node;
+                        gObj._obj3 = binds[3] as Node;
+                        gObj._obj4 = binds[4] as Node;
+                        gObj._obj5 = binds[5] as Node;
+                        gObj._obj6 = binds[6] as Node;
+                        gObj._obj7 = binds[7] as Node;
+                        gObj._obj8 = binds[8] as Node;
+                        gObj._obj9 = binds[9] as Node;
+                        gObj._obj10 = binds[10] as Node;
+                        gObj._obj11 = binds[11] as Node;
+                        gObj._obj12 = binds[12] as Node;
+                        gObj._obj13 = binds[13] as Node;
+                        gObj._obj14 = binds[14] as Node;
                         if (Groups14.ContainsKey(queryName)) Groups14[queryName].Add(gObj);
                         else Groups14.Add(queryName, new List<GroupObject14> { gObj });
                     }
@@ -1161,22 +1128,22 @@ namespace SysError99
                     {
                         var gObj = new GroupObject15();
                         groupObject = gObj;
-                        gObj._obj0 = binds[0];
-                        gObj._obj1 = binds[1];
-                        gObj._obj2 = binds[2];
-                        gObj._obj3 = binds[3];
-                        gObj._obj4 = binds[4];
-                        gObj._obj5 = binds[5];
-                        gObj._obj6 = binds[6];
-                        gObj._obj7 = binds[7];
-                        gObj._obj8 = binds[8];
-                        gObj._obj9 = binds[9];
-                        gObj._obj10 = binds[10];
-                        gObj._obj11 = binds[11];
-                        gObj._obj12 = binds[12];
-                        gObj._obj13 = binds[13];
-                        gObj._obj14 = binds[14];
-                        gObj._obj15 = binds[15];
+                        gObj._obj0 = binds[0] as Node;
+                        gObj._obj1 = binds[1] as Node;
+                        gObj._obj2 = binds[2] as Node;
+                        gObj._obj3 = binds[3] as Node;
+                        gObj._obj4 = binds[4] as Node;
+                        gObj._obj5 = binds[5] as Node;
+                        gObj._obj6 = binds[6] as Node;
+                        gObj._obj7 = binds[7] as Node;
+                        gObj._obj8 = binds[8] as Node;
+                        gObj._obj9 = binds[9] as Node;
+                        gObj._obj10 = binds[10] as Node;
+                        gObj._obj11 = binds[11] as Node;
+                        gObj._obj12 = binds[12] as Node;
+                        gObj._obj13 = binds[13] as Node;
+                        gObj._obj14 = binds[14] as Node;
+                        gObj._obj15 = binds[15] as Node;
                         if (Groups15.ContainsKey(queryName)) Groups15[queryName].Add(gObj);
                         else Groups15.Add(queryName, new List<GroupObject15> { gObj });
                     }
@@ -1185,23 +1152,23 @@ namespace SysError99
                     {
                         var gObj = new GroupObject16();
                         groupObject = gObj;
-                        gObj._obj0 = binds[0];
-                        gObj._obj1 = binds[1];
-                        gObj._obj2 = binds[2];
-                        gObj._obj3 = binds[3];
-                        gObj._obj4 = binds[4];
-                        gObj._obj5 = binds[5];
-                        gObj._obj6 = binds[6];
-                        gObj._obj7 = binds[7];
-                        gObj._obj8 = binds[8];
-                        gObj._obj9 = binds[9];
-                        gObj._obj10 = binds[10];
-                        gObj._obj11 = binds[11];
-                        gObj._obj12 = binds[12];
-                        gObj._obj13 = binds[13];
-                        gObj._obj14 = binds[14];
-                        gObj._obj15 = binds[15];
-                        gObj._obj16 = binds[16];
+                        gObj._obj0 = binds[0] as Node;
+                        gObj._obj1 = binds[1] as Node;
+                        gObj._obj2 = binds[2] as Node;
+                        gObj._obj3 = binds[3] as Node;
+                        gObj._obj4 = binds[4] as Node;
+                        gObj._obj5 = binds[5] as Node;
+                        gObj._obj6 = binds[6] as Node;
+                        gObj._obj7 = binds[7] as Node;
+                        gObj._obj8 = binds[8] as Node;
+                        gObj._obj9 = binds[9] as Node;
+                        gObj._obj10 = binds[10] as Node;
+                        gObj._obj11 = binds[11] as Node;
+                        gObj._obj12 = binds[12] as Node;
+                        gObj._obj13 = binds[13] as Node;
+                        gObj._obj14 = binds[14] as Node;
+                        gObj._obj15 = binds[15] as Node;
+                        gObj._obj16 = binds[16] as Node;
                         if (Groups16.ContainsKey(queryName)) Groups16[queryName].Add(gObj);
                         else Groups16.Add(queryName, new List<GroupObject16> { gObj });
                     }

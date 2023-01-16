@@ -80,25 +80,22 @@ func _ready() -> void:
 
 
 	Groups.bind_query_to_current_scene(
-		"",
 		["KinematicBody2D", "Sprite"],
 		MoveTowardsCenterSystem,
 		self
 	)
 	# Groups.bind_query(
-	# 	"",
 	# 	["KinematicBody2D", "Sprite"],
 	# 	ShakeSystem,
 	# 	self
 	# )
 	# Groups.bind_query(
-	# 	"",
 	# 	["KinematicBody2D", "Sprite"],
 	# 	BlinkSystem,
 	# 	self
 	# )
 
-	# var query := yield(Groups.query("", ["KinematicBody2D", "Sprite"]), "completed") as Array
+	# var query := Groups.query(["KinematicBody2D", "Sprite"])
 	# print(query.size())
 
 
