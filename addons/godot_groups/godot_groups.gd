@@ -1,7 +1,7 @@
 extends Node
 
 
-const COMP_ZERO_ERR = "'component_names' must have at least one member!"
+const _COMP_ZERO_ERR = "'component_names' must have at least one member!"
 
 
 const _COMP_NAME = "#CN"
@@ -29,25 +29,23 @@ class QueryYielder extends Object:
 	signal completed(array)
 
 
-var nogroup_templates := {}
-var regex := RegEx.new()
-var tree: SceneTree
-var templates := {}
+var _nogroup_templates := {}
+var _regex := RegEx.new()
+var _root: Viewport
+var _tree: SceneTree
+var _templates := {}
 
 
-onready var root := tree.root
-
-
-func get_iterator(query_name: String) -> Iterator:
-	var iterator := root.get_node_or_null(query_name) as Iterator
+func __get_iterator(query_name: String) -> Iterator:
+	var iterator := _root.get_node_or_null(query_name) as Iterator
 	if not is_instance_valid(iterator):
 		iterator = Iterator.new()
 		iterator.name = query_name
-		root.add_child(iterator)
+		_root.add_child(iterator)
 	return iterator
 
 
-func get_query_name(group_name: String, component_names: Array) -> String:
+func __get_query_name(group_name: String, component_names: Array) -> String:
 	var query_name = _QUERY + group_name
 	for name in component_names:
 		query_name += "_" + name
@@ -56,59 +54,59 @@ func get_query_name(group_name: String, component_names: Array) -> String:
 
 # API
 func bind_query(group_name: String, component_names: Array, system: Object, shared = null, to_current_scene: bool = false) -> void:
-	yield(tree, "idle_frame")
-	assert(component_names.size() > 0, COMP_ZERO_ERR)
-	var query_name := get_query_name(group_name, component_names)
-	var iterator := get_iterator(query_name)
+	yield(_tree, "idle_frame")
+	assert(component_names.size() > 0, _COMP_ZERO_ERR)
+	var query_name := __get_query_name(group_name, component_names)
+	var iterator := __get_iterator(query_name)
 	var new_subscriber := [system, shared]
 	iterator.subscribers.push_back(new_subscriber)
 	if to_current_scene:
 		iterator.current_scene_subscribers.push_back(new_subscriber)
-	build_query(group_name, query_name, component_names, iterator, [new_subscriber])
+	__build_query(group_name, query_name, component_names, iterator, [new_subscriber])
 
 
 # API
 func bind_query_to_current_scene(group_name: String, component_names: Array, system: Object, shared = null) -> void:
-	yield(tree, "idle_frame")
+	yield(_tree, "idle_frame")
 	bind_query(group_name, component_names, system, shared, true)
 
 
-func build_query(group_name: String, query_name: String, component_names: Array, iterator: Object, subscribers: Array) -> void:
-	var registered_scenes := tree.get_nodes_in_group(_REGISTERED_SCENE)
+func __build_query(group_name: String, query_name: String, component_names: Array, iterator: Object, subscribers: Array) -> void:
+	var registered_scenes := _tree.get_nodes_in_group(_REGISTERED_SCENE)
 	if group_name == "":
-		nogroup_templates[query_name] = component_names
+		_nogroup_templates[query_name] = component_names
 		for scene_ref in registered_scenes:
 			var scene := scene_ref as Node
 			for entity in scene.get_children():
-				bind_to_iterator(entity, query_name, component_names, iterator, subscribers)
+				__bind_to_iterator(entity, query_name, component_names, iterator, subscribers)
 	else:
-		if not templates.has(group_name):
-			templates[group_name] = { query_name: component_names, }
+		if not _templates.has(group_name):
+			_templates[group_name] = { query_name: component_names, }
 		else:
-			templates[group_name][query_name] = component_names
+			_templates[group_name][query_name] = component_names
 		for scene_ref in registered_scenes:
 			var scene := scene_ref as Node
 			for entity_ref in scene.get_children():
 				var entity := entity_ref as Node
 				if not entity.is_in_group(group_name):
 					continue
-				bind_to_iterator(entity, query_name, component_names, iterator, subscribers)
+				__bind_to_iterator(entity, query_name, component_names, iterator, subscribers)
 
 
-func bind_to_iterators(entity: Node):
-	for query_name in nogroup_templates:
-		var iterator := get_iterator(query_name)
-		bind_to_iterator(entity, query_name, nogroup_templates[query_name], iterator, iterator.subscribers)
-	for template_name in templates:
+func __bind_to_iterators(entity: Node):
+	for query_name in _nogroup_templates:
+		var iterator := __get_iterator(query_name)
+		__bind_to_iterator(entity, query_name, _nogroup_templates[query_name], iterator, iterator.subscribers)
+	for template_name in _templates:
 		if not entity.is_in_group(template_name):
 			continue
-		var template := templates[template_name] as Dictionary
+		var template := _templates[template_name] as Dictionary
 		for query_name in template:
-			var iterator := get_iterator(query_name)
-			bind_to_iterator(entity, query_name, template[query_name], iterator, iterator.subscribers)
+			var iterator := __get_iterator(query_name)
+			__bind_to_iterator(entity, query_name, template[query_name], iterator, iterator.subscribers)
 
 
-func bind_to_iterator(entity: Node, query_name: String, component_names: Array, iterator: Iterator, subscribers: Array) -> void:
+func __bind_to_iterator(entity: Node, query_name: String, component_names: Array, iterator: Iterator, subscribers: Array) -> void:
 	if entity.is_in_group(_REGISTERED_SCENE) or entity.get_class() != component_names[0]:
 		return
 	var binds := entity.get_meta(query_name, []) as Array
@@ -121,7 +119,7 @@ func bind_to_iterator(entity: Node, query_name: String, component_names: Array, 
 			for component_ref in children:
 				var component := component_ref as Node
 				if component.name == component_name:
-					var bind_name := regex.sub(component_name, "_$1", true).to_lower()
+					var bind_name := _regex.sub(component_name, "_$1", true).to_lower()
 					component.set_meta(_COMP_NAME, bind_name.substr(1, bind_name.length()))
 					children.erase(component)
 					binds.push_back(component)
@@ -155,19 +153,19 @@ func bind_to_iterator(entity: Node, query_name: String, component_names: Array, 
 
 # API
 func query(group_name: String, component_names: Array) -> QueryYielder:
-	assert(component_names.size() > 0, COMP_ZERO_ERR)
+	assert(component_names.size() > 0, _COMP_ZERO_ERR)
 	var yielder := QueryYielder.new()
-	_yield_query(group_name, component_names, yielder)
+	__yield_query(group_name, component_names, yielder)
 	return yielder
 
 
-func _yield_query(group_name: String, component_names: Array, yielder: QueryYielder) -> void:
-	var query_name := get_query_name(group_name, component_names)
-	yield(tree, "idle_frame")
-	var iterator := get_iterator(query_name)
-	build_query(group_name, query_name, component_names, iterator, [])
+func __yield_query(group_name: String, component_names: Array, yielder: QueryYielder) -> void:
+	var query_name := __get_query_name(group_name, component_names)
+	yield(_tree, "idle_frame")
+	var iterator := __get_iterator(query_name)
+	__build_query(group_name, query_name, component_names, iterator, [])
 	var list := []
-	for entity in tree.get_nodes_in_group(query_name):
+	for entity in _tree.get_nodes_in_group(query_name):
 		list.push_back(entity.get_meta(query_name))
 	yielder.emit_signal("completed", list)
 	yielder.free()
@@ -175,27 +173,27 @@ func _yield_query(group_name: String, component_names: Array, yielder: QueryYiel
 
 # API
 func change_scene(path: String) -> void:
-	var current_scene := tree.current_scene
+	var current_scene := _tree.current_scene
 	var inst := (load(path) as PackedScene).instance()
-	for iterator in tree.get_nodes_in_group(_ITERATOR):
+	for iterator in _tree.get_nodes_in_group(_ITERATOR):
 		iterator.call("remove_current_scene_subscribers")
 	if is_instance_valid(current_scene):
 		current_scene.queue_free()
-	root.add_child(inst)
-	tree.current_scene = inst
+	_root.add_child(inst)
+	_tree.current_scene = inst
 	yield(inst, "ready")
-	post_change_scene()
+	__post_change_scene()
 
 
-func post_change_scene() -> void:
-	var registered_scenes := tree.get_nodes_in_group(_UNREGISTERED_SCENE)
+func __post_change_scene() -> void:
+	var registered_scenes := _tree.get_nodes_in_group(_UNREGISTERED_SCENE)
 	if registered_scenes.size() > 0:
 		for scn_ref in registered_scenes:
 			var scn := scn_ref as Node
 			scn.remove_from_group(_UNREGISTERED_SCENE)
 			register_as_scene(scn)
 	else:
-		register_as_scene(tree.current_scene)
+		register_as_scene(_tree.current_scene)
 
 
 # API
@@ -204,17 +202,17 @@ func register_as_scene(node: Node) -> void:
 	node.connect("child_entered_tree", self, "_entity_entered_scene")
 	node.connect("child_exiting_tree", self, "_entity_exiting_scene")
 	for child_ref in node.get_children():
-		register_entity(child_ref)
+		__register_entity(child_ref)
 
 
-func register_entity(entity: Node) -> void:
+func __register_entity(entity: Node) -> void:
 	entity.connect("child_entered_tree", self, "_entity_component_added", [ entity ])
-	bind_to_iterators(entity)
+	__bind_to_iterators(entity)
 
 
 func _entity_entered_scene(entity: Node) -> void:
 	yield(entity, "ready")
-	register_entity(entity)
+	__register_entity(entity)
 
 
 func _entity_exiting_scene(entity: Node) -> void:
@@ -225,7 +223,7 @@ func _entity_exiting_scene(entity: Node) -> void:
 
 func _entity_component_added(_new_component: Node, entity) -> void:
 	_entity_exiting_scene(entity)
-	bind_to_iterators(entity)
+	__bind_to_iterators(entity)
 
 
 func _entity_component_removed(entity: Node, query_name: String, systems: Array) -> void:
@@ -243,12 +241,13 @@ func _entity_component_removed(entity: Node, query_name: String, systems: Array)
 
 
 func _init() -> void:
-	regex.compile("((?<=[a-z])[A-Z]|[A-Z](?=[a-z])|[0-9])")
+	_regex.compile("((?<=[a-z])[A-Z]|[A-Z](?=[a-z])|[0-9])")
 
 
 func _enter_tree() -> void:
-	tree = get_tree()
+	_tree = get_tree()
+	_root = _tree.root
 
 
 func _ready() -> void:
-	post_change_scene()
+	__post_change_scene()
