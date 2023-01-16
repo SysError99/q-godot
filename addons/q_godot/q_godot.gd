@@ -128,7 +128,10 @@ func __bind_to_iterator(entity: Node, query_name: String, component_names: Array
 
 # API
 func query(component_names: Array) -> Array:
-	return _tree.get_nodes_in_group(__get_query_name(component_names))
+	var query_name := __get_query_name(component_names)
+	if not query_name in _templates:
+		__build_query(query_name, component_names, __get_iterator(query_name), [])
+	return _tree.get_nodes_in_group(query_name)
 
 
 # API
