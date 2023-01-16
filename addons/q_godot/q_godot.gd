@@ -189,11 +189,10 @@ func _entity_component_added(_new_component: Node, entity) -> void:
 
 
 func _entity_component_removed(entity: Node, query_name: String, systems: Array) -> void:
-	if systems.size() > 0:
+	if entity.is_in_group(query_name):
+		entity.remove_from_group(query_name)
 		if entity.has_meta(query_name):
 			entity.remove_meta(query_name)
-		if entity.is_in_group(query_name):
-			entity.remove_from_group(query_name)
 		for system in systems:
 			if system is Node:
 				system.call_deferred("queue_free")
