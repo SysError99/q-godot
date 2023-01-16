@@ -42,7 +42,7 @@ func __get_iterator(query_name: String) -> Iterator:
 
 
 func __get_query_name(component_names: Array) -> String:
-	return _QUERY + PoolStringArray(component_names).join("_")
+	return _QUERY + "_" + PoolStringArray(component_names).join("_")
 
 
 # API
