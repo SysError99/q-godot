@@ -68,17 +68,6 @@ func _ready() -> void:
 	add_child(tween)
 	rand_seed(814995)
 
-	for x in 10000:
-		var clone := KinematicBody2D.new()
-		var sprite := Sprite.new()
-		clone.name = "Icon%d" % x
-		sprite.name = "Sprite"
-		sprite.texture = preload("res://icon.png")
-		clone.position = Vector2(randi() % 1024, randi() % 600)
-		clone.add_child(sprite)
-		add_child(clone)
-
-
 	Groups.bind_query_to_current_scene(
 		["KinematicBody2D", "Sprite"],
 		MoveTowardsCenterSystem,
@@ -97,6 +86,16 @@ func _ready() -> void:
 
 	# var query := Groups.query(["KinematicBody2D", "Sprite"])
 	# print(query.size())
+
+	for x in 10000:
+		var clone := KinematicBody2D.new()
+		var sprite := Sprite.new()
+		clone.name = "Icon%d" % x
+		sprite.name = "Sprite"
+		sprite.texture = preload("res://icon.png")
+		clone.position = Vector2(randi() % 1024, randi() % 600)
+		clone.add_child(sprite)
+		add_child(clone)
 
 
 func _process(_delta: float) -> void:
