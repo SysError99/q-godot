@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SysError99
 {
-    public class GodotSharpGroups : Node
+    public class QGodotSharp : Node
     {
         private const string _Component = "#C";
         private const string _RegisteredScene = "#RS";
@@ -12,7 +12,7 @@ namespace SysError99
 
         private static Viewport Root;
         private static SceneTree MainTree;
-        private static GodotSharpGroups Self;
+        private static QGodotSharp Self;
         private static Dictionary<string, List<GroupObject0>> Groups0 = new();
         private static Dictionary<string, List<GroupObject1>> Groups1 = new();
         private static Dictionary<string, List<GroupObject2>> Groups2 = new();

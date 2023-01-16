@@ -30,7 +30,7 @@ public class ScnTestGodotSharpGroups : Node2D
 
     public override void _Process(float delta)
     {
-        foreach (var (parent, sprite) in GodotSharpGroups.Query<KinematicBody2D, Sprite>())
+        foreach (var (parent, sprite) in QGodotSharp.Query<KinematicBody2D, Sprite>())
         {
             var vel = parent.Position.DirectionTo(Target) * 10;
             parent.MoveAndSlide(vel);
