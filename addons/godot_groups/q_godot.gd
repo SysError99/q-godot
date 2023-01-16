@@ -5,7 +5,6 @@ const _COMP_ZERO_ERR = "'component_names' must have at least one member!"
 
 
 const _COMP_NAME = "#CN"
-const _CURRENT_SCENE_ONLY = "#CS"
 const _ITERATOR = "#I"
 const _REGISTERED_SCENE = "#RS"
 const _QUERY = "#Q"
