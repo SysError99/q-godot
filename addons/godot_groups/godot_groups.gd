@@ -173,19 +173,18 @@ func __yield_query(group_name: String, component_names: Array, yielder: QueryYie
 
 # API
 func change_scene(path: String) -> void:
-	var current_scene := _tree.current_scene
 	var inst := (load(path) as PackedScene).instance()
 	for iterator in _tree.get_nodes_in_group(_ITERATOR):
 		iterator.call("remove_current_scene_subscribers")
-	if is_instance_valid(current_scene):
-		current_scene.queue_free()
-	_root.add_child(inst)
-	_tree.current_scene = inst
+	_tree.current_scene.queue_free()
+	_root.set_meta("current_scene", inst)
+	_root.call_deferred("add_child", inst)
+	_tree.set_deferred("current_scene", inst)
 	yield(inst, "ready")
-	__post_change_scene()
+	__post_change_scene(inst)
 
 
-func __post_change_scene() -> void:
+func __post_change_scene(current_scene: Node) -> void:
 	var registered_scenes := _tree.get_nodes_in_group(_UNREGISTERED_SCENE)
 	if registered_scenes.size() > 0:
 		for scn_ref in registered_scenes:
@@ -193,7 +192,7 @@ func __post_change_scene() -> void:
 			scn.remove_from_group(_UNREGISTERED_SCENE)
 			register_as_scene(scn)
 	else:
-		register_as_scene(_tree.current_scene)
+		register_as_scene(current_scene)
 
 
 # API
@@ -250,4 +249,4 @@ func _enter_tree() -> void:
 
 
 func _ready() -> void:
-	__post_change_scene()
+	__post_change_scene(_tree.current_scene)
