@@ -23,6 +23,7 @@ class Iterator extends Node:
 			subscribers.erase(element)
 		current_scene_subscribers.clear()
 
+
 var _query_cache := {}
 var _regex := RegEx.new()
 var _root_ready := false
