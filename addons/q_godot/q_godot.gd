@@ -97,9 +97,10 @@ func __bind_to_iterator(entity: Node, query_name: String, component_names: Array
 			if not is_instance_valid(component):
 				return
 			var bind_name := _regex.sub(component_name, "_$1", true).to_lower()
-			component.connect("tree_exited", self, "_entity_component_removed", [ entity, query_name, systems ], CONNECT_ONESHOT)
 			component.set_meta(_COMP_NAME, bind_name.substr(1, bind_name.length()))
 			binds.push_back(component)
+			if not component.is_connected("tree_exited", self, "_entity_component_removed"):
+				component.connect("tree_exited", self, "_entity_component_removed", [ entity, query_name, systems ], CONNECT_ONESHOT)
 		if binds.size() == component_names.size() - number_of_groups:
 			entity.add_to_group(query_name)
 			entity.set_meta(query_name, binds)
@@ -192,19 +193,17 @@ func _entity_component_added(_new_component: Node, entity) -> void:
 
 
 func _entity_component_removed(entity: Node, query_name: String, systems: Array) -> void:
-	if entity.is_in_group(query_name):
-		entity.remove_from_group(query_name)
-		if query_name in _query_cache:
-			var cache := _query_cache[query_name] as Array
-			cache.erase(entity)
-		if entity.has_meta(query_name):
-			entity.remove_meta(query_name)
-		for system in systems:
-			if system is Node:
-				system.call_deferred("queue_free")
-			else:
-				system.call_deferred("free")
-		systems.clear()
+	entity.remove_meta(query_name)
+	entity.remove_from_group(query_name)
+	if query_name in _query_cache:
+		var cache := _query_cache[query_name] as Array
+		cache.erase(entity)
+	for system in systems:
+		if system is Node:
+			system.call_deferred("queue_free")
+		else:
+			system.call_deferred("free")
+	systems.clear()
 
 
 func _init() -> void:

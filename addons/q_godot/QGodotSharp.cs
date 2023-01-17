@@ -916,6 +916,7 @@ namespace SysError99
         {
             if (entity.GetType().Name != componentNames[0]) return;
             var binds = entity.GetMeta(queryName, new Godot.Collections.Array()) as Godot.Collections.Array;
+            var groupObjects = entity.GetMeta(queryName + "$", new Godot.Collections.Array()) as Godot.Collections.Array;
             var groupObject = new GroupObject();
             if (binds.Count == 0)
             {
@@ -924,13 +925,17 @@ namespace SysError99
                 foreach (var componentName in componentNames)
                 {
                     if (entity.GetNodeOrNull(componentName) is not Node component) return;
-                    component.Connect("tree_exited", Self, nameof(_EntityComponentRemoved), new Godot.Collections.Array { entity, component, groupObject, queryName }, (uint)ConnectFlags.Oneshot);
                     component.AddToGroup(_Component);
                     binds.Add(component);
+                    if (!entity.IsConnected("tree_exited", Self, nameof(_EntityComponentRemoved)))
+                    {
+                        component.Connect("tree_exited", Self, nameof(_EntityComponentRemoved), new Godot.Collections.Array { entity, component, groupObjects, queryName }, (uint)ConnectFlags.Oneshot);
+                    }
                 }
                 if (binds.Count == componentNames.Count)
                 {
                     entity.SetMeta(queryName, binds);
+                    entity.SetMeta(queryName + "$", groupObjects);
                 }
             }
             binds.Insert(0, entity);
@@ -1262,32 +1267,34 @@ namespace SysError99
             BindToGroups(entity);
         }
 
-        private void _EntityComponentRemoved(Node entity, Node component, GroupObject groupObject, string queryName)
+        private void _EntityComponentRemoved(Node entity, Node component, Godot.Collections.Array groupObjects, string queryName)
         {
-            if (!Object.IsInstanceValid(groupObject)) return;
             component.RemoveFromGroup(_Component);
             entity.RemoveMeta(queryName);
-            switch (groupObject)
+            foreach (GroupObject groupObject in groupObjects)
             {
-                case GroupObject0 groupObject0: Groups0[queryName].Remove(groupObject0); break;
-                case GroupObject1 groupObject1: Groups1[queryName].Remove(groupObject1); break;
-                case GroupObject2 groupObject2: Groups2[queryName].Remove(groupObject2); break;
-                case GroupObject3 groupObject3: Groups3[queryName].Remove(groupObject3); break;
-                case GroupObject4 groupObject4: Groups4[queryName].Remove(groupObject4); break;
-                case GroupObject5 groupObject5: Groups5[queryName].Remove(groupObject5); break;
-                case GroupObject6 groupObject6: Groups6[queryName].Remove(groupObject6); break;
-                case GroupObject7 groupObject7: Groups7[queryName].Remove(groupObject7); break;
-                case GroupObject8 groupObject8: Groups8[queryName].Remove(groupObject8); break;
-                case GroupObject9 groupObject9: Groups9[queryName].Remove(groupObject9); break;
-                case GroupObject10 groupObject10: Groups10[queryName].Remove(groupObject10); break;
-                case GroupObject11 groupObject11: Groups11[queryName].Remove(groupObject11); break;
-                case GroupObject12 groupObject12: Groups12[queryName].Remove(groupObject12); break;
-                case GroupObject13 groupObject13: Groups13[queryName].Remove(groupObject13); break;
-                case GroupObject14 groupObject14: Groups14[queryName].Remove(groupObject14); break;
-                case GroupObject15 groupObject15: Groups15[queryName].Remove(groupObject15); break;
-                case GroupObject16 groupObject16: Groups16[queryName].Remove(groupObject16); break;
+                switch (groupObject)
+                {
+                    case GroupObject0 groupObject0: Groups0[queryName].Remove(groupObject0); break;
+                    case GroupObject1 groupObject1: Groups1[queryName].Remove(groupObject1); break;
+                    case GroupObject2 groupObject2: Groups2[queryName].Remove(groupObject2); break;
+                    case GroupObject3 groupObject3: Groups3[queryName].Remove(groupObject3); break;
+                    case GroupObject4 groupObject4: Groups4[queryName].Remove(groupObject4); break;
+                    case GroupObject5 groupObject5: Groups5[queryName].Remove(groupObject5); break;
+                    case GroupObject6 groupObject6: Groups6[queryName].Remove(groupObject6); break;
+                    case GroupObject7 groupObject7: Groups7[queryName].Remove(groupObject7); break;
+                    case GroupObject8 groupObject8: Groups8[queryName].Remove(groupObject8); break;
+                    case GroupObject9 groupObject9: Groups9[queryName].Remove(groupObject9); break;
+                    case GroupObject10 groupObject10: Groups10[queryName].Remove(groupObject10); break;
+                    case GroupObject11 groupObject11: Groups11[queryName].Remove(groupObject11); break;
+                    case GroupObject12 groupObject12: Groups12[queryName].Remove(groupObject12); break;
+                    case GroupObject13 groupObject13: Groups13[queryName].Remove(groupObject13); break;
+                    case GroupObject14 groupObject14: Groups14[queryName].Remove(groupObject14); break;
+                    case GroupObject15 groupObject15: Groups15[queryName].Remove(groupObject15); break;
+                    case GroupObject16 groupObject16: Groups16[queryName].Remove(groupObject16); break;
+                }
+                groupObject.Free();
             }
-            groupObject.Free();
         }
 
         public override void _Ready()
