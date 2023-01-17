@@ -5,12 +5,13 @@ const _COMP_ZERO_ERR = "'component_names' must have at least one member!"
 
 
 const _COMP_NAME = "#CN"
+const _FUNC_NAME = 1
 const _ITERATOR = "#I"
 const _REGISTERED_SCENE = "#RS"
 const _QUERY = "#Q"
 const _QUERY_NAMES = "#QN"
-const _SHARED_VAR = 1
 const _SYSTEM_CLASS = 0
+const _SYSTEM_BASE_CLASS = "#BC"
 const _UNREGISTERED_SCENE = "registered_scene"
 
 
@@ -47,13 +48,13 @@ func __get_query_name(component_names: Array) -> String:
 
 
 # API
-func bind_query(component_names: Array, system: Object, shared = null, to_current_scene: bool = false) -> void:
+func bind_query(component_names: Array, system: Object, func_name: String = "", to_current_scene: bool = false) -> void:
 	if not _root_ready:
 		yield(_root, "ready")
 	assert(component_names.size() > 0, _COMP_ZERO_ERR)
 	var query_name := __get_query_name(component_names)
 	var iterator := __get_iterator(query_name)
-	var new_subscriber := [system, shared]
+	var new_subscriber := [system, func_name]
 	iterator.subscribers.push_back(new_subscriber)
 	if to_current_scene:
 		iterator.current_scene_subscribers.push_back(new_subscriber)
@@ -61,8 +62,8 @@ func bind_query(component_names: Array, system: Object, shared = null, to_curren
 
 
 # API
-func bind_query_to_current_scene(component_names: Array, system: Object, shared = null) -> void:
-	bind_query(component_names, system, shared, true)
+func bind_query_to_current_scene(component_names: Array, system: Object, func_name = null) -> void:
+	bind_query(component_names, system, func_name, true)
 
 
 func __build_query(query_name: String, component_names: Array, iterator: Object, subscribers: Array) -> void:
@@ -101,10 +102,10 @@ func __bind_to_iterator(entity: Node, query_name: String, component_names: Array
 				return
 			var bind_name := _regex.sub(component_name, "_$1", true).to_lower()
 			component.set_meta(_COMP_NAME, bind_name.substr(1, bind_name.length()))
-			entity.set_meta("$" + component_name, component) # TODO: Find a way to clear when component exits.
+			entity.set_meta("$" + component_name, component)
 			binds.push_back(component)
 			if not component.is_connected("tree_exited", self, "_entity_component_removed"):
-				component.connect("tree_exited", self, "_entity_component_removed", [ entity, query_names, component_name ], CONNECT_ONESHOT)
+				component.connect("tree_exited", self, "_entity_component_removed", [ entity, component, query_names], CONNECT_ONESHOT)
 		if binds.size() == component_names.size() - number_of_groups:
 			entity.add_to_group(query_name)
 			entity.set_meta(query_name + "#", binds)
@@ -116,22 +117,13 @@ func __bind_to_iterator(entity: Node, query_name: String, component_names: Array
 				cache.push_back(entity)
 	for system_ref in subscribers:
 		var system := system_ref[_SYSTEM_CLASS] as Object
-		if not system.has_method("new"):
-			binds = binds.duplicate()
-			binds.push_front(entity)
-			system.callv(system_ref[_SHARED_VAR], binds)
+		if system.get_meta(entity.name + query_name, false):
 			continue
-		system = system.new() as Object
+		binds = binds.duplicate()
+		binds.push_front(entity)
 		systems.push_back(system)
-		system.set("parent", entity)
-		system.set("shared", system_ref[_SHARED_VAR])
-		for component_ref in binds:
-			var component := component_ref as Node
-			system.set(component.get_meta(_COMP_NAME), component_ref)
-		if system is Node:
-			iterator.add_child(system)
-		if system.has_method("_create"):
-			system.call("_create")
+		system.callv(system_ref[_FUNC_NAME], binds)
+		system.set_meta(entity.name + query_name, true)
 
 
 # API
@@ -194,11 +186,12 @@ func _entity_exiting_scene(entity: Node) -> void:
 
 
 func _entity_component_added(_new_component: Node, entity) -> void:
-	_entity_exiting_scene(entity)
 	__bind_to_iterators(entity)
 
 
-func _entity_component_removed(entity: Node, query_names: Array, component_name: String) -> void:
+func _entity_component_removed(entity: Node, component: Node, query_names: Array) -> void:
+	var component_name := component.name
+	entity.remove_meta("$" + component_name)
 	for query_name in query_names:
 		if not component_name in query_name:
 			continue
@@ -210,10 +203,7 @@ func _entity_component_removed(entity: Node, query_names: Array, component_name:
 			var cache := _query_cache[query_name] as Array
 			cache.erase(entity)
 		for system in systems:
-			if system is Node:
-				system.call_deferred("queue_free")
-			else:
-				system.call_deferred("free")
+			system.remove_meta(entity.name + query_name)
 		systems.clear()
 
 

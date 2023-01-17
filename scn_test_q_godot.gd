@@ -8,84 +8,13 @@ var tween = Tween.new()
 
 
 onready var label := $CanvasLayer/Label as Label
-
-
-class MoveTowardsCenterSystem extends Node:
-	const TARGET = Vector2(512, 300)
-
-
-	var parent: KinematicBody2D
-	# var shared: Dictionary
-	var sprite: Sprite
-
-
-	# func _create() -> void:
-	# 	var tween := shared.tween as Tween
-	# 	tween.interpolate_property(
-	# 		parent, "position",
-	# 		parent.position, TARGET,
-	# 		100
-	# 	)
-	# 	tween.start()
-	# 	parent.look_at(TARGET)
-
-
-	func _process(_delta: float) -> void:
-		var vel := parent.position.direction_to(TARGET) * 10.0
-		parent.move_and_slide(vel)
-		parent.look_at(TARGET)
-
-
-# class ShakeSystem extends Node:
-# 	const TARGET = Vector2(512, 300)
-
-# 	var parent: KinematicBody2D
-# 	var sprite: Sprite
-
-# 	func _process(_delta: float) -> void:
-# 		parent.position += Vector2(randi() % 3 - 1, randi() % 3 - 1)
-
-
-# class BlinkSystem extends Node:
-# 	var fade_in := true
-# 	var sprite: Sprite
-
-# 	func _create() -> void:
-# 		sprite.modulate.a = 0
-
-# 	func _process(delta: float) -> void:
-# 		if fade_in:
-# 			sprite.modulate.a += delta
-# 			if sprite.modulate.a > 1:
-# 				fade_in = false
-# 		else:
-# 			sprite.modulate.a -= delta
-# 			if sprite.modulate.a < 0:
-# 				fade_in = true
+onready var query := QGodot.query(["KinematicBody2D", "Sprite"])
 
 
 func _ready() -> void:
 	add_child(tween)
 	rand_seed(814995)
 
-	QGodot.bind_query_to_current_scene(
-		["KinematicBody2D", "Sprite"],
-		MoveTowardsCenterSystem,
-		self
-	)
-	# QGodot.bind_query(
-	# 	["KinematicBody2D", "Sprite"],
-	# 	ShakeSystem,
-	# 	self
-	# )
-	# QGodot.bind_query(
-	# 	["KinematicBody2D", "Sprite"],
-	# 	BlinkSystem,
-	# 	self
-	# )
-
-	# var query := QGodot.query(["KinematicBody2D", "Sprite"])
-	# print(query.size())
 
 	for x in 10000:
 		var clone := KinematicBody2D.new()
@@ -100,6 +29,10 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	label.text = "FPS: %f" % Engine.get_frames_per_second()
+	for entity in query:
+		var vel := (entity.position.direction_to(TARGET) * 10.0) as Vector2
+		entity.move_and_slide(vel)
+		entity.look_at(TARGET)
 
 
 func _input(event: InputEvent) -> void:
