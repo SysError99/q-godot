@@ -7,6 +7,16 @@ const TARGET = Vector2(512, 300)
 var tween = Tween.new()
 
 
+# class Movement extends Node:
+# 	var parent: KinematicBody2D
+# 	var sprite: Sprite
+# 	func _process(_delta: float) -> void:
+# 		var vel := (parent.position.direction_to(TARGET) * 10.0) as Vector2
+# 		parent.move_and_slide(vel)
+# 		parent.look_at(TARGET)
+# 		sprite.scale *= 1.001
+
+
 onready var label := $CanvasLayer/Label as Label
 onready var query := QGodot.query(["KinematicBody2D", "Sprite"])
 
@@ -14,6 +24,12 @@ onready var query := QGodot.query(["KinematicBody2D", "Sprite"])
 func _ready() -> void:
 	add_child(tween)
 	rand_seed(814995)
+
+
+	# QGodot.bind_query(
+	# 	["KinematicBody2D", "Sprite"],
+	# 	Movement
+	# )
 
 
 	for x in 10000:
@@ -31,6 +47,7 @@ func _process(_delta: float) -> void:
 	label.text = "FPS: %f" % Engine.get_frames_per_second()
 	for entity in query:
 		var vel := (entity.position.direction_to(TARGET) * 10.0) as Vector2
+		entity.get_meta("$Sprite").scale *= 1.001
 		entity.move_and_slide(vel)
 		entity.look_at(TARGET)
 
