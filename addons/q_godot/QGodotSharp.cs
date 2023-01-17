@@ -1303,6 +1303,7 @@ namespace SysError99
                     }
                     queryObject.Free();
                 }
+                queryObjects.Clear();
             }
         }
 
