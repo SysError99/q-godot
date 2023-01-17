@@ -27,7 +27,6 @@ class Iterator extends Node:
 
 
 var _query_cache := {}
-var _regex := RegEx.new()
 var _root_ready := false
 var _root: Viewport
 var _templates := {}
@@ -100,8 +99,6 @@ func __bind_to_iterator(entity: Node, query_name: String, component_names: Array
 			var component := entity.get_node_or_null(component_name) as Node
 			if not is_instance_valid(component):
 				return
-			var bind_name := _regex.sub(component_name, "_$1", true).to_lower()
-			component.set_meta(_COMP_NAME, bind_name.substr(1, bind_name.length()))
 			entity.set_meta("$" + component_name, component)
 			binds.push_back(component)
 			if not component.is_connected("tree_exited", self, "_entity_component_removed"):
@@ -205,10 +202,6 @@ func _entity_component_removed(entity: Node, component: Node, query_names: Array
 		for system in systems:
 			system.remove_meta(entity.name + query_name)
 		systems.clear()
-
-
-func _init() -> void:
-	_regex.compile("((?<=[a-z])[A-Z]|[A-Z](?=[a-z])|[0-9])")
 
 
 func _enter_tree() -> void:
