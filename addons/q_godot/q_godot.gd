@@ -147,10 +147,12 @@ func query(component_names: Array) -> Array:
 
 # API
 func change_scene(path: String) -> void:
+	var current_scene := _tree.current_scene
 	var inst := (load(path) as PackedScene).instance()
 	for iterator in _tree.get_nodes_in_group(_ITERATOR):
 		iterator.call("remove_current_scene_subscribers")
-	_tree.current_scene.queue_free()
+	current_scene.queue_free()
+	yield(current_scene, "tree_exited")
 	_root.set_meta("current_scene", inst)
 	_root.call_deferred("add_child", inst)
 	_tree.set_deferred("current_scene", inst)
