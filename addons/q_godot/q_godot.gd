@@ -23,7 +23,7 @@ class Iterator extends Node:
 			subscribers.erase(element)
 		current_scene_subscribers.clear()
 
-
+var _query_cache := {}
 var _regex := RegEx.new()
 var _root_ready := false
 var _root: Viewport
@@ -103,6 +103,9 @@ func __bind_to_iterator(entity: Node, query_name: String, component_names: Array
 			entity.add_to_group(query_name)
 			entity.set_meta(query_name, binds)
 			entity.set_meta(query_name + "$", systems)
+			if query_name in _query_cache:
+				var cache := _query_cache[query_name] as Array
+				cache.push_back(entity)
 			for component_ref in binds:
 				var component := component_ref as Node
 				component.connect("tree_exited", self, "_entity_component_removed", [ entity, query_name, systems ], CONNECT_ONESHOT)
@@ -129,9 +132,11 @@ func __bind_to_iterator(entity: Node, query_name: String, component_names: Array
 # API
 func query(component_names: Array) -> Array:
 	var query_name := __get_query_name(component_names)
-	if not query_name in _templates:
-		__build_query(query_name, component_names, __get_iterator(query_name), [])
-	return _tree.get_nodes_in_group(query_name)
+	if not query_name in _query_cache:
+		if not query_name in _templates:
+			__build_query(query_name, component_names, __get_iterator(query_name), [])
+		_query_cache[query_name] = _tree.get_nodes_in_group(query_name)
+	return _query_cache[query_name]
 
 
 # API
@@ -191,6 +196,9 @@ func _entity_component_added(_new_component: Node, entity) -> void:
 func _entity_component_removed(entity: Node, query_name: String, systems: Array) -> void:
 	if entity.is_in_group(query_name):
 		entity.remove_from_group(query_name)
+		if query_name in _query_cache:
+			var cache := _query_cache[query_name] as Array
+			cache.erase(entity)
 		if entity.has_meta(query_name):
 			entity.remove_meta(query_name)
 		for system in systems:
