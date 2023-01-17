@@ -61,7 +61,7 @@ func bind_query(component_names: Array, system: Object, func_name: String = "", 
 
 
 # API
-func bind_query_to_current_scene(component_names: Array, system: Object, func_name = null) -> void:
+func bind_query_to_current_scene(component_names: Array, system: Object, func_name: String = "") -> void:
 	bind_query(component_names, system, func_name, true)
 
 
