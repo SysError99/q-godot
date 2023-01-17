@@ -118,6 +118,7 @@ func __bind_to_iterator(entity: Node, query_name: String, component_names: Array
 		var system := system_ref[_SYSTEM_CLASS] as Object
 		if system.has_meta(system_inst_name):
 			continue
+		systems.push_back(system)
 		if system.has_method("new"):
 			var system_inst := system.new() as Object
 			system_inst.set("parent", entity)
@@ -130,7 +131,6 @@ func __bind_to_iterator(entity: Node, query_name: String, component_names: Array
 		else:
 			binds = binds.duplicate()
 			binds.push_front(entity)
-			systems.push_back(system)
 			system.callv(system_ref[_SHARED_VAR], binds)
 			system.set_meta(system_inst_name, system)
 
