@@ -12,23 +12,23 @@ namespace SysError99
         private static Viewport Root;
         private static SceneTree MainTree;
         private static QGodotSharp Self;
-        private static Dictionary<string, List<GroupObject0>> Groups0 = new();
-        private static Dictionary<string, List<GroupObject1>> Groups1 = new();
-        private static Dictionary<string, List<GroupObject2>> Groups2 = new();
-        private static Dictionary<string, List<GroupObject3>> Groups3 = new();
-        private static Dictionary<string, List<GroupObject4>> Groups4 = new();
-        private static Dictionary<string, List<GroupObject5>> Groups5 = new();
-        private static Dictionary<string, List<GroupObject6>> Groups6 = new();
-        private static Dictionary<string, List<GroupObject7>> Groups7 = new();
-        private static Dictionary<string, List<GroupObject8>> Groups8 = new();
-        private static Dictionary<string, List<GroupObject9>> Groups9 = new();
-        private static Dictionary<string, List<GroupObject10>> Groups10 = new();
-        private static Dictionary<string, List<GroupObject11>> Groups11 = new();
-        private static Dictionary<string, List<GroupObject12>> Groups12 = new();
-        private static Dictionary<string, List<GroupObject13>> Groups13 = new();
-        private static Dictionary<string, List<GroupObject14>> Groups14 = new();
-        private static Dictionary<string, List<GroupObject15>> Groups15 = new();
-        private static Dictionary<string, List<GroupObject16>> Groups16 = new();
+        private static Dictionary<string, List<QueryObject0>> Queries0 = new();
+        private static Dictionary<string, List<QueryObject1>> Queries1 = new();
+        private static Dictionary<string, List<QueryObject2>> Queries2 = new();
+        private static Dictionary<string, List<QueryObject3>> Queries3 = new();
+        private static Dictionary<string, List<QueryObject4>> Queries4 = new();
+        private static Dictionary<string, List<QueryObject5>> Queries5 = new();
+        private static Dictionary<string, List<QueryObject6>> Queries6 = new();
+        private static Dictionary<string, List<QueryObject7>> Queries7 = new();
+        private static Dictionary<string, List<QueryObject8>> Queries8 = new();
+        private static Dictionary<string, List<QueryObject9>> Queries9 = new();
+        private static Dictionary<string, List<QueryObject10>> Queries10 = new();
+        private static Dictionary<string, List<QueryObject11>> Queries11 = new();
+        private static Dictionary<string, List<QueryObject12>> Queries12 = new();
+        private static Dictionary<string, List<QueryObject13>> Queries13 = new();
+        private static Dictionary<string, List<QueryObject14>> Queries14 = new();
+        private static Dictionary<string, List<QueryObject15>> Queries15 = new();
+        private static Dictionary<string, List<QueryObject16>> Queries16 = new();
         private static Dictionary<string, List<string>> Templates = new();
 
         #region Query
@@ -37,9 +37,9 @@ namespace SysError99
             where T : Object
         {
             var queryName =  typeof(T).Name;
-            if (Groups0.ContainsKey(queryName))
+            if (Queries0.ContainsKey(queryName))
             {
-                foreach (var obj in Groups0[queryName])
+                foreach (var obj in Queries0[queryName])
                     yield return obj.Get<T>();
             }
             else
@@ -67,9 +67,9 @@ namespace SysError99
                 typeof(T0).Name +
                 typeof(T1).Name
             ;
-            if (Groups1.ContainsKey(queryName))
+            if (Queries1.ContainsKey(queryName))
             {
-                foreach (var obj in Groups1[queryName])
+                foreach (var obj in Queries1[queryName])
                     yield return obj.Get<T0, T1>();
             }
             else
@@ -100,9 +100,9 @@ namespace SysError99
                 typeof(T1).Name +
                 typeof(T2).Name
             ;
-            if (Groups2.ContainsKey(queryName))
+            if (Queries2.ContainsKey(queryName))
             {
-                foreach (var obj in Groups2[queryName])
+                foreach (var obj in Queries2[queryName])
                     yield return obj.Get<T0, T1, T2>();
             }
             else
@@ -136,9 +136,9 @@ namespace SysError99
                 typeof(T2).Name +
                 typeof(T3).Name
             ;
-            if (Groups3.ContainsKey(queryName))
+            if (Queries3.ContainsKey(queryName))
             {
-                foreach (var obj in Groups3[queryName])
+                foreach (var obj in Queries3[queryName])
                     yield return obj.Get<T0, T1, T2, T3>();
             }
             else
@@ -175,9 +175,9 @@ namespace SysError99
                 typeof(T3).Name +
                 typeof(T4).Name
             ;
-            if (Groups4.ContainsKey(queryName))
+            if (Queries4.ContainsKey(queryName))
             {
-                foreach (var obj in Groups4[queryName])
+                foreach (var obj in Queries4[queryName])
                     yield return obj.Get<T0, T1, T2, T3, T4>();
             }
             else
@@ -217,9 +217,9 @@ namespace SysError99
                 typeof(T4).Name +
                 typeof(T5).Name
             ;
-            if (Groups5.ContainsKey(queryName))
+            if (Queries5.ContainsKey(queryName))
             {
-                foreach (var obj in Groups5[queryName])
+                foreach (var obj in Queries5[queryName])
                     yield return obj.Get<T0, T1, T2, T3, T4, T5>();
             }
             else
@@ -262,9 +262,9 @@ namespace SysError99
                 typeof(T5).Name +
                 typeof(T6).Name
             ;
-            if (Groups6.ContainsKey(queryName))
+            if (Queries6.ContainsKey(queryName))
             {
-                foreach (var obj in Groups6[queryName])
+                foreach (var obj in Queries6[queryName])
                     yield return obj.Get<T0, T1, T2, T3, T4, T5, T6>();
             }
             else
@@ -310,9 +310,9 @@ namespace SysError99
                 typeof(T6).Name +
                 typeof(T7).Name
             ;
-            if (Groups7.ContainsKey(queryName))
+            if (Queries7.ContainsKey(queryName))
             {
-                foreach (var obj in Groups7[queryName])
+                foreach (var obj in Queries7[queryName])
                     yield return obj.Get<T0, T1, T2, T3, T4, T5, T6, T7>();
             }
             else
@@ -361,9 +361,9 @@ namespace SysError99
                 typeof(T7).Name +
                 typeof(T8).Name
             ;
-            if (Groups8.ContainsKey(queryName))
+            if (Queries8.ContainsKey(queryName))
             {
-                foreach (var obj in Groups8[queryName])
+                foreach (var obj in Queries8[queryName])
                     yield return obj.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8>();
             }
             else
@@ -415,9 +415,9 @@ namespace SysError99
                 typeof(T8).Name +
                 typeof(T9).Name
             ;
-            if (Groups9.ContainsKey(queryName))
+            if (Queries9.ContainsKey(queryName))
             {
-                foreach (var obj in Groups9[queryName])
+                foreach (var obj in Queries9[queryName])
                     yield return obj.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>();
             }
             else
@@ -472,9 +472,9 @@ namespace SysError99
                 typeof(T9).Name +
                 typeof(T10).Name
             ;
-            if (Groups10.ContainsKey(queryName))
+            if (Queries10.ContainsKey(queryName))
             {
-                foreach (var obj in Groups10[queryName])
+                foreach (var obj in Queries10[queryName])
                     yield return obj.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>();
             }
             else
@@ -532,9 +532,9 @@ namespace SysError99
                 typeof(T10).Name +
                 typeof(T11).Name
             ;
-            if (Groups11.ContainsKey(queryName))
+            if (Queries11.ContainsKey(queryName))
             {
-                foreach (var obj in Groups11[queryName])
+                foreach (var obj in Queries11[queryName])
                     yield return obj.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>();
             }
             else
@@ -595,9 +595,9 @@ namespace SysError99
                 typeof(T11).Name +
                 typeof(T12).Name
             ;
-            if (Groups12.ContainsKey(queryName))
+            if (Queries12.ContainsKey(queryName))
             {
-                foreach (var obj in Groups12[queryName])
+                foreach (var obj in Queries12[queryName])
                     yield return obj.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>();
             }
             else
@@ -661,9 +661,9 @@ namespace SysError99
                 typeof(T12).Name +
                 typeof(T13).Name
             ;
-            if (Groups13.ContainsKey(queryName))
+            if (Queries13.ContainsKey(queryName))
             {
-                foreach (var obj in Groups13[queryName])
+                foreach (var obj in Queries13[queryName])
                     yield return obj.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>();
             }
             else
@@ -730,9 +730,9 @@ namespace SysError99
                 typeof(T13).Name +
                 typeof(T14).Name
             ;
-            if (Groups14.ContainsKey(queryName))
+            if (Queries14.ContainsKey(queryName))
             {
-                foreach (var obj in Groups14[queryName])
+                foreach (var obj in Queries14[queryName])
                     yield return obj.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>();
             }
             else
@@ -802,9 +802,9 @@ namespace SysError99
                 typeof(T14).Name +
                 typeof(T15).Name
             ;
-            if (Groups15.ContainsKey(queryName))
+            if (Queries15.ContainsKey(queryName))
             {
-                foreach (var obj in Groups15[queryName])
+                foreach (var obj in Queries15[queryName])
                     yield return obj.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>();
             }
             else
@@ -887,7 +887,7 @@ namespace SysError99
         private static void RegisterEntity(Node entity)
         {
             entity.Connect("child_entered_tree", Self, nameof(_EntityComponentAdded), new Godot.Collections.Array { entity });
-            BindToGroups(entity);
+            BindToQueries(entity);
         }
 
         private static void BuildQuery(string queryName, in List<string> componentNames)
@@ -904,7 +904,7 @@ namespace SysError99
             }
         }
 
-        private static void BindToGroups(Node entity)
+        private static void BindToQueries(Node entity)
         {
             foreach (var subTemplate in Templates)
             {
@@ -917,8 +917,8 @@ namespace SysError99
             if (entity.GetType().Name != componentNames[0]) return;
             var binds = entity.GetMeta(queryName + "#", new Godot.Collections.Array()) as Godot.Collections.Array;
             var queryNames = entity.GetMeta(_QueryNames, new Godot.Collections.Array()) as Godot.Collections.Array;
-            var groupObjects = entity.GetMeta(queryName + "$", new Godot.Collections.Array()) as Godot.Collections.Array;
-            var groupObject = new GroupObject();
+            var queryObjects = entity.GetMeta(queryName + "$", new Godot.Collections.Array()) as Godot.Collections.Array;
+            var queryObject = new QueryObject();
             if (!queryNames.Contains(queryName))
             {
                 componentNames = new List<string>(componentNames);
@@ -937,7 +937,7 @@ namespace SysError99
                     entity.AddToGroup(queryName);
                     entity.SetMeta(queryName + "#", binds);
                     entity.SetMeta(_QueryNames, queryNames);
-                    entity.SetMeta(queryName + "$", groupObjects);
+                    entity.SetMeta(queryName + "$", queryObjects);
                     queryNames.Add(queryName);
                 }
             }
@@ -947,78 +947,78 @@ namespace SysError99
             {
                 case 1:
                     {
-                        var gObj = new GroupObject0();
-                        groupObject = gObj;
+                        var gObj = new QueryObject0();
+                        queryObject = gObj;
                         gObj._obj0 = binds[0] as Node;
-                        if (Groups0.ContainsKey(queryName)) Groups0[queryName].Add(gObj);
-                        else Groups0.Add(queryName, new List<GroupObject0> { gObj });
+                        if (Queries0.ContainsKey(queryName)) Queries0[queryName].Add(gObj);
+                        else Queries0.Add(queryName, new List<QueryObject0> { gObj });
                     }
                     break;
 
                 case 2:
                     {
-                        var gObj = new GroupObject1();
-                        groupObject = gObj;
+                        var gObj = new QueryObject1();
+                        queryObject = gObj;
                         gObj._obj0 = binds[0] as Node;
                         gObj._obj1 = binds[1] as Node;
-                        if (Groups1.ContainsKey(queryName)) Groups1[queryName].Add(gObj);
-                        else Groups1.Add(queryName, new List<GroupObject1> { gObj });
+                        if (Queries1.ContainsKey(queryName)) Queries1[queryName].Add(gObj);
+                        else Queries1.Add(queryName, new List<QueryObject1> { gObj });
                     }
                     break;
                 case 3:
                     {
-                        var gObj = new GroupObject2();
-                        groupObject = gObj;
+                        var gObj = new QueryObject2();
+                        queryObject = gObj;
                         gObj._obj0 = binds[0] as Node;
                         gObj._obj1 = binds[1] as Node;
                         gObj._obj2 = binds[2] as Node;
-                        if (Groups2.ContainsKey(queryName)) Groups2[queryName].Add(gObj);
-                        else Groups2.Add(queryName, new List<GroupObject2> { gObj });
+                        if (Queries2.ContainsKey(queryName)) Queries2[queryName].Add(gObj);
+                        else Queries2.Add(queryName, new List<QueryObject2> { gObj });
                     }
                     break;
                 case 4:
                     {
-                        var gObj = new GroupObject3();
-                        groupObject = gObj;
+                        var gObj = new QueryObject3();
+                        queryObject = gObj;
                         gObj._obj0 = binds[0] as Node;
                         gObj._obj1 = binds[1] as Node;
                         gObj._obj2 = binds[2] as Node;
                         gObj._obj3 = binds[3] as Node;
-                        if (Groups3.ContainsKey(queryName)) Groups3[queryName].Add(gObj);
-                        else Groups3.Add(queryName, new List<GroupObject3> { gObj });
+                        if (Queries3.ContainsKey(queryName)) Queries3[queryName].Add(gObj);
+                        else Queries3.Add(queryName, new List<QueryObject3> { gObj });
                     }
                     break;
                 case 5:
                     {
-                        var gObj = new GroupObject4();
-                        groupObject = gObj;
+                        var gObj = new QueryObject4();
+                        queryObject = gObj;
                         gObj._obj0 = binds[0] as Node;
                         gObj._obj1 = binds[1] as Node;
                         gObj._obj2 = binds[2] as Node;
                         gObj._obj3 = binds[3] as Node;
                         gObj._obj4 = binds[4] as Node;
-                        if (Groups4.ContainsKey(queryName)) Groups4[queryName].Add(gObj);
-                        else Groups4.Add(queryName, new List<GroupObject4> { gObj });
+                        if (Queries4.ContainsKey(queryName)) Queries4[queryName].Add(gObj);
+                        else Queries4.Add(queryName, new List<QueryObject4> { gObj });
                     }
                     break;
                 case 6:
                     {
-                        var gObj = new GroupObject5();
-                        groupObject = gObj;
+                        var gObj = new QueryObject5();
+                        queryObject = gObj;
                         gObj._obj0 = binds[0] as Node;
                         gObj._obj1 = binds[1] as Node;
                         gObj._obj2 = binds[2] as Node;
                         gObj._obj3 = binds[3] as Node;
                         gObj._obj4 = binds[4] as Node;
                         gObj._obj5 = binds[5] as Node;
-                        if (Groups5.ContainsKey(queryName)) Groups5[queryName].Add(gObj);
-                        else Groups5.Add(queryName, new List<GroupObject5> { gObj });
+                        if (Queries5.ContainsKey(queryName)) Queries5[queryName].Add(gObj);
+                        else Queries5.Add(queryName, new List<QueryObject5> { gObj });
                     }
                     break;
                 case 7:
                     {
-                        var gObj = new GroupObject6();
-                        groupObject = gObj;
+                        var gObj = new QueryObject6();
+                        queryObject = gObj;
                         gObj._obj0 = binds[0] as Node;
                         gObj._obj1 = binds[1] as Node;
                         gObj._obj2 = binds[2] as Node;
@@ -1026,14 +1026,14 @@ namespace SysError99
                         gObj._obj4 = binds[4] as Node;
                         gObj._obj5 = binds[5] as Node;
                         gObj._obj6 = binds[6] as Node;
-                        if (Groups6.ContainsKey(queryName)) Groups6[queryName].Add(gObj);
-                        else Groups6.Add(queryName, new List<GroupObject6> { gObj });
+                        if (Queries6.ContainsKey(queryName)) Queries6[queryName].Add(gObj);
+                        else Queries6.Add(queryName, new List<QueryObject6> { gObj });
                     }
                     break;
                 case 8:
                     {
-                        var gObj = new GroupObject7();
-                        groupObject = gObj;
+                        var gObj = new QueryObject7();
+                        queryObject = gObj;
                         gObj._obj0 = binds[0] as Node;
                         gObj._obj1 = binds[1] as Node;
                         gObj._obj2 = binds[2] as Node;
@@ -1042,14 +1042,14 @@ namespace SysError99
                         gObj._obj5 = binds[5] as Node;
                         gObj._obj6 = binds[6] as Node;
                         gObj._obj7 = binds[7] as Node;
-                        if (Groups7.ContainsKey(queryName)) Groups7[queryName].Add(gObj);
-                        else Groups7.Add(queryName, new List<GroupObject7> { gObj });
+                        if (Queries7.ContainsKey(queryName)) Queries7[queryName].Add(gObj);
+                        else Queries7.Add(queryName, new List<QueryObject7> { gObj });
                     }
                     break;
                 case 9:
                     {
-                        var gObj = new GroupObject8();
-                        groupObject = gObj;
+                        var gObj = new QueryObject8();
+                        queryObject = gObj;
                         gObj._obj0 = binds[0] as Node;
                         gObj._obj1 = binds[1] as Node;
                         gObj._obj2 = binds[2] as Node;
@@ -1059,14 +1059,14 @@ namespace SysError99
                         gObj._obj6 = binds[6] as Node;
                         gObj._obj7 = binds[7] as Node;
                         gObj._obj8 = binds[8] as Node;
-                        if (Groups8.ContainsKey(queryName)) Groups8[queryName].Add(gObj);
-                        else Groups8.Add(queryName, new List<GroupObject8> { gObj });
+                        if (Queries8.ContainsKey(queryName)) Queries8[queryName].Add(gObj);
+                        else Queries8.Add(queryName, new List<QueryObject8> { gObj });
                     }
                     break;
                 case 10:
                     {
-                        var gObj = new GroupObject9();
-                        groupObject = gObj;
+                        var gObj = new QueryObject9();
+                        queryObject = gObj;
                         gObj._obj0 = binds[0] as Node;
                         gObj._obj1 = binds[1] as Node;
                         gObj._obj2 = binds[2] as Node;
@@ -1077,14 +1077,14 @@ namespace SysError99
                         gObj._obj7 = binds[7] as Node;
                         gObj._obj8 = binds[8] as Node;
                         gObj._obj9 = binds[9] as Node;
-                        if (Groups9.ContainsKey(queryName)) Groups9[queryName].Add(gObj);
-                        else Groups9.Add(queryName, new List<GroupObject9> { gObj });
+                        if (Queries9.ContainsKey(queryName)) Queries9[queryName].Add(gObj);
+                        else Queries9.Add(queryName, new List<QueryObject9> { gObj });
                     }
                     break;
                 case 11:
                     {
-                        var gObj = new GroupObject10();
-                        groupObject = gObj;
+                        var gObj = new QueryObject10();
+                        queryObject = gObj;
                         gObj._obj0 = binds[0] as Node;
                         gObj._obj1 = binds[1] as Node;
                         gObj._obj2 = binds[2] as Node;
@@ -1096,14 +1096,14 @@ namespace SysError99
                         gObj._obj8 = binds[8] as Node;
                         gObj._obj9 = binds[9] as Node;
                         gObj._obj10 = binds[10] as Node;
-                        if (Groups10.ContainsKey(queryName)) Groups10[queryName].Add(gObj);
-                        else Groups10.Add(queryName, new List<GroupObject10> { gObj });
+                        if (Queries10.ContainsKey(queryName)) Queries10[queryName].Add(gObj);
+                        else Queries10.Add(queryName, new List<QueryObject10> { gObj });
                     }
                     break;
                 case 12:
                     {
-                        var gObj = new GroupObject11();
-                        groupObject = gObj;
+                        var gObj = new QueryObject11();
+                        queryObject = gObj;
                         gObj._obj0 = binds[0] as Node;
                         gObj._obj1 = binds[1] as Node;
                         gObj._obj2 = binds[2] as Node;
@@ -1116,14 +1116,14 @@ namespace SysError99
                         gObj._obj9 = binds[9] as Node;
                         gObj._obj10 = binds[10] as Node;
                         gObj._obj11 = binds[11] as Node;
-                        if (Groups11.ContainsKey(queryName)) Groups11[queryName].Add(gObj);
-                        else Groups11.Add(queryName, new List<GroupObject11> { gObj });
+                        if (Queries11.ContainsKey(queryName)) Queries11[queryName].Add(gObj);
+                        else Queries11.Add(queryName, new List<QueryObject11> { gObj });
                     }
                     break;
                 case 13:
                     {
-                        var gObj = new GroupObject12();
-                        groupObject = gObj;
+                        var gObj = new QueryObject12();
+                        queryObject = gObj;
                         gObj._obj0 = binds[0] as Node;
                         gObj._obj1 = binds[1] as Node;
                         gObj._obj2 = binds[2] as Node;
@@ -1137,14 +1137,14 @@ namespace SysError99
                         gObj._obj10 = binds[10] as Node;
                         gObj._obj11 = binds[11] as Node;
                         gObj._obj12 = binds[12] as Node;
-                        if (Groups12.ContainsKey(queryName)) Groups12[queryName].Add(gObj);
-                        else Groups12.Add(queryName, new List<GroupObject12> { gObj });
+                        if (Queries12.ContainsKey(queryName)) Queries12[queryName].Add(gObj);
+                        else Queries12.Add(queryName, new List<QueryObject12> { gObj });
                     }
                     break;
                 case 14:
                     {
-                        var gObj = new GroupObject13();
-                        groupObject = gObj;
+                        var gObj = new QueryObject13();
+                        queryObject = gObj;
                         gObj._obj0 = binds[0] as Node;
                         gObj._obj1 = binds[1] as Node;
                         gObj._obj2 = binds[2] as Node;
@@ -1159,14 +1159,14 @@ namespace SysError99
                         gObj._obj11 = binds[11] as Node;
                         gObj._obj12 = binds[12] as Node;
                         gObj._obj13 = binds[13] as Node;
-                        if (Groups13.ContainsKey(queryName)) Groups13[queryName].Add(gObj);
-                        else Groups13.Add(queryName, new List<GroupObject13> { gObj });
+                        if (Queries13.ContainsKey(queryName)) Queries13[queryName].Add(gObj);
+                        else Queries13.Add(queryName, new List<QueryObject13> { gObj });
                     }
                     break;
                 case 15:
                     {
-                        var gObj = new GroupObject14();
-                        groupObject = gObj;
+                        var gObj = new QueryObject14();
+                        queryObject = gObj;
                         gObj._obj0 = binds[0] as Node;
                         gObj._obj1 = binds[1] as Node;
                         gObj._obj2 = binds[2] as Node;
@@ -1182,14 +1182,14 @@ namespace SysError99
                         gObj._obj12 = binds[12] as Node;
                         gObj._obj13 = binds[13] as Node;
                         gObj._obj14 = binds[14] as Node;
-                        if (Groups14.ContainsKey(queryName)) Groups14[queryName].Add(gObj);
-                        else Groups14.Add(queryName, new List<GroupObject14> { gObj });
+                        if (Queries14.ContainsKey(queryName)) Queries14[queryName].Add(gObj);
+                        else Queries14.Add(queryName, new List<QueryObject14> { gObj });
                     }
                     break;
                 case 16:
                     {
-                        var gObj = new GroupObject15();
-                        groupObject = gObj;
+                        var gObj = new QueryObject15();
+                        queryObject = gObj;
                         gObj._obj0 = binds[0] as Node;
                         gObj._obj1 = binds[1] as Node;
                         gObj._obj2 = binds[2] as Node;
@@ -1206,14 +1206,14 @@ namespace SysError99
                         gObj._obj13 = binds[13] as Node;
                         gObj._obj14 = binds[14] as Node;
                         gObj._obj15 = binds[15] as Node;
-                        if (Groups15.ContainsKey(queryName)) Groups15[queryName].Add(gObj);
-                        else Groups15.Add(queryName, new List<GroupObject15> { gObj });
+                        if (Queries15.ContainsKey(queryName)) Queries15[queryName].Add(gObj);
+                        else Queries15.Add(queryName, new List<QueryObject15> { gObj });
                     }
                     break;
                 case 17:
                     {
-                        var gObj = new GroupObject16();
-                        groupObject = gObj;
+                        var gObj = new QueryObject16();
+                        queryObject = gObj;
                         gObj._obj0 = binds[0] as Node;
                         gObj._obj1 = binds[1] as Node;
                         gObj._obj2 = binds[2] as Node;
@@ -1231,8 +1231,8 @@ namespace SysError99
                         gObj._obj14 = binds[14] as Node;
                         gObj._obj15 = binds[15] as Node;
                         gObj._obj16 = binds[16] as Node;
-                        if (Groups16.ContainsKey(queryName)) Groups16[queryName].Add(gObj);
-                        else Groups16.Add(queryName, new List<GroupObject16> { gObj });
+                        if (Queries16.ContainsKey(queryName)) Queries16[queryName].Add(gObj);
+                        else Queries16.Add(queryName, new List<QueryObject16> { gObj });
                     }
                     break;
             }
@@ -1264,7 +1264,7 @@ namespace SysError99
         private void _EntityComponentAdded(Node newComponent, Node entity)
         {
             _EntityExitingScene(entity);
-            BindToGroups(entity);
+            BindToQueries(entity);
         }
 
         private void _EntityComponentRemoved(Node entity, string componentName, Godot.Collections.Array queryNames)
@@ -1275,33 +1275,33 @@ namespace SysError99
                 {
                     continue;
                 }
-                var groupObjects = entity.GetMeta(queryName + "$", new Godot.Collections.Array()) as Godot.Collections.Array;
+                var queryObjects = entity.GetMeta(queryName + "$", new Godot.Collections.Array()) as Godot.Collections.Array;
                 entity.RemoveMeta(queryName + "#");
                 entity.RemoveMeta(queryName + "$");
                 entity.RemoveFromGroup(queryName);
-                foreach (GroupObject groupObject in groupObjects)
+                foreach (QueryObject queryObject in queryObjects)
                 {
-                    switch (groupObject)
+                    switch (queryObject)
                     {
-                        case GroupObject0 groupObject0: Groups0[queryName].Remove(groupObject0); break;
-                        case GroupObject1 groupObject1: Groups1[queryName].Remove(groupObject1); break;
-                        case GroupObject2 groupObject2: Groups2[queryName].Remove(groupObject2); break;
-                        case GroupObject3 groupObject3: Groups3[queryName].Remove(groupObject3); break;
-                        case GroupObject4 groupObject4: Groups4[queryName].Remove(groupObject4); break;
-                        case GroupObject5 groupObject5: Groups5[queryName].Remove(groupObject5); break;
-                        case GroupObject6 groupObject6: Groups6[queryName].Remove(groupObject6); break;
-                        case GroupObject7 groupObject7: Groups7[queryName].Remove(groupObject7); break;
-                        case GroupObject8 groupObject8: Groups8[queryName].Remove(groupObject8); break;
-                        case GroupObject9 groupObject9: Groups9[queryName].Remove(groupObject9); break;
-                        case GroupObject10 groupObject10: Groups10[queryName].Remove(groupObject10); break;
-                        case GroupObject11 groupObject11: Groups11[queryName].Remove(groupObject11); break;
-                        case GroupObject12 groupObject12: Groups12[queryName].Remove(groupObject12); break;
-                        case GroupObject13 groupObject13: Groups13[queryName].Remove(groupObject13); break;
-                        case GroupObject14 groupObject14: Groups14[queryName].Remove(groupObject14); break;
-                        case GroupObject15 groupObject15: Groups15[queryName].Remove(groupObject15); break;
-                        case GroupObject16 groupObject16: Groups16[queryName].Remove(groupObject16); break;
+                        case QueryObject0 queryObject0: Queries0[queryName].Remove(queryObject0); break;
+                        case QueryObject1 queryObject1: Queries1[queryName].Remove(queryObject1); break;
+                        case QueryObject2 queryObject2: Queries2[queryName].Remove(queryObject2); break;
+                        case QueryObject3 queryObject3: Queries3[queryName].Remove(queryObject3); break;
+                        case QueryObject4 queryObject4: Queries4[queryName].Remove(queryObject4); break;
+                        case QueryObject5 queryObject5: Queries5[queryName].Remove(queryObject5); break;
+                        case QueryObject6 queryObject6: Queries6[queryName].Remove(queryObject6); break;
+                        case QueryObject7 queryObject7: Queries7[queryName].Remove(queryObject7); break;
+                        case QueryObject8 queryObject8: Queries8[queryName].Remove(queryObject8); break;
+                        case QueryObject9 queryObject9: Queries9[queryName].Remove(queryObject9); break;
+                        case QueryObject10 queryObject10: Queries10[queryName].Remove(queryObject10); break;
+                        case QueryObject11 queryObject11: Queries11[queryName].Remove(queryObject11); break;
+                        case QueryObject12 queryObject12: Queries12[queryName].Remove(queryObject12); break;
+                        case QueryObject13 queryObject13: Queries13[queryName].Remove(queryObject13); break;
+                        case QueryObject14 queryObject14: Queries14[queryName].Remove(queryObject14); break;
+                        case QueryObject15 queryObject15: Queries15[queryName].Remove(queryObject15); break;
+                        case QueryObject16 queryObject16: Queries16[queryName].Remove(queryObject16); break;
                     }
-                    groupObject.Free();
+                    queryObject.Free();
                 }
             }
         }
@@ -1314,17 +1314,17 @@ namespace SysError99
 
     #region Query Class
 
-    internal class GroupObject : Object
+    internal class QueryObject : Object
     {
     }
 
-    internal class GroupObject0 : GroupObject
+    internal class QueryObject0 : QueryObject
     {
         internal Object _obj0;
         public T Get<T>() where T : Object => _obj0 as T;
     }
 
-    internal class GroupObject1 : GroupObject
+    internal class QueryObject1 : QueryObject
     {
         internal Object _obj0;
         internal Object _obj1;
@@ -1334,7 +1334,7 @@ namespace SysError99
             => (_obj0 as T0, _obj1 as T1);
     }
 
-    internal class GroupObject2 : GroupObject
+    internal class QueryObject2 : QueryObject
     {
         internal Object _obj0;
         internal Object _obj1;
@@ -1346,7 +1346,7 @@ namespace SysError99
             => (_obj0 as T0, _obj1 as T1, _obj2 as T2);
     }
 
-    internal class GroupObject3 : GroupObject
+    internal class QueryObject3 : QueryObject
     {
         internal Object _obj0;
         internal Object _obj1;
@@ -1366,7 +1366,7 @@ namespace SysError99
             );
     }
 
-    internal class GroupObject4 : GroupObject
+    internal class QueryObject4 : QueryObject
     {
         internal Object _obj0;
         internal Object _obj1;
@@ -1389,7 +1389,7 @@ namespace SysError99
             );
     }
 
-    internal class GroupObject5 : GroupObject
+    internal class QueryObject5 : QueryObject
     {
         internal Object _obj0;
         internal Object _obj1;
@@ -1415,7 +1415,7 @@ namespace SysError99
             );
     }
 
-    internal class GroupObject6 : GroupObject
+    internal class QueryObject6 : QueryObject
     {
         internal Object _obj0;
         internal Object _obj1;
@@ -1444,7 +1444,7 @@ namespace SysError99
            );
     }
 
-    internal class GroupObject7 : GroupObject
+    internal class QueryObject7 : QueryObject
     {
         internal Object _obj0;
         internal Object _obj1;
@@ -1476,7 +1476,7 @@ namespace SysError99
             );
     }
 
-    internal class GroupObject8 : GroupObject
+    internal class QueryObject8 : QueryObject
     {
         internal Object _obj0;
         internal Object _obj1;
@@ -1511,7 +1511,7 @@ namespace SysError99
             );
     }
 
-    internal class GroupObject9 : GroupObject
+    internal class QueryObject9 : QueryObject
     {
         internal Object _obj0;
         internal Object _obj1;
@@ -1549,7 +1549,7 @@ namespace SysError99
         );
     }
 
-    internal class GroupObject10 : GroupObject
+    internal class QueryObject10 : QueryObject
     {
         internal Object _obj0;
         internal Object _obj1;
@@ -1590,7 +1590,7 @@ namespace SysError99
             );
     }
 
-    internal class GroupObject11 : GroupObject
+    internal class QueryObject11 : QueryObject
     {
         internal Object _obj0;
         internal Object _obj1;
@@ -1634,7 +1634,7 @@ namespace SysError99
             );
     }
 
-    internal class GroupObject12 : GroupObject
+    internal class QueryObject12 : QueryObject
     {
         internal Object _obj0;
         internal Object _obj1;
@@ -1681,7 +1681,7 @@ namespace SysError99
             );
     }
 
-    internal class GroupObject13 : GroupObject
+    internal class QueryObject13 : QueryObject
     {
         internal Object _obj0;
         internal Object _obj1;
@@ -1731,7 +1731,7 @@ namespace SysError99
             );
     }
 
-    internal class GroupObject14 : GroupObject
+    internal class QueryObject14 : QueryObject
     {
         internal Object _obj0;
         internal Object _obj1;
@@ -1784,7 +1784,7 @@ namespace SysError99
             );
     }
 
-    internal class GroupObject15 : GroupObject
+    internal class QueryObject15 : QueryObject
     {
         internal Object _obj0;
         internal Object _obj1;
@@ -1840,7 +1840,7 @@ namespace SysError99
             );
     }
 
-    internal class GroupObject16 : GroupObject
+    internal class QueryObject16 : QueryObject
     {
         internal Object _obj0;
         internal Object _obj1;
