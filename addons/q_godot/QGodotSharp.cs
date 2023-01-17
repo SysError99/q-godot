@@ -843,15 +843,13 @@ namespace SysError99
 
         public static async void ChangeScene(string path)
         {
-            var tree = Self.GetTree();
-            var currentScene = tree.CurrentScene;
+            var currentScene = MainTree.CurrentScene;
             var inst = GD.Load<PackedScene>(path).Instance();
-            if (Object.IsInstanceValid(currentScene))
-            {
-                currentScene.QueueFree();
-            }
-            Root.AddChild(inst);
-            MainTree.CurrentScene = inst;
+            currentScene.QueueFree();
+            await Self.ToSignal(currentScene, "tree_exited");
+            Root.SetMeta("current_scene", inst);
+            Root.CallDeferred("add_child", inst);
+            MainTree.SetDeferred("current_scene", inst);
             await Self.ToSignal(inst, "ready");
             PostChangeScene();
         }
