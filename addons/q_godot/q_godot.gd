@@ -97,8 +97,8 @@ func __bind_to_iterator(entity: Node, query_name: String, component_names: Array
 			if not is_instance_valid(component):
 				return
 			var bind_name := _regex.sub(component_name, "_$1", true).to_lower()
-			component.set_meta(_COMP_NAME, bind_name.substr(1, bind_name.length()))
 			component.connect("tree_exited", self, "_entity_component_removed", [ entity, query_name, systems ], CONNECT_ONESHOT)
+			component.set_meta(_COMP_NAME, bind_name.substr(1, bind_name.length()))
 			binds.push_back(component)
 		if binds.size() == component_names.size() - number_of_groups:
 			entity.add_to_group(query_name)
