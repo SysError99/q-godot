@@ -119,19 +119,20 @@ func __bind_to_iterator(entity: Node, query_name: String, component_names: Array
 		if system.has_meta(system_inst_name):
 			continue
 		if system.has_method("new"):
-			system = system.new()
-			system.set("parent", entity)
-			system.set("shared", system_ref[_SHARED_VAR])
+			var system_inst := system.new() as Object
+			system_inst.set("parent", entity)
+			system_inst.set("shared", system_ref[_SHARED_VAR])
 			for component in binds:
 				var bind_name := _regex.sub(component.name, "_$1", true).to_lower()
-				system.set(bind_name.substr(1, bind_name.length()), component)
-			iterator.add_child(system)
+				system_inst.set(bind_name.substr(1, bind_name.length()), component)
+			system.set_meta(system_inst_name, system_inst)
+			iterator.add_child(system_inst)
 		else:
 			binds = binds.duplicate()
 			binds.push_front(entity)
 			systems.push_back(system)
 			system.callv(system_ref[_SHARED_VAR], binds)
-		system.set_meta(system_inst_name, system)
+			system.set_meta(system_inst_name, system)
 
 
 # API
