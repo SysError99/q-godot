@@ -87,8 +87,8 @@ func __bind_to_iterator(entity: Node, query_name: String, component_names: Array
 	if entity.get_class() != component_names[0]:
 		return
 	var binds := entity.get_meta(query_name + "#", []) as Array
-	var systems := entity.get_meta(query_name + "$", []) as Array
 	var query_names := entity.get_meta(_QUERY_NAMES, []) as Array
+	var system_instances := entity.get_meta(query_name + "$", []) as Array
 	if not query_name in query_names:
 		component_names = component_names.duplicate()
 		component_names.remove(0)
@@ -107,18 +107,18 @@ func __bind_to_iterator(entity: Node, query_name: String, component_names: Array
 		if binds.size() == component_names.size() - number_of_groups:
 			entity.add_to_group(query_name)
 			entity.set_meta(query_name + "#", binds)
-			entity.set_meta(query_name + "$", systems)
 			entity.set_meta(_QUERY_NAMES, query_names)
+			entity.set_meta(query_name + "$", system_instances)
 			query_names.push_back(query_name)
 			if query_name in _query_cache:
 				var cache := _query_cache[query_name] as Array
 				cache.push_back(entity)
-	var system_inst_name := entity.name + query_name
+	var system_instance_name := entity.name + query_name
 	for system_ref in subscribers:
 		var system := system_ref[_SYSTEM_CLASS] as Object
-		if system.has_meta(system_inst_name):
+		if system.has_meta(system_instance_name):
 			continue
-		systems.push_back(system)
+		system_instances.push_back(system)
 		if system.has_method("new"):
 			var system_inst := system.new() as Object
 			system_inst.set("parent", entity)
@@ -126,13 +126,13 @@ func __bind_to_iterator(entity: Node, query_name: String, component_names: Array
 			for component in binds:
 				var bind_name := _regex.sub(component.name, "_$1", true).to_lower()
 				system_inst.set(bind_name.substr(1, bind_name.length()), component)
-			system.set_meta(system_inst_name, system_inst)
+			system.set_meta(system_instance_name, system_inst)
 			iterator.add_child(system_inst)
 		else:
 			binds = binds.duplicate()
 			binds.push_front(entity)
 			system.callv(system_ref[_SHARED_VAR], binds)
-			system.set_meta(system_inst_name, system)
+			system.set_meta(system_instance_name, system)
 
 
 # API
@@ -200,28 +200,27 @@ func _entity_component_added(_new_component: Node, entity) -> void:
 	__bind_to_iterators(entity)
 
 
-func _entity_component_removed(entity: Node, component: Node, query_names: Array) -> void:
-	var component_name := component.name
+func _entity_component_removed(entity: Node, component_name: String, query_names: Array) -> void:
 	entity.remove_meta("$" + component_name)
 	for query_name in query_names:
 		if not component_name in query_name:
 			continue
-		var system_inst_name := entity.name + query_name as String
-		var systems := entity.get_meta(query_name + "$", []) as Array
+		var system_instances := entity.get_meta(query_name + "$", []) as Array
 		entity.remove_meta(query_name + "#")
 		entity.remove_meta(query_name + "$")
 		entity.remove_from_group(query_name)
 		if query_name in _query_cache:
 			var cache := _query_cache[query_name] as Array
 			cache.erase(entity)
-		for system in systems:
-			if not system.has_meta(system_inst_name):
+		var system_instance_name := entity.name + query_name as String
+		for system in system_instances:
+			if not system.has_meta(system_instance_name):
 				continue
-			var system_inst := system.get_meta(system_inst_name) as Object
-			system.remove_meta(system_inst_name)
+			var system_inst := system.get_meta(system_instance_name) as Object
+			system.remove_meta(system_instance_name)
 			if is_instance_valid(system_inst) and system_inst != system:
 				system_inst.call_deferred("free")
-		systems.clear()
+		system_instances.clear()
 
 
 func _init() -> void:

@@ -929,7 +929,7 @@ namespace SysError99
                     binds.Add(component);
                     if (!entity.IsConnected("tree_exited", Self, nameof(_EntityComponentRemoved)))
                     {
-                        component.Connect("tree_exited", Self, nameof(_EntityComponentRemoved), new Godot.Collections.Array { entity, queryNames, componentName }, (uint)ConnectFlags.Oneshot);
+                        component.Connect("tree_exited", Self, nameof(_EntityComponentRemoved), new Godot.Collections.Array { entity, componentName, queryNames }, (uint)ConnectFlags.Oneshot);
                     }
                 }
                 if (binds.Count == componentNames.Count)
@@ -1267,7 +1267,7 @@ namespace SysError99
             BindToGroups(entity);
         }
 
-        private void _EntityComponentRemoved(Node entity, Godot.Collections.Array queryNames, string componentName)
+        private void _EntityComponentRemoved(Node entity, string componentName, Godot.Collections.Array queryNames)
         {
             foreach (string queryName in queryNames)
             {
