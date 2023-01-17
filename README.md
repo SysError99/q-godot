@@ -187,7 +187,7 @@ onready var query := QGodot.query(["KinematicBody2D", "Icon", "enemy"])
 ---
 
 ## Binding Query With Instantiable References (GDScript Only)
-Sometimes you wanted to iterate through nodes but using instantiable classes. This will slightly helps on speed since it doesn't require constant using `get_meta()` to get sub nodes. However, this will increase memory usage, and slightly tricky to use.
+Sometimes you wanted to iterate through nodes but using instantiable classes. This will slightly helps on speed since it doesn't require constant use of `get_meta()` to get sub nodes. However, this will increase memory usage, and slightly tricky to use.
 
 *Note: when querying, variable bindings will use `snake_case`. Two variables `parent`, and `shared` will be reserved for parent node binding and shared variable binding repectively.*
 
