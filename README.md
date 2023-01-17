@@ -21,69 +21,57 @@ Now we can have our first system that will control three nodes. First, create a 
 
 ![image](https://user-images.githubusercontent.com/17522480/212734669-fdf68bf6-7db4-440f-9306-254e4a719ffb.png)
 
+Let's 'subscribe' to our first query!:
 
-Then, we will start writing our first iterator class that is instantiable.:
 ```gdscript
 extends Node2D
 
-
-class MovementIterator extends Node:
-    const TARGET = Vector2(512, 300) # Target position that node needs to move into.
-    var parent: KinematicBody2D # Parent node binder, must be properly casted to parent node type.
-    func _process(delta):
-        # Simple movement script.
-        var vel := parent.position.direction_to(TARGET) * 10.0
-        parent.move_and_slide(vel)
-        parent.look_at(TARGET)
+# First element in the query will be 'main class name' of parent node.
+onready var query := QGodot.query(["KinematicBody2D"])
 ```
 
-Now, on `_ready()` block, we can bind our iterator:
+Now we can iterate through our subscribed query in `_process()` :
 
 ```gdscript
-func _ready():
-    QGodot.bind_query(
-        # Array of all nodes you want to query. First element must be 'main class name' of parent node.
-        # In this case 'KinematicBody2D' (it doesn't care about node name)
-        ["KinematicBody2D"], 
-        MovementIterator
-    )
+const TARGET = Vector2(512,300)
+
+func _process(_delta: float) -> void:
+    for entity in query:
+		var vel := (entity.position.direction_to(TARGET) * 10.0) as Vector2
+		entity.move_and_slide(vel)
+		entity.look_at(TARGET)
 ```
 
-In the end, script should be something like this:
+The rest of code should be something like this:
 
-![image](https://user-images.githubusercontent.com/17522480/212736011-6d8a6cd5-9439-4d2d-bebf-bba0c098b2ee.png)
+![image](https://user-images.githubusercontent.com/17522480/212868982-3918b69c-7f66-40a5-a8a0-cd91be2359c9.png)
 
-When you start running the script, voila!
+When you start running the game, voila!
 
 ![image](https://user-images.githubusercontent.com/17522480/212736180-a8f69a45-ba88-4159-87ef-dba16b5f130b.png)
 
-Now, we wanted to change `Icon` size by code. On `_ready()` function, we will add node name into the array that is used for querying:
+Now, we wanted constantly scale icon size by making changes on the `Icon` node. Let's make change on the query and add one more node to query:
 
 ```gdscript
-    QGodot.bind_query(
-        # Again, first element will always be 'main class name' of parent node.
-        # Other sub nodes (components) will use node names. In this case 'Icon'.
-        ["KinematicBody2D", "Icon"],
-        MovementIterator
-    )
+# Unlike first element, you need to add node names next to first element, NOT the main class name.
+onready var query := QGodot.query(["KinematicBody2D", "Icon"])
 ```
 
-On `MovementIterator`, we will add binder and also icon scaling script:
+Then, on the `_process()` loop, we can retrieve component by using `get_meta()` on the entity node:
 
 ```gdscript
-    var icon: Sprite # Binder variable, must be converted to 'snake_case'.
-    # For example, if a node name is 'PlayerStatus', it will be 'player_status'.
-    # If it's 'Node2D', then it will be 'node_2d'.
-    func _ready():
-        # Simple scaling script
-        icon.scale = Vector2.ONE * 4
+func _process(_delta: float) -> void:
+    for entity in query:
+        # Whnh querying by 'get_meta()', you must add dollar sign ('$') in front of node name.
+        var icon := entity.get_meta("$Icon") as Sprite
+        icon.scale = icon.scale * 1.01
 ```
 
-The rest of the script should be something like this:
+The rest of code now should be something like this:
 
-![image](https://user-images.githubusercontent.com/17522480/212739262-6c690840-22bc-4666-bd82-410c483606de.png)
+![image](https://user-images.githubusercontent.com/17522480/212878427-64c624a9-2e04-46e8-95ae-aa7972c76fad.png)
 
-When we start the project again, the icon is now scaled!
+When we start the project again, the icon now scales indefinitely!
 
 ![image](https://user-images.githubusercontent.com/17522480/212738843-e2db606d-1c83-4f79-b335-f7a972cc3d5a.png)
 
@@ -92,12 +80,12 @@ When we start the project again, the icon is now scaled!
 ## Quickstart (C#)
 Importing is similar to GDScript variant, but instead it will be `QGodotSharp.cs` for script, and `QGodotSharp` for class.
 
-Unlike GDScript variant, C# version doesn't need any of binder class, and instead just iterate list of classes directly:
+Unlike GDScript, C# version utilises C#'s `Tuple` to query nodes. Again, first element will always be class reference of parent node:
 
 ```cs
 public override void _Ready()
 {
-    await ToSignal(GetTree(), "idle_frame"); // Must wait at least one frame before query can occur
+    await ToSignal(GetTree(), "idle_frame"); // On '_Ready()', it must wait at least one frame before query can occur
     foreach (var (parent, sprite) in QGodotSharp.Query<KinematicBody2D, Sprite>())
     {
         sprite.Scale = Vector2.One * 4f;
@@ -149,18 +137,6 @@ QGodotSharp.RegisterAsScene(myTargetNode);
 
 ---
 
-## Iteration (GDScript)
-Sometimes it's necessary to directly iterate through query. This can be addressed by using `query()` function. However, this function is very constly in terms of performance, and has limitations, such as, it has no automatic bindings, and requires parent node to be fully set up.
-
-```gdscript
-yield(get_tree(), "idle_frame") # If the script loads for first time, you may need to wait at least one frame.
-for node in QGodot.query(["KinematicBody2D", "Icon"]):
-    var parent: KinematicBody2D = node
-    var icon := parent.get_node("Icon") as Sprite
-```
-
----
-
 ## One-shot Query Binding (GDScript Only)
 Sometimes you don't really want to iterate all nodes in every given frame, such as, you wanted to do event-driven programming (using `Signal`), you can do one-shot binding instead:
 
@@ -192,6 +168,18 @@ Sometimes, you don't really want all systems in the game to run all the time in 
 ```gdscript
 QGodot.bind_query_to_current_scene(
     ["KinematicBody2D", "Icon"],
-    MovementIterator,
+    self,
+    "entity_entered"
 )
+```
+
+---
+
+## Using Godot Groups In Query (GDScript Only)
+You can also add 'groups' into the query if you wanted to have better node filtering However, first element in the query array still needs to be main class name of parent node.
+
+Example, querying `KinematicBody2D` with `Sprite` node named 'Icon', in the group 'enemy':
+
+```gdscript
+onready var query := QGodot.query(["KinematicBody2D", "Icon", "enemy"])
 ```
