@@ -98,6 +98,7 @@ func __bind_to_iterator(entity: Node, query_name: String, component_names: Array
 				return
 			var bind_name := _regex.sub(component_name, "_$1", true).to_lower()
 			component.set_meta(_COMP_NAME, bind_name.substr(1, bind_name.length()))
+			component.connect("tree_exited", self, "_entity_component_removed", [ entity, query_name, systems ], CONNECT_ONESHOT)
 			binds.push_back(component)
 		if binds.size() == component_names.size() - number_of_groups:
 			entity.add_to_group(query_name)
@@ -106,9 +107,6 @@ func __bind_to_iterator(entity: Node, query_name: String, component_names: Array
 			if query_name in _query_cache:
 				var cache := _query_cache[query_name] as Array
 				cache.push_back(entity)
-			for component_ref in binds:
-				var component := component_ref as Node
-				component.connect("tree_exited", self, "_entity_component_removed", [ entity, query_name, systems ], CONNECT_ONESHOT)
 	for system_ref in subscribers:
 		var system := system_ref[_SYSTEM_CLASS] as Object
 		if not system.has_method("new"):

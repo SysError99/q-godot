@@ -924,16 +924,13 @@ namespace SysError99
                 foreach (var componentName in componentNames)
                 {
                     if (entity.GetNodeOrNull(componentName) is not Node component) return;
+                    component.Connect("tree_exited", Self, nameof(_EntityComponentRemoved), new Godot.Collections.Array { entity, component, groupObject, queryName }, (uint)ConnectFlags.Oneshot);
                     component.AddToGroup(_Component);
                     binds.Add(component);
                 }
                 if (binds.Count == componentNames.Count)
                 {
                     entity.SetMeta(queryName, binds);
-                    foreach (Node component in binds)
-                    {
-                        component.Connect("tree_exited", Self, nameof(_EntityComponentRemoved), new Godot.Collections.Array { entity, component, groupObject, queryName }, (uint)ConnectFlags.Oneshot);
-                    }
                 }
             }
             binds.Insert(0, entity);
