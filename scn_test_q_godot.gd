@@ -8,6 +8,7 @@ var tween = Tween.new()
 
 
 # class Movement extends Node:
+#	const TARGET = Vector2(512, 300)
 # 	var parent: KinematicBody2D
 # 	var sprite: Sprite
 # 	func _process(_delta: float) -> void:
