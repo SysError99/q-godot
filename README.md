@@ -183,3 +183,51 @@ Example, querying `KinematicBody2D` with `Sprite` node named 'Icon', in the grou
 ```gdscript
 onready var query := QGodot.query(["KinematicBody2D", "Icon", "enemy"])
 ```
+
+---
+
+## Binding Query With Instantiable References (GDScript Only)
+Sometimes you wanted to iterate through nodes but using instantiable classes. This will slightly helps on speed since it doesn't require constant using `get_meta()` to get sub nodes. However, this will increase memory usage, and slightly tricky to use.
+
+*Note: when querying, variable bindings will use `snake_case`. Two variables `parent`, and `shared` will be reserved for parent node binding and shared variable binding repectively.*
+
+Which means, `QGodot.bind_query()` will help us in this case.
+
+
+```gdscript
+extends Node
+var count := 0
+
+
+func _ready() -> void:
+	QGodot.bind_queqy(
+		["KinematicBody2D", "Icon"], # Node list. Use 'PascalCase' for every nodes,
+		# including main class name of first parameter in the query array, in exception for 'groups',
+		# which still can be 'snake_case'.
+		Movement,
+		self # Use this instance as shared object for this query.
+	)
+
+
+class Movement extends Node:
+	const TARGET = Vector2(512, 300)
+	
+	# Reserved keywords
+	var parent: KinematicBody2D
+	var shared: Node
+	
+	# Node names, will be converted to 'snake_case'!
+	# Example 1: node name is 'SomeGoodStatus', it will be converted to 'some_good_states'.
+	# Example 2: node name is 'Node2D', 'it will be converted to 'node_2d'.
+	# In this case, node name is 'Icon', which means, it will be converted to just 'icon'.
+	var icon: Sprite
+	
+	func _ready() -> void:
+		shared.count += 1
+	
+	func _process(_delta: float) -> void:
+		var vel := (parent.position.direction_to(TARGET) * 10.0) as Vector2
+ 		parent.move_and_slide(vel)
+ 		parent.look_at(TARGET)
+ 		sprite.scale *= 1.001
+```
