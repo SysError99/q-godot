@@ -98,6 +98,7 @@ func __bind_to_iterator(entity: Node, query_name: String, component_names: Array
 				return
 			var bind_name := _regex.sub(component_name, "_$1", true).to_lower()
 			component.set_meta(_COMP_NAME, bind_name.substr(1, bind_name.length()))
+			entity.set_meta("$" + component_name, component) # TODO: Find a way to clear when component exits.
 			binds.push_back(component)
 			if not component.is_connected("tree_exited", self, "_entity_component_removed"):
 				component.connect("tree_exited", self, "_entity_component_removed", [ entity, query_name, systems ], CONNECT_ONESHOT)
