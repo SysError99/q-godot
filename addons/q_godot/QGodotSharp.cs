@@ -5,7 +5,7 @@ namespace SysError99
 {
     public class QGodotSharp : Node
     {
-        private const string _Component = "#C";
+        private const string _QueryNames = "#QN";
         private const string _RegisteredScene = "#RS";
         private const string _UnregisteredScene = "registered_scene";
 
@@ -915,27 +915,30 @@ namespace SysError99
         private static void BindToGroup(Node entity, string queryName, List<string> componentNames)
         {
             if (entity.GetType().Name != componentNames[0]) return;
-            var binds = entity.GetMeta(queryName, new Godot.Collections.Array()) as Godot.Collections.Array;
+            var binds = entity.GetMeta(queryName + "#", new Godot.Collections.Array()) as Godot.Collections.Array;
+            var queryNames = entity.GetMeta(_QueryNames, new Godot.Collections.Array()) as Godot.Collections.Array;
             var groupObjects = entity.GetMeta(queryName + "$", new Godot.Collections.Array()) as Godot.Collections.Array;
             var groupObject = new GroupObject();
-            if (binds.Count == 0)
+            if (!queryNames.Contains(queryName))
             {
                 componentNames = new List<string>(componentNames);
                 componentNames.RemoveAt(0);
                 foreach (var componentName in componentNames)
                 {
                     if (entity.GetNodeOrNull(componentName) is not Node component) return;
-                    component.AddToGroup(_Component);
                     binds.Add(component);
                     if (!entity.IsConnected("tree_exited", Self, nameof(_EntityComponentRemoved)))
                     {
-                        component.Connect("tree_exited", Self, nameof(_EntityComponentRemoved), new Godot.Collections.Array { entity, component, groupObjects, queryName }, (uint)ConnectFlags.Oneshot);
+                        component.Connect("tree_exited", Self, nameof(_EntityComponentRemoved), new Godot.Collections.Array { entity, queryNames, componentName }, (uint)ConnectFlags.Oneshot);
                     }
                 }
                 if (binds.Count == componentNames.Count)
                 {
-                    entity.SetMeta(queryName, binds);
+                    entity.AddToGroup(queryName);
+                    entity.SetMeta(queryName + "#", binds);
+                    entity.SetMeta(_QueryNames, queryNames);
                     entity.SetMeta(queryName + "$", groupObjects);
+                    queryNames.Add(queryName);
                 }
             }
             binds.Insert(0, entity);
@@ -1254,10 +1257,7 @@ namespace SysError99
         {
             foreach (Node component in entity.GetChildren())
             {
-                if (component.IsInGroup(_Component))
-                {
-                    component.EmitSignal("tree_exited");
-                }
+                component.EmitSignal("tree_exited");
             }
         }
 
@@ -1267,33 +1267,42 @@ namespace SysError99
             BindToGroups(entity);
         }
 
-        private void _EntityComponentRemoved(Node entity, Node component, Godot.Collections.Array groupObjects, string queryName)
+        private void _EntityComponentRemoved(Node entity, Godot.Collections.Array queryNames, string componentName)
         {
-            component.RemoveFromGroup(_Component);
-            entity.RemoveMeta(queryName);
-            foreach (GroupObject groupObject in groupObjects)
+            foreach (string queryName in queryNames)
             {
-                switch (groupObject)
+                if (!queryName.Contains(componentName))
                 {
-                    case GroupObject0 groupObject0: Groups0[queryName].Remove(groupObject0); break;
-                    case GroupObject1 groupObject1: Groups1[queryName].Remove(groupObject1); break;
-                    case GroupObject2 groupObject2: Groups2[queryName].Remove(groupObject2); break;
-                    case GroupObject3 groupObject3: Groups3[queryName].Remove(groupObject3); break;
-                    case GroupObject4 groupObject4: Groups4[queryName].Remove(groupObject4); break;
-                    case GroupObject5 groupObject5: Groups5[queryName].Remove(groupObject5); break;
-                    case GroupObject6 groupObject6: Groups6[queryName].Remove(groupObject6); break;
-                    case GroupObject7 groupObject7: Groups7[queryName].Remove(groupObject7); break;
-                    case GroupObject8 groupObject8: Groups8[queryName].Remove(groupObject8); break;
-                    case GroupObject9 groupObject9: Groups9[queryName].Remove(groupObject9); break;
-                    case GroupObject10 groupObject10: Groups10[queryName].Remove(groupObject10); break;
-                    case GroupObject11 groupObject11: Groups11[queryName].Remove(groupObject11); break;
-                    case GroupObject12 groupObject12: Groups12[queryName].Remove(groupObject12); break;
-                    case GroupObject13 groupObject13: Groups13[queryName].Remove(groupObject13); break;
-                    case GroupObject14 groupObject14: Groups14[queryName].Remove(groupObject14); break;
-                    case GroupObject15 groupObject15: Groups15[queryName].Remove(groupObject15); break;
-                    case GroupObject16 groupObject16: Groups16[queryName].Remove(groupObject16); break;
+                    continue;
                 }
-                groupObject.Free();
+                var groupObjects = entity.GetMeta(queryName + "$", new Godot.Collections.Array()) as Godot.Collections.Array;
+                entity.RemoveMeta(queryName + "#");
+                entity.RemoveMeta(queryName + "$");
+                entity.RemoveFromGroup(queryName);
+                foreach (GroupObject groupObject in groupObjects)
+                {
+                    switch (groupObject)
+                    {
+                        case GroupObject0 groupObject0: Groups0[queryName].Remove(groupObject0); break;
+                        case GroupObject1 groupObject1: Groups1[queryName].Remove(groupObject1); break;
+                        case GroupObject2 groupObject2: Groups2[queryName].Remove(groupObject2); break;
+                        case GroupObject3 groupObject3: Groups3[queryName].Remove(groupObject3); break;
+                        case GroupObject4 groupObject4: Groups4[queryName].Remove(groupObject4); break;
+                        case GroupObject5 groupObject5: Groups5[queryName].Remove(groupObject5); break;
+                        case GroupObject6 groupObject6: Groups6[queryName].Remove(groupObject6); break;
+                        case GroupObject7 groupObject7: Groups7[queryName].Remove(groupObject7); break;
+                        case GroupObject8 groupObject8: Groups8[queryName].Remove(groupObject8); break;
+                        case GroupObject9 groupObject9: Groups9[queryName].Remove(groupObject9); break;
+                        case GroupObject10 groupObject10: Groups10[queryName].Remove(groupObject10); break;
+                        case GroupObject11 groupObject11: Groups11[queryName].Remove(groupObject11); break;
+                        case GroupObject12 groupObject12: Groups12[queryName].Remove(groupObject12); break;
+                        case GroupObject13 groupObject13: Groups13[queryName].Remove(groupObject13); break;
+                        case GroupObject14 groupObject14: Groups14[queryName].Remove(groupObject14); break;
+                        case GroupObject15 groupObject15: Groups15[queryName].Remove(groupObject15); break;
+                        case GroupObject16 groupObject16: Groups16[queryName].Remove(groupObject16); break;
+                    }
+                    groupObject.Free();
+                }
             }
         }
 

@@ -8,6 +8,7 @@ const _COMP_NAME = "#CN"
 const _ITERATOR = "#I"
 const _REGISTERED_SCENE = "#RS"
 const _QUERY = "#Q"
+const _QUERY_NAMES = "#QN"
 const _SHARED_VAR = 1
 const _SYSTEM_CLASS = 0
 const _UNREGISTERED_SCENE = "registered_scene"
@@ -84,9 +85,10 @@ func __bind_to_iterators(entity: Node):
 func __bind_to_iterator(entity: Node, query_name: String, component_names: Array, iterator: Iterator, subscribers: Array) -> void:
 	if entity.get_class() != component_names[0]:
 		return
-	var binds := entity.get_meta(query_name, []) as Array
+	var binds := entity.get_meta(query_name + "#", []) as Array
 	var systems := entity.get_meta(query_name + "$", []) as Array
-	if binds.size() == 0:
+	var query_names := entity.get_meta(_QUERY_NAMES, []) as Array
+	if not query_name in query_names:
 		component_names = component_names.duplicate()
 		component_names.remove(0)
 		var number_of_groups := 0
@@ -102,11 +104,13 @@ func __bind_to_iterator(entity: Node, query_name: String, component_names: Array
 			entity.set_meta("$" + component_name, component) # TODO: Find a way to clear when component exits.
 			binds.push_back(component)
 			if not component.is_connected("tree_exited", self, "_entity_component_removed"):
-				component.connect("tree_exited", self, "_entity_component_removed", [ entity, query_name, systems ], CONNECT_ONESHOT)
+				component.connect("tree_exited", self, "_entity_component_removed", [ entity, query_names, component_name ], CONNECT_ONESHOT)
 		if binds.size() == component_names.size() - number_of_groups:
 			entity.add_to_group(query_name)
-			entity.set_meta(query_name, binds)
+			entity.set_meta(query_name + "#", binds)
 			entity.set_meta(query_name + "$", systems)
+			entity.set_meta(_QUERY_NAMES, query_names)
+			query_names.push_back(query_name)
 			if query_name in _query_cache:
 				var cache := _query_cache[query_name] as Array
 				cache.push_back(entity)
@@ -194,18 +198,23 @@ func _entity_component_added(_new_component: Node, entity) -> void:
 	__bind_to_iterators(entity)
 
 
-func _entity_component_removed(entity: Node, query_name: String, systems: Array) -> void:
-	entity.remove_meta(query_name)
-	entity.remove_from_group(query_name)
-	if query_name in _query_cache:
-		var cache := _query_cache[query_name] as Array
-		cache.erase(entity)
-	for system in systems:
-		if system is Node:
-			system.call_deferred("queue_free")
-		else:
-			system.call_deferred("free")
-	systems.clear()
+func _entity_component_removed(entity: Node, query_names: Array, component_name: String) -> void:
+	for query_name in query_names:
+		if not component_name in query_name:
+			continue
+		var systems := entity.get_meta(query_name + "$", []) as Array
+		entity.remove_meta(query_name + "#")
+		entity.remove_meta(query_name + "$")
+		entity.remove_from_group(query_name)
+		if query_name in _query_cache:
+			var cache := _query_cache[query_name] as Array
+			cache.erase(entity)
+		for system in systems:
+			if system is Node:
+				system.call_deferred("queue_free")
+			else:
+				system.call_deferred("free")
+		systems.clear()
 
 
 func _init() -> void:
