@@ -5,11 +5,11 @@ const _COMP_ZERO_ERR = "'component_names' must have at least one member!"
 
 
 const _COMP_NAME = "#CN"
-const _FUNC_NAME = 1
 const _ITERATOR = "#I"
 const _REGISTERED_SCENE = "#RS"
 const _QUERY = "#Q"
 const _QUERY_NAMES = "#QN"
+const _SHARED_VAR = 1
 const _SYSTEM_CLASS = 0
 const _SYSTEM_BASE_CLASS = "#BC"
 const _UNREGISTERED_SCENE = "registered_scene"
@@ -27,6 +27,7 @@ class Iterator extends Node:
 
 
 var _query_cache := {}
+var _regex := RegEx.new()
 var _root_ready := false
 var _root: Viewport
 var _templates := {}
@@ -47,13 +48,13 @@ func __get_query_name(component_names: Array) -> String:
 
 
 # API
-func bind_query(component_names: Array, system: Object, func_name: String = "", to_current_scene: bool = false) -> void:
+func bind_query(component_names: Array, system: Object, shared = null, to_current_scene: bool = false) -> void:
 	if not _root_ready:
 		yield(_root, "ready")
 	assert(component_names.size() > 0, _COMP_ZERO_ERR)
 	var query_name := __get_query_name(component_names)
 	var iterator := __get_iterator(query_name)
-	var new_subscriber := [system, func_name]
+	var new_subscriber := [system, shared]
 	iterator.subscribers.push_back(new_subscriber)
 	if to_current_scene:
 		iterator.current_scene_subscribers.push_back(new_subscriber)
@@ -61,8 +62,8 @@ func bind_query(component_names: Array, system: Object, func_name: String = "", 
 
 
 # API
-func bind_query_to_current_scene(component_names: Array, system: Object, func_name: String = "") -> void:
-	bind_query(component_names, system, func_name, true)
+func bind_query_to_current_scene(component_names: Array, system: Object, shared = null) -> void:
+	bind_query(component_names, system, shared, true)
 
 
 func __build_query(query_name: String, component_names: Array, iterator: Object, subscribers: Array) -> void:
@@ -112,15 +113,25 @@ func __bind_to_iterator(entity: Node, query_name: String, component_names: Array
 			if query_name in _query_cache:
 				var cache := _query_cache[query_name] as Array
 				cache.push_back(entity)
+	var system_inst_name := entity.name + query_name
 	for system_ref in subscribers:
 		var system := system_ref[_SYSTEM_CLASS] as Object
-		if system.get_meta(entity.name + query_name, false):
+		if system.has_meta(system_inst_name):
 			continue
-		binds = binds.duplicate()
-		binds.push_front(entity)
-		systems.push_back(system)
-		system.callv(system_ref[_FUNC_NAME], binds)
-		system.set_meta(entity.name + query_name, true)
+		if system.has_method("new"):
+			system = system.new()
+			system.set("parent", entity)
+			system.set("shared", system_ref[_SHARED_VAR])
+			for component in binds:
+				var bind_name := _regex.sub(component.name, "_$1", true).to_lower()
+				system.set(bind_name.substr(1, bind_name.length()), component)
+			iterator.add_child(system)
+		else:
+			binds = binds.duplicate()
+			binds.push_front(entity)
+			systems.push_back(system)
+			system.callv(system_ref[_SHARED_VAR], binds)
+		system.set_meta(system_inst_name, system)
 
 
 # API
@@ -192,6 +203,7 @@ func _entity_component_removed(entity: Node, component: Node, query_names: Array
 	for query_name in query_names:
 		if not component_name in query_name:
 			continue
+		var system_inst_name := entity.name + query_name as String
 		var systems := entity.get_meta(query_name + "$", []) as Array
 		entity.remove_meta(query_name + "#")
 		entity.remove_meta(query_name + "$")
@@ -200,8 +212,17 @@ func _entity_component_removed(entity: Node, component: Node, query_names: Array
 			var cache := _query_cache[query_name] as Array
 			cache.erase(entity)
 		for system in systems:
-			system.remove_meta(entity.name + query_name)
+			if not system.has_meta(system_inst_name):
+				continue
+			var system_inst := system.get_meta(system_inst_name) as Object
+			system.remove_meta(system_inst_name)
+			if is_instance_valid(system_inst) and system_inst != system:
+				system_inst.call_deferred("free")
 		systems.clear()
+
+
+func _init() -> void:
+	_regex.compile("((?<=[a-z])[A-Z]|[A-Z](?=[a-z])|[0-9])")
 
 
 func _enter_tree() -> void:
