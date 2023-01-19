@@ -217,7 +217,13 @@ func _entity_component_removed(entity: Node, component_name: String, bound_queri
 			system.remove_meta(system_instance_name)
 			if is_instance_valid(system_inst) and system_inst != system:
 				system_inst.call_deferred("free")
+		__array_erase_deferred(bound_queries, query_name);
 		system_instances.clear()
+
+
+func __array_erase_deferred(array: Array, element) -> void:
+	yield(get_tree(), "idle_frame")
+	array.erase(element)
 
 
 func _init() -> void:

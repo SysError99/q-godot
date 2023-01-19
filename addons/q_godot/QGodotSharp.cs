@@ -1238,7 +1238,7 @@ namespace SysError99
                 foreach (Node entity in scene.GetChildren())
                 {
                     if (entity.IsInGroup(_RegisteredScene)) continue;
-                    BindToQuery(entity, queryName);
+                    BindToQueryObjectList(entity, queryName);
                 }
             }
         }
@@ -1296,18 +1296,18 @@ namespace SysError99
         private static void RegisterEntity(Node entity)
         {
             entity.Connect("child_entered_tree", Self, nameof(_EntityComponentAdded), new Godot.Collections.Array { entity });
-            BindToQueries(entity);
+            BindToQueryObjectLists(entity);
         }
 
-        private static void BindToQueries(Node entity)
+        private static void BindToQueryObjectLists(Node entity)
         {
             foreach (var subTemplate in ComponentNames)
             {
-                BindToQuery(entity, subTemplate.Key);
+                BindToQueryObjectList(entity, subTemplate.Key);
             }
         }
 
-        private static void BindToQuery(Node entity, string queryName)
+        private static void BindToQueryObjectList(Node entity, string queryName)
         {
             var componentNames = ComponentNames[queryName];
             if (entity.GetType().Name != componentNames[0]) return;
@@ -1669,7 +1669,7 @@ namespace SysError99
         private void _EntityComponentAdded(Node newComponent, Node entity)
         {
             _EntityExitingScene(entity);
-            BindToQueries(entity);
+            BindToQueryObjectLists(entity);
         }
 
         private void _EntityComponentRemoved(Node entity, string componentName, Godot.Collections.Array boundQueries)
@@ -1708,8 +1708,15 @@ namespace SysError99
                     }
                     queryObject.Free();
                 }
+                ArrayEraseDeferred(boundQueries, queryName);
                 queryObjects.Clear();
             }
+        }
+
+        private async void ArrayEraseDeferred(Godot.Collections.Array array, object element)
+        {
+            await ToSignal(MainTree, "idle_frame");
+            array.Remove(element);
         }
 
         public override void _Ready()
