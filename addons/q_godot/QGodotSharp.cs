@@ -1282,7 +1282,7 @@ namespace SysError99
             }
         }
 
-        private static void RegisterAsScene(Node scene)
+        public static void RegisterAsScene(Node scene)
         {
             scene.AddToGroup(_RegisteredScene);
             scene.Connect("child_entered_tree", Self, nameof(_EntityEnteredScene));
