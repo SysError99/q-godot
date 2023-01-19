@@ -5,7 +5,7 @@ namespace SysError99
 {
     public class QGodotSharp : Node
     {
-        private const string _QueryNames = "#QN";
+        private const string _BoundQueries = "#QN";
         private const string _RegisteredScene = "#RS";
         private const string _UnregisteredScene = "registered_scene";
 
@@ -29,7 +29,7 @@ namespace SysError99
         private static Dictionary<string, List<QueryObject14>> Queries14 = new();
         private static Dictionary<string, List<QueryObject15>> Queries15 = new();
         private static Dictionary<string, List<QueryObject16>> Queries16 = new();
-        private static Dictionary<string, List<string>> Templates = new();
+        private static Dictionary<string, List<string>> ComponentNames = new();
 
         #region Query
 
@@ -44,7 +44,7 @@ namespace SysError99
             }
             else
             {
-                BuildQuery(
+                QueryBuild(
                     queryName,
                     new List<string>
                     {
@@ -74,7 +74,7 @@ namespace SysError99
             }
             else
             {
-                BuildQuery(
+                QueryBuild(
                     queryName,
                     new List<string>
                     {
@@ -107,7 +107,7 @@ namespace SysError99
             }
             else
             {
-                BuildQuery(
+                QueryBuild(
                     queryName,
                     new List<string>
                     {
@@ -143,7 +143,7 @@ namespace SysError99
             }
             else
             {
-                BuildQuery(
+                QueryBuild(
                     queryName,
                     new List<string>
                     {
@@ -182,7 +182,7 @@ namespace SysError99
             }
             else
             {
-                BuildQuery(
+                QueryBuild(
                     queryName,
                     new List<string>
                     {
@@ -224,7 +224,7 @@ namespace SysError99
             }
             else
             {
-                BuildQuery(
+                QueryBuild(
                     queryName,
                     new List<string>
                     {
@@ -269,7 +269,7 @@ namespace SysError99
             }
             else
             {
-                BuildQuery(
+                QueryBuild(
                     queryName,
                     new List<string>
                     {
@@ -317,7 +317,7 @@ namespace SysError99
             }
             else
             {
-                BuildQuery(
+                QueryBuild(
                     queryName,
                     new List<string>
                     {
@@ -368,7 +368,7 @@ namespace SysError99
             }
             else
             {
-                BuildQuery(
+                QueryBuild(
                     queryName,
                     new List<string>
                     {
@@ -422,7 +422,7 @@ namespace SysError99
             }
             else
             {
-                BuildQuery(
+                QueryBuild(
                     queryName,
                     new List<string>
                     {
@@ -479,7 +479,7 @@ namespace SysError99
             }
             else
             {
-                BuildQuery(
+                QueryBuild(
                     queryName,
                     new List<string>
                     {
@@ -539,7 +539,7 @@ namespace SysError99
             }
             else
             {
-                BuildQuery(
+                QueryBuild(
                     queryName,
                     new List<string>
                     {
@@ -602,7 +602,7 @@ namespace SysError99
             }
             else
             {
-                BuildQuery(
+                QueryBuild(
                     queryName,
                     new List<string>
                     {
@@ -668,7 +668,7 @@ namespace SysError99
             }
             else
             {
-                BuildQuery(
+                QueryBuild(
                     queryName,
                     new List<string>
                     {
@@ -737,7 +737,7 @@ namespace SysError99
             }
             else
             {
-                BuildQuery(
+                QueryBuild(
                     queryName,
                     new List<string>
                     {
@@ -809,7 +809,7 @@ namespace SysError99
             }
             else
             {
-                BuildQuery(
+                QueryBuild(
                     queryName,
                     new List<string>
                     {
@@ -841,6 +841,20 @@ namespace SysError99
 
         #endregion
 
+        private static void QueryBuild(string queryName, in List<string> componentNames)
+        {
+            var registeredScenes = Self.GetTree().GetNodesInGroup(_RegisteredScene);
+            ComponentNames[queryName] = componentNames;
+            foreach (Node scene in registeredScenes)
+            {
+                foreach (Node entity in scene.GetChildren())
+                {
+                    if (entity.IsInGroup(_RegisteredScene)) continue;
+                    BindToQuery(entity, queryName);
+                }
+            }
+        }
+        
         public static async void ChangeScene(string path)
         {
             var currentScene = MainTree.CurrentScene;
@@ -888,36 +902,23 @@ namespace SysError99
             BindToQueries(entity);
         }
 
-        private static void BuildQuery(string queryName, in List<string> componentNames)
-        {
-            var registeredScenes = Self.GetTree().GetNodesInGroup(_RegisteredScene);
-            Templates[queryName] = componentNames;
-            foreach (Node scene in registeredScenes)
-            {
-                foreach (Node entity in scene.GetChildren())
-                {
-                    if (entity.IsInGroup(_RegisteredScene)) continue;
-                    BindToGroup(entity, queryName, componentNames);
-                }
-            }
-        }
-
         private static void BindToQueries(Node entity)
         {
-            foreach (var subTemplate in Templates)
+            foreach (var subTemplate in ComponentNames)
             {
-                BindToGroup(entity, subTemplate.Key, subTemplate.Value);
+                BindToQuery(entity, subTemplate.Key);
             }
         }
 
-        private static void BindToGroup(Node entity, string queryName, List<string> componentNames)
+        private static void BindToQuery(Node entity, string queryName)
         {
+            var componentNames = ComponentNames[queryName];
             if (entity.GetType().Name != componentNames[0]) return;
             var binds = entity.GetMeta(queryName + "#", new Godot.Collections.Array()) as Godot.Collections.Array;
-            var queryNames = entity.GetMeta(_QueryNames, new Godot.Collections.Array()) as Godot.Collections.Array;
+            var boundQueries = entity.GetMeta(_BoundQueries, new Godot.Collections.Array()) as Godot.Collections.Array;
             var queryObjects = entity.GetMeta(queryName + "$", new Godot.Collections.Array()) as Godot.Collections.Array;
             var queryObject = new QueryObject();
-            if (!queryNames.Contains(queryName))
+            if (!boundQueries.Contains(queryName))
             {
                 componentNames = new List<string>(componentNames);
                 componentNames.RemoveAt(0);
@@ -927,16 +928,16 @@ namespace SysError99
                     binds.Add(component);
                     if (!entity.IsConnected("tree_exited", Self, nameof(_EntityComponentRemoved)))
                     {
-                        component.Connect("tree_exited", Self, nameof(_EntityComponentRemoved), new Godot.Collections.Array { entity, componentName, queryNames }, (uint)ConnectFlags.Oneshot);
+                        component.Connect("tree_exited", Self, nameof(_EntityComponentRemoved), new Godot.Collections.Array { entity, componentName, boundQueries }, (uint)ConnectFlags.Oneshot);
                     }
                 }
                 if (binds.Count == componentNames.Count)
                 {
                     entity.AddToGroup(queryName);
                     entity.SetMeta(queryName + "#", binds);
-                    entity.SetMeta(_QueryNames, queryNames);
+                    entity.SetMeta(_BoundQueries, boundQueries);
                     entity.SetMeta(queryName + "$", queryObjects);
-                    queryNames.Add(queryName);
+                    boundQueries.Add(queryName);
                 }
             }
             binds.Insert(0, entity);
@@ -1265,9 +1266,9 @@ namespace SysError99
             BindToQueries(entity);
         }
 
-        private void _EntityComponentRemoved(Node entity, string componentName, Godot.Collections.Array queryNames)
+        private void _EntityComponentRemoved(Node entity, string componentName, Godot.Collections.Array boundQueries)
         {
-            foreach (string queryName in queryNames)
+            foreach (string queryName in boundQueries)
             {
                 if (!queryName.Contains(componentName))
                 {
