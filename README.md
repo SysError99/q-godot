@@ -137,7 +137,7 @@ QGodotSharp.RegisterAsScene(myTargetNode);
 
 ---
 
-## One-shot Query Binding (GDScript Only)
+## One-shot Query Binding
 Sometimes you don't really want to iterate all nodes in every given frame, such as, you wanted to do event-driven programming (using `Signal`), you can do one-shot binding instead:
 
 ```gdscript
@@ -160,9 +160,24 @@ func entity_entered(parent: KinematicBody2D, icon: Sprite) -> void:
     tween.start()
 ```
 
+On C# version is quite similar, however, array of node names will instead be replaced with C# `Tuple`s:
+
+```cs
+	//
+	QGodotSharp.BindQuery<KinematicBody2D, Sprite>(this, nameof(_EntityEnteredScene));
+	//
+
+public void _EntityEnteredScene(KinematicBody2D parent, Sprite sprite)
+{
+	GD.Print(parent.Name + " entered scene!");
+	sprite.Scale = Vector2.One * 4f;
+}
+
+```
+
 ---
 
-## Current Scene Query Binding (GDScript Only)
+## Current Scene Query Binding
 Sometimes, you don't really want all systems in the game to run all the time in all scenes. You can instead bind query using `bind_query_to_current_scene()`:
 
 ```gdscript
@@ -171,6 +186,12 @@ QGodot.bind_query_to_current_scene(
     self,
     "entity_entered"
 )
+```
+
+On C#, after second parameter of the function, add `true` after it:
+
+```cs
+QGodotSharp.BindQuery<KinematicBody2D, Sprite>(this, nameof(_EntityEnteredScene), true);
 ```
 
 ---
