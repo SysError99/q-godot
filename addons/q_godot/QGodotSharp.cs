@@ -30,13 +30,482 @@ namespace SysError99
         private static Dictionary<string, List<QueryObject15>> Queries15 = new();
         private static Dictionary<string, List<QueryObject16>> Queries16 = new();
         private static Dictionary<string, List<string>> ComponentNames = new();
+        private static Dictionary<string, List<SystemBinder>> SubscribedSystems = new();
+        private static Dictionary<string, List<SystemBinder>> CurrentSceneSubscribedSystems = new();
+
+        # region Query Bind
+
+        public static void BindQuery<T>(Object system, string functionName, bool toCurrentScene = false)
+            where T : Object
+        {
+            var componentNames = new List<string>
+            {
+                typeof(T).Name,
+            };
+            var queryName = GetQueryName(componentNames);
+            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+        }
+
+        public static void BindQuery<T0, T1>(Object system, string functionName, bool toCurrentScene = false)
+            where T0 : Object
+            where T1 : Object
+        {
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+            };
+            var queryName = GetQueryName(componentNames);
+            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+        }
+
+        public static void BindQuery<T0, T1, T2>(Object system, string functionName, bool toCurrentScene = false)
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+        {
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+            };
+            var queryName = GetQueryName(componentNames);
+            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+        }
+
+        public static void BindQuery<T0, T1, T2, T3>(Object system, string functionName, bool toCurrentScene = false)
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+        {
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+                typeof(T3).Name,
+            };
+            var queryName = GetQueryName(componentNames);
+            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+        }
+
+        public static void BindQuery<T0, T1, T2, T3, T4>(Object system, string functionName, bool toCurrentScene = false)
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+            where T4 : Object
+        {
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+                typeof(T3).Name,
+                typeof(T4).Name,
+            };
+            var queryName = GetQueryName(componentNames);
+            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+        }
+
+        public static void BindQuery<T0, T1, T2, T3, T4, T5>(Object system, string functionName, bool toCurrentScene = false)
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+            where T4 : Object
+            where T5 : Object
+        {
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+                typeof(T3).Name,
+                typeof(T4).Name,
+                typeof(T5).Name,
+            };
+            var queryName = GetQueryName(componentNames);
+            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+        }
+
+        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6>(Object system, string functionName, bool toCurrentScene = false)
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+            where T4 : Object
+            where T5 : Object
+            where T6 : Object
+        {
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+                typeof(T3).Name,
+                typeof(T4).Name,
+                typeof(T5).Name,
+                typeof(T6).Name,
+            };
+            var queryName = GetQueryName(componentNames);
+            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+        }
+
+        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7>(Object system, string functionName, bool toCurrentScene = false)
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+            where T4 : Object
+            where T5 : Object
+            where T6 : Object
+            where T7 : Object
+        {
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+                typeof(T3).Name,
+                typeof(T4).Name,
+                typeof(T5).Name,
+                typeof(T6).Name,
+                typeof(T7).Name,
+            };
+            var queryName = GetQueryName(componentNames);
+            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+        }
+
+        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8>(Object system, string functionName, bool toCurrentScene = false)
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+            where T4 : Object
+            where T5 : Object
+            where T6 : Object
+            where T7 : Object
+            where T8 : Object
+        {
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+                typeof(T3).Name,
+                typeof(T4).Name,
+                typeof(T5).Name,
+                typeof(T6).Name,
+                typeof(T7).Name,
+                typeof(T8).Name,
+            };
+            var queryName = GetQueryName(componentNames);
+            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+        }
+
+        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>(Object system, string functionName, bool toCurrentScene = false)
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+            where T4 : Object
+            where T5 : Object
+            where T6 : Object
+            where T7 : Object
+            where T8 : Object
+            where T9 : Object
+        {
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+                typeof(T3).Name,
+                typeof(T4).Name,
+                typeof(T5).Name,
+                typeof(T6).Name,
+                typeof(T7).Name,
+                typeof(T8).Name,
+                typeof(T9).Name,
+            };
+            var queryName = GetQueryName(componentNames);
+            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+        }
+
+        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(Object system, string functionName, bool toCurrentScene = false)
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+            where T4 : Object
+            where T5 : Object
+            where T6 : Object
+            where T7 : Object
+            where T8 : Object
+            where T9 : Object
+            where T10 : Object
+        {
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+                typeof(T3).Name,
+                typeof(T4).Name,
+                typeof(T5).Name,
+                typeof(T6).Name,
+                typeof(T7).Name,
+                typeof(T8).Name,
+                typeof(T9).Name,
+                typeof(T10).Name,
+            };
+            var queryName = GetQueryName(componentNames);
+            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+        }
+
+        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(Object system, string functionName, bool toCurrentScene = false)
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+            where T4 : Object
+            where T5 : Object
+            where T6 : Object
+            where T7 : Object
+            where T8 : Object
+            where T9 : Object
+            where T10 : Object
+            where T11 : Object
+        {
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+                typeof(T3).Name,
+                typeof(T4).Name,
+                typeof(T5).Name,
+                typeof(T6).Name,
+                typeof(T7).Name,
+                typeof(T8).Name,
+                typeof(T9).Name,
+                typeof(T10).Name,
+                typeof(T11).Name,
+            };
+            var queryName = GetQueryName(componentNames);
+            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+        }
+
+        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(Object system, string functionName, bool toCurrentScene = false)
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+            where T4 : Object
+            where T5 : Object
+            where T6 : Object
+            where T7 : Object
+            where T8 : Object
+            where T9 : Object
+            where T10 : Object
+            where T11 : Object
+            where T12 : Object
+        {
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+                typeof(T3).Name,
+                typeof(T4).Name,
+                typeof(T5).Name,
+                typeof(T6).Name,
+                typeof(T7).Name,
+                typeof(T8).Name,
+                typeof(T9).Name,
+                typeof(T10).Name,
+                typeof(T11).Name,
+                typeof(T12).Name,
+            };
+            var queryName = GetQueryName(componentNames);
+            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+        }
+
+        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(Object system, string functionName, bool toCurrentScene = false)
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+            where T4 : Object
+            where T5 : Object
+            where T6 : Object
+            where T7 : Object
+            where T8 : Object
+            where T9 : Object
+            where T10 : Object
+            where T11 : Object
+            where T12 : Object
+            where T13 : Object
+        {
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+                typeof(T3).Name,
+                typeof(T4).Name,
+                typeof(T5).Name,
+                typeof(T6).Name,
+                typeof(T7).Name,
+                typeof(T8).Name,
+                typeof(T9).Name,
+                typeof(T10).Name,
+                typeof(T11).Name,
+                typeof(T12).Name,
+                typeof(T13).Name,
+            };
+            var queryName = GetQueryName(componentNames);
+            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+        }
+
+        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(Object system, string functionName, bool toCurrentScene = false)
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+            where T4 : Object
+            where T5 : Object
+            where T6 : Object
+            where T7 : Object
+            where T8 : Object
+            where T9 : Object
+            where T10 : Object
+            where T11 : Object
+            where T12 : Object
+            where T13 : Object
+            where T14 : Object
+        {
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+                typeof(T3).Name,
+                typeof(T4).Name,
+                typeof(T5).Name,
+                typeof(T6).Name,
+                typeof(T7).Name,
+                typeof(T8).Name,
+                typeof(T9).Name,
+                typeof(T10).Name,
+                typeof(T11).Name,
+                typeof(T12).Name,
+                typeof(T13).Name,
+                typeof(T14).Name,
+            };
+            var queryName = GetQueryName(componentNames);
+            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+        }
+
+        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(Object system, string functionName, bool toCurrentScene = false)
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+            where T4 : Object
+            where T5 : Object
+            where T6 : Object
+            where T7 : Object
+            where T8 : Object
+            where T9 : Object
+            where T10 : Object
+            where T11 : Object
+            where T12 : Object
+            where T13 : Object
+            where T14 : Object
+            where T15 : Object
+        {
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+                typeof(T3).Name,
+                typeof(T4).Name,
+                typeof(T5).Name,
+                typeof(T6).Name,
+                typeof(T7).Name,
+                typeof(T8).Name,
+                typeof(T9).Name,
+                typeof(T10).Name,
+                typeof(T11).Name,
+                typeof(T12).Name,
+                typeof(T13).Name,
+                typeof(T14).Name,
+                typeof(T15).Name,
+            };
+            var queryName = GetQueryName(componentNames);
+            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+        }
+
+        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(Object system, string functionName, bool toCurrentScene = false)
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+            where T4 : Object
+            where T5 : Object
+            where T6 : Object
+            where T7 : Object
+            where T8 : Object
+            where T9 : Object
+            where T10 : Object
+            where T11 : Object
+            where T12 : Object
+            where T13 : Object
+            where T14 : Object
+            where T15 : Object
+            where T16 : Object
+        {
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+                typeof(T3).Name,
+                typeof(T4).Name,
+                typeof(T5).Name,
+                typeof(T6).Name,
+                typeof(T7).Name,
+                typeof(T8).Name,
+                typeof(T9).Name,
+                typeof(T10).Name,
+                typeof(T11).Name,
+                typeof(T12).Name,
+                typeof(T13).Name,
+                typeof(T14).Name,
+                typeof(T15).Name,
+                typeof(T16).Name,
+            };
+            var queryName = GetQueryName(componentNames);
+            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+        }
+
+        # endregion
 
         #region Query
 
         public static IEnumerable<T> Query<T>()
             where T : Object
         {
-            var queryName =  typeof(T).Name;
+            var componentNames = new List<string>
+            {
+                typeof(T).Name,
+            };
+            var queryName = GetQueryName(componentNames);
             if (Queries0.ContainsKey(queryName))
             {
                 foreach (var obj in Queries0[queryName])
@@ -44,13 +513,7 @@ namespace SysError99
             }
             else
             {
-                QueryBuild(
-                    queryName,
-                    new List<string>
-                    {
-                        typeof(T).Name,
-                    }
-                );
+                QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T>())
                 {
                     yield return obj;
@@ -63,10 +526,12 @@ namespace SysError99
             where T0 : Object
             where T1 : Object
         {
-            var queryName = 
-                typeof(T0).Name +
-                typeof(T1).Name
-            ;
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+            };
+            var queryName = GetQueryName(componentNames);
             if (Queries1.ContainsKey(queryName))
             {
                 foreach (var obj in Queries1[queryName])
@@ -74,14 +539,7 @@ namespace SysError99
             }
             else
             {
-                QueryBuild(
-                    queryName,
-                    new List<string>
-                    {
-                        typeof(T0).Name,
-                        typeof(T1).Name,
-                    }
-                );
+                QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1>())
                 {
                     yield return obj;
@@ -95,11 +553,13 @@ namespace SysError99
             where T1 : Object
             where T2 : Object
         {
-            var queryName = 
-                typeof(T0).Name +
-                typeof(T1).Name +
-                typeof(T2).Name
-            ;
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+            };
+            var queryName = GetQueryName(componentNames);
             if (Queries2.ContainsKey(queryName))
             {
                 foreach (var obj in Queries2[queryName])
@@ -107,15 +567,7 @@ namespace SysError99
             }
             else
             {
-                QueryBuild(
-                    queryName,
-                    new List<string>
-                    {
-                        typeof(T0).Name,
-                        typeof(T1).Name,
-                        typeof(T2).Name,
-                    }
-                );
+                QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2>())
                 {
                     yield return obj;
@@ -130,12 +582,14 @@ namespace SysError99
             where T2 : Object
             where T3 : Object
         {
-            var queryName = 
-                typeof(T0).Name +
-                typeof(T1).Name +
-                typeof(T2).Name +
-                typeof(T3).Name
-            ;
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+                typeof(T3).Name,
+            };
+            var queryName = GetQueryName(componentNames);
             if (Queries3.ContainsKey(queryName))
             {
                 foreach (var obj in Queries3[queryName])
@@ -143,16 +597,7 @@ namespace SysError99
             }
             else
             {
-                QueryBuild(
-                    queryName,
-                    new List<string>
-                    {
-                        typeof(T0).Name,
-                        typeof(T1).Name,
-                        typeof(T2).Name,
-                        typeof(T3).Name,
-                    }
-                );
+                QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2, T3>())
                 {
                     yield return obj;
@@ -168,13 +613,15 @@ namespace SysError99
             where T3 : Object
             where T4 : Object
         {
-            var queryName = 
-                typeof(T0).Name +
-                typeof(T1).Name +
-                typeof(T2).Name +
-                typeof(T3).Name +
-                typeof(T4).Name
-            ;
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+                typeof(T3).Name,
+                typeof(T4).Name,
+            };
+            var queryName = GetQueryName(componentNames);
             if (Queries4.ContainsKey(queryName))
             {
                 foreach (var obj in Queries4[queryName])
@@ -182,17 +629,7 @@ namespace SysError99
             }
             else
             {
-                QueryBuild(
-                    queryName,
-                    new List<string>
-                    {
-                        typeof(T0).Name,
-                        typeof(T1).Name,
-                        typeof(T2).Name,
-                        typeof(T3).Name,
-                        typeof(T4).Name,
-                    }
-                );
+                QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2, T3, T4>())
                 {
                     yield return obj;
@@ -209,14 +646,16 @@ namespace SysError99
             where T4 : Object
             where T5 : Object
         {
-            var queryName = 
-                typeof(T0).Name +
-                typeof(T1).Name +
-                typeof(T2).Name +
-                typeof(T3).Name +
-                typeof(T4).Name +
-                typeof(T5).Name
-            ;
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+                typeof(T3).Name,
+                typeof(T4).Name,
+                typeof(T5).Name,
+            };
+            var queryName = GetQueryName(componentNames);
             if (Queries5.ContainsKey(queryName))
             {
                 foreach (var obj in Queries5[queryName])
@@ -224,18 +663,7 @@ namespace SysError99
             }
             else
             {
-                QueryBuild(
-                    queryName,
-                    new List<string>
-                    {
-                        typeof(T0).Name,
-                        typeof(T1).Name,
-                        typeof(T2).Name,
-                        typeof(T3).Name,
-                        typeof(T4).Name,
-                        typeof(T5).Name,
-                    }
-                );
+                QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2, T3, T4, T5>())
                 {
                     yield return obj;
@@ -253,15 +681,17 @@ namespace SysError99
             where T5 : Object
             where T6 : Object
         {
-            var queryName = 
-                typeof(T0).Name +
-                typeof(T1).Name +
-                typeof(T2).Name +
-                typeof(T3).Name +
-                typeof(T4).Name +
-                typeof(T5).Name +
-                typeof(T6).Name
-            ;
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+                typeof(T3).Name,
+                typeof(T4).Name,
+                typeof(T5).Name,
+                typeof(T6).Name,
+            };
+            var queryName = GetQueryName(componentNames);
             if (Queries6.ContainsKey(queryName))
             {
                 foreach (var obj in Queries6[queryName])
@@ -269,19 +699,7 @@ namespace SysError99
             }
             else
             {
-                QueryBuild(
-                    queryName,
-                    new List<string>
-                    {
-                        typeof(T0).Name,
-                        typeof(T1).Name,
-                        typeof(T2).Name,
-                        typeof(T3).Name,
-                        typeof(T4).Name,
-                        typeof(T5).Name,
-                        typeof(T6).Name,
-                    }
-                );
+                QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6>())
                 {
                     yield return obj;
@@ -300,16 +718,18 @@ namespace SysError99
             where T6 : Object
             where T7 : Object
         {
-            var queryName = 
-                typeof(T0).Name +
-                typeof(T1).Name +
-                typeof(T2).Name +
-                typeof(T3).Name +
-                typeof(T4).Name +
-                typeof(T5).Name +
-                typeof(T6).Name +
-                typeof(T7).Name
-            ;
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+                typeof(T3).Name,
+                typeof(T4).Name,
+                typeof(T5).Name,
+                typeof(T6).Name,
+                typeof(T7).Name,
+            };
+            var queryName = GetQueryName(componentNames);
             if (Queries7.ContainsKey(queryName))
             {
                 foreach (var obj in Queries7[queryName])
@@ -317,20 +737,7 @@ namespace SysError99
             }
             else
             {
-                QueryBuild(
-                    queryName,
-                    new List<string>
-                    {
-                        typeof(T0).Name,
-                        typeof(T1).Name,
-                        typeof(T2).Name,
-                        typeof(T3).Name,
-                        typeof(T4).Name,
-                        typeof(T5).Name,
-                        typeof(T6).Name,
-                        typeof(T7).Name,
-                    }
-                );
+                QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7>())
                 {
                     yield return obj;
@@ -350,17 +757,19 @@ namespace SysError99
             where T7 : Object
             where T8 : Object
         {
-            var queryName = 
-                typeof(T0).Name +
-                typeof(T1).Name +
-                typeof(T2).Name +
-                typeof(T3).Name +
-                typeof(T4).Name +
-                typeof(T5).Name +
-                typeof(T6).Name +
-                typeof(T7).Name +
-                typeof(T8).Name
-            ;
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+                typeof(T3).Name,
+                typeof(T4).Name,
+                typeof(T5).Name,
+                typeof(T6).Name,
+                typeof(T7).Name,
+                typeof(T8).Name,
+            };
+            var queryName = GetQueryName(componentNames);
             if (Queries8.ContainsKey(queryName))
             {
                 foreach (var obj in Queries8[queryName])
@@ -368,21 +777,7 @@ namespace SysError99
             }
             else
             {
-                QueryBuild(
-                    queryName,
-                    new List<string>
-                    {
-                        typeof(T0).Name,
-                        typeof(T1).Name,
-                        typeof(T2).Name,
-                        typeof(T3).Name,
-                        typeof(T4).Name,
-                        typeof(T5).Name,
-                        typeof(T6).Name,
-                        typeof(T7).Name,
-                        typeof(T8).Name,
-                    }
-                );
+                QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8>())
                 {
                     yield return obj;
@@ -403,18 +798,20 @@ namespace SysError99
             where T8 : Object
             where T9 : Object
         {
-            var queryName = 
-                typeof(T0).Name +
-                typeof(T1).Name +
-                typeof(T2).Name +
-                typeof(T3).Name +
-                typeof(T4).Name +
-                typeof(T5).Name +
-                typeof(T6).Name +
-                typeof(T7).Name +
-                typeof(T8).Name +
-                typeof(T9).Name
-            ;
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+                typeof(T3).Name,
+                typeof(T4).Name,
+                typeof(T5).Name,
+                typeof(T6).Name,
+                typeof(T7).Name,
+                typeof(T8).Name,
+                typeof(T9).Name,
+            };
+            var queryName = GetQueryName(componentNames);
             if (Queries9.ContainsKey(queryName))
             {
                 foreach (var obj in Queries9[queryName])
@@ -422,22 +819,7 @@ namespace SysError99
             }
             else
             {
-                QueryBuild(
-                    queryName,
-                    new List<string>
-                    {
-                        typeof(T0).Name,
-                        typeof(T1).Name,
-                        typeof(T2).Name,
-                        typeof(T3).Name,
-                        typeof(T4).Name,
-                        typeof(T5).Name,
-                        typeof(T6).Name,
-                        typeof(T7).Name,
-                        typeof(T8).Name,
-                        typeof(T9).Name,
-                    }
-                );
+                QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>())
                 {
                     yield return obj;
@@ -459,19 +841,21 @@ namespace SysError99
             where T9 : Object
             where T10 : Object
         {
-            var queryName = 
-                typeof(T0).Name +
-                typeof(T1).Name +
-                typeof(T2).Name +
-                typeof(T3).Name +
-                typeof(T4).Name +
-                typeof(T5).Name +
-                typeof(T6).Name +
-                typeof(T7).Name +
-                typeof(T8).Name +
-                typeof(T9).Name +
-                typeof(T10).Name
-            ;
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+                typeof(T3).Name,
+                typeof(T4).Name,
+                typeof(T5).Name,
+                typeof(T6).Name,
+                typeof(T7).Name,
+                typeof(T8).Name,
+                typeof(T9).Name,
+                typeof(T10).Name,
+            };
+            var queryName = GetQueryName(componentNames);
             if (Queries10.ContainsKey(queryName))
             {
                 foreach (var obj in Queries10[queryName])
@@ -479,23 +863,7 @@ namespace SysError99
             }
             else
             {
-                QueryBuild(
-                    queryName,
-                    new List<string>
-                    {
-                        typeof(T0).Name,
-                        typeof(T1).Name,
-                        typeof(T2).Name,
-                        typeof(T3).Name,
-                        typeof(T4).Name,
-                        typeof(T5).Name,
-                        typeof(T6).Name,
-                        typeof(T7).Name,
-                        typeof(T8).Name,
-                        typeof(T9).Name,
-                        typeof(T10).Name,
-                    }
-                );
+                QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>())
                 {
                     yield return obj;
@@ -518,20 +886,22 @@ namespace SysError99
             where T10 : Object
             where T11 : Object
         {
-            var queryName = 
-                typeof(T0).Name +
-                typeof(T1).Name +
-                typeof(T2).Name +
-                typeof(T3).Name +
-                typeof(T4).Name +
-                typeof(T5).Name +
-                typeof(T6).Name +
-                typeof(T7).Name +
-                typeof(T8).Name +
-                typeof(T9).Name +
-                typeof(T10).Name +
-                typeof(T11).Name
-            ;
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+                typeof(T3).Name,
+                typeof(T4).Name,
+                typeof(T5).Name,
+                typeof(T6).Name,
+                typeof(T7).Name,
+                typeof(T8).Name,
+                typeof(T9).Name,
+                typeof(T10).Name,
+                typeof(T11).Name,
+            };
+            var queryName = GetQueryName(componentNames);
             if (Queries11.ContainsKey(queryName))
             {
                 foreach (var obj in Queries11[queryName])
@@ -539,24 +909,7 @@ namespace SysError99
             }
             else
             {
-                QueryBuild(
-                    queryName,
-                    new List<string>
-                    {
-                        typeof(T0).Name,
-                        typeof(T1).Name,
-                        typeof(T2).Name,
-                        typeof(T3).Name,
-                        typeof(T4).Name,
-                        typeof(T5).Name,
-                        typeof(T6).Name,
-                        typeof(T7).Name,
-                        typeof(T8).Name,
-                        typeof(T9).Name,
-                        typeof(T10).Name,
-                        typeof(T11).Name,
-                    }
-                );
+                QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>())
                 {
                     yield return obj;
@@ -580,21 +933,23 @@ namespace SysError99
             where T11 : Object
             where T12 : Object
         {
-            var queryName = 
-                typeof(T0).Name +
-                typeof(T1).Name +
-                typeof(T2).Name +
-                typeof(T3).Name +
-                typeof(T4).Name +
-                typeof(T5).Name +
-                typeof(T6).Name +
-                typeof(T7).Name +
-                typeof(T8).Name +
-                typeof(T9).Name +
-                typeof(T10).Name +
-                typeof(T11).Name +
-                typeof(T12).Name
-            ;
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+                typeof(T3).Name,
+                typeof(T4).Name,
+                typeof(T5).Name,
+                typeof(T6).Name,
+                typeof(T7).Name,
+                typeof(T8).Name,
+                typeof(T9).Name,
+                typeof(T10).Name,
+                typeof(T11).Name,
+                typeof(T12).Name,
+            };
+            var queryName = GetQueryName(componentNames);
             if (Queries12.ContainsKey(queryName))
             {
                 foreach (var obj in Queries12[queryName])
@@ -602,25 +957,7 @@ namespace SysError99
             }
             else
             {
-                QueryBuild(
-                    queryName,
-                    new List<string>
-                    {
-                        typeof(T0).Name,
-                        typeof(T1).Name,
-                        typeof(T2).Name,
-                        typeof(T3).Name,
-                        typeof(T4).Name,
-                        typeof(T5).Name,
-                        typeof(T6).Name,
-                        typeof(T7).Name,
-                        typeof(T8).Name,
-                        typeof(T9).Name,
-                        typeof(T10).Name,
-                        typeof(T11).Name,
-                        typeof(T12).Name,
-                    }
-                );
+                QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>())
                 {
                     yield return obj;
@@ -645,22 +982,24 @@ namespace SysError99
             where T12 : Object
             where T13 : Object
         {
-            var queryName = 
-                typeof(T0).Name +
-                typeof(T1).Name +
-                typeof(T2).Name +
-                typeof(T3).Name +
-                typeof(T4).Name +
-                typeof(T5).Name +
-                typeof(T6).Name +
-                typeof(T7).Name +
-                typeof(T8).Name +
-                typeof(T9).Name +
-                typeof(T10).Name +
-                typeof(T11).Name +
-                typeof(T12).Name +
-                typeof(T13).Name
-            ;
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+                typeof(T3).Name,
+                typeof(T4).Name,
+                typeof(T5).Name,
+                typeof(T6).Name,
+                typeof(T7).Name,
+                typeof(T8).Name,
+                typeof(T9).Name,
+                typeof(T10).Name,
+                typeof(T11).Name,
+                typeof(T12).Name,
+                typeof(T13).Name,
+            };
+            var queryName = GetQueryName(componentNames);
             if (Queries13.ContainsKey(queryName))
             {
                 foreach (var obj in Queries13[queryName])
@@ -668,26 +1007,7 @@ namespace SysError99
             }
             else
             {
-                QueryBuild(
-                    queryName,
-                    new List<string>
-                    {
-                        typeof(T0).Name,
-                        typeof(T1).Name,
-                        typeof(T2).Name,
-                        typeof(T3).Name,
-                        typeof(T4).Name,
-                        typeof(T5).Name,
-                        typeof(T6).Name,
-                        typeof(T7).Name,
-                        typeof(T8).Name,
-                        typeof(T9).Name,
-                        typeof(T10).Name,
-                        typeof(T11).Name,
-                        typeof(T12).Name,
-                        typeof(T13).Name,
-                    }
-                );
+                QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>())
                 {
                     yield return obj;
@@ -713,23 +1033,25 @@ namespace SysError99
             where T13 : Object
             where T14 : Object
         {
-            var queryName = 
-                typeof(T0).Name +
-                typeof(T1).Name +
-                typeof(T2).Name +
-                typeof(T3).Name +
-                typeof(T4).Name +
-                typeof(T5).Name +
-                typeof(T6).Name +
-                typeof(T7).Name +
-                typeof(T8).Name +
-                typeof(T9).Name +
-                typeof(T10).Name +
-                typeof(T11).Name +
-                typeof(T12).Name +
-                typeof(T13).Name +
-                typeof(T14).Name
-            ;
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+                typeof(T3).Name,
+                typeof(T4).Name,
+                typeof(T5).Name,
+                typeof(T6).Name,
+                typeof(T7).Name,
+                typeof(T8).Name,
+                typeof(T9).Name,
+                typeof(T10).Name,
+                typeof(T11).Name,
+                typeof(T12).Name,
+                typeof(T13).Name,
+                typeof(T14).Name,
+            };
+            var queryName = GetQueryName(componentNames);
             if (Queries14.ContainsKey(queryName))
             {
                 foreach (var obj in Queries14[queryName])
@@ -737,27 +1059,7 @@ namespace SysError99
             }
             else
             {
-                QueryBuild(
-                    queryName,
-                    new List<string>
-                    {
-                        typeof(T0).Name,
-                        typeof(T1).Name,
-                        typeof(T2).Name,
-                        typeof(T3).Name,
-                        typeof(T4).Name,
-                        typeof(T5).Name,
-                        typeof(T6).Name,
-                        typeof(T7).Name,
-                        typeof(T8).Name,
-                        typeof(T9).Name,
-                        typeof(T10).Name,
-                        typeof(T11).Name,
-                        typeof(T12).Name,
-                        typeof(T13).Name,
-                        typeof(T14).Name,
-                    }
-                );
+                QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>())
                 {
                     yield return obj;
@@ -784,24 +1086,26 @@ namespace SysError99
             where T14 : Object
             where T15 : Object
         {
-            var queryName = 
-                typeof(T0).Name +
-                typeof(T1).Name +
-                typeof(T2).Name +
-                typeof(T3).Name +
-                typeof(T4).Name +
-                typeof(T5).Name +
-                typeof(T6).Name +
-                typeof(T7).Name +
-                typeof(T8).Name +
-                typeof(T9).Name +
-                typeof(T10).Name +
-                typeof(T11).Name +
-                typeof(T12).Name +
-                typeof(T13).Name +
-                typeof(T14).Name +
-                typeof(T15).Name
-            ;
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+                typeof(T3).Name,
+                typeof(T4).Name,
+                typeof(T5).Name,
+                typeof(T6).Name,
+                typeof(T7).Name,
+                typeof(T8).Name,
+                typeof(T9).Name,
+                typeof(T10).Name,
+                typeof(T11).Name,
+                typeof(T12).Name,
+                typeof(T13).Name,
+                typeof(T14).Name,
+                typeof(T15).Name,
+            };
+            var queryName = GetQueryName(componentNames);
             if (Queries15.ContainsKey(queryName))
             {
                 foreach (var obj in Queries15[queryName])
@@ -809,29 +1113,64 @@ namespace SysError99
             }
             else
             {
-                QueryBuild(
-                    queryName,
-                    new List<string>
-                    {
-                        typeof(T0).Name,
-                        typeof(T1).Name,
-                        typeof(T2).Name,
-                        typeof(T3).Name,
-                        typeof(T4).Name,
-                        typeof(T5).Name,
-                        typeof(T6).Name,
-                        typeof(T7).Name,
-                        typeof(T8).Name,
-                        typeof(T9).Name,
-                        typeof(T10).Name,
-                        typeof(T11).Name,
-                        typeof(T12).Name,
-                        typeof(T13).Name,
-                        typeof(T14).Name,
-                        typeof(T15).Name,
-                    }
-                );
+                QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>())
+                {
+                    yield return obj;
+                }
+            }
+            yield break;
+        }
+
+        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16)> Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>()
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+            where T4 : Object
+            where T5 : Object
+            where T6 : Object
+            where T7 : Object
+            where T8 : Object
+            where T9 : Object
+            where T10 : Object
+            where T11 : Object
+            where T12 : Object
+            where T13 : Object
+            where T14 : Object
+            where T15 : Object
+            where T16 : Object
+        {
+            var componentNames = new List<string>
+            {
+                typeof(T0).Name,
+                typeof(T1).Name,
+                typeof(T2).Name,
+                typeof(T3).Name,
+                typeof(T4).Name,
+                typeof(T5).Name,
+                typeof(T6).Name,
+                typeof(T7).Name,
+                typeof(T8).Name,
+                typeof(T9).Name,
+                typeof(T10).Name,
+                typeof(T11).Name,
+                typeof(T12).Name,
+                typeof(T13).Name,
+                typeof(T14).Name,
+                typeof(T15).Name,
+                typeof(T16).Name,
+            };
+            var queryName = GetQueryName(componentNames);
+            if (Queries15.ContainsKey(queryName))
+            {
+                foreach (var obj in Queries16[queryName])
+                    yield return obj.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>();
+            }
+            else
+            {
+                QueryBuild(queryName, componentNames);
+                foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>())
                 {
                     yield return obj;
                 }
@@ -841,6 +1180,55 @@ namespace SysError99
 
         #endregion
 
+        private static string GetQueryName(List<string> componentNames)
+        {
+            return System.String.Join("_", componentNames);
+        }
+
+        private static void BindQuery(string queryName, List<string> componentNames, Object system, string functionName, bool toCurrentScene)
+        {
+            var systemBinder = new SystemBinder(system, functionName);
+            if (!SubscribedSystems.ContainsKey(queryName))
+            {
+                SubscribedSystems.Add(queryName, new List<SystemBinder>() { systemBinder });
+            }
+            else
+            {
+                SubscribedSystems[queryName].Add(systemBinder);
+            }
+            if (toCurrentScene)
+            {
+                if (!CurrentSceneSubscribedSystems.ContainsKey(queryName))
+                {
+                    CurrentSceneSubscribedSystems.Add(queryName, new List<SystemBinder>() { systemBinder });
+                }
+                else
+                {
+                    CurrentSceneSubscribedSystems[queryName].Add(systemBinder);
+                }
+            }
+            switch (componentNames.Count)
+            {
+                case 1: if (!Queries0.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 2: if (!Queries1.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 3: if (!Queries2.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 4: if (!Queries3.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 5: if (!Queries4.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 6: if (!Queries5.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 7: if (!Queries6.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 8: if (!Queries7.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 9: if (!Queries8.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 10: if (!Queries9.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 11: if (!Queries10.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 12: if (!Queries11.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 13: if (!Queries12.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 14: if (!Queries13.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 15: if (!Queries14.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 16: if (!Queries15.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 17: if (!Queries16.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+            }
+        }
+        
         private static void QueryBuild(string queryName, in List<string> componentNames)
         {
             var registeredScenes = Self.GetTree().GetNodesInGroup(_RegisteredScene);
@@ -859,6 +1247,15 @@ namespace SysError99
         {
             var currentScene = MainTree.CurrentScene;
             var inst = GD.Load<PackedScene>(path).Instance();
+            foreach (var queryName in CurrentSceneSubscribedSystems.Keys)
+            {
+                var systems = SubscribedSystems[queryName];
+                foreach (var system in CurrentSceneSubscribedSystems[queryName])
+                {
+                    systems.Remove(system);
+                }
+            }
+            CurrentSceneSubscribedSystems.Clear();
             currentScene.QueueFree();
             await Self.ToSignal(currentScene, "tree_exited");
             Root.SetMeta("current_scene", inst);
@@ -941,7 +1338,16 @@ namespace SysError99
                 }
             }
             binds.Insert(0, entity);
-            # region Save Query
+            # region One-shot call
+            if (SubscribedSystems.ContainsKey(queryName))
+            {
+                foreach (var systemBinder in SubscribedSystems[queryName])
+                {
+                    systemBinder._system.Callv(systemBinder._functionName, binds);
+                }
+            }
+            # endregion
+            # region Add To QueryObject(s)
             switch (binds.Count)
             {
                 case 1:
@@ -1309,6 +1715,18 @@ namespace SysError99
         public override void _Ready()
         {
             PostChangeScene();
+        }
+    }
+
+    internal class SystemBinder
+    {
+        internal Object _system;
+        internal string _functionName;
+
+        public SystemBinder(Object system, string functionName)
+        {
+            _functionName = functionName;
+            _system = system;
         }
     }
 

@@ -26,6 +26,14 @@ public class ScnTestGodotSharpGroups : Node2D
             clone.AddChild(sprite);
             currentScene.AddChild(clone);
         }
+
+        QGodotSharp.BindQuery<KinematicBody2D, Sprite>(this, nameof(_EntityEnteredScene), true);
+    }
+
+    public void _EntityEnteredScene(KinematicBody2D parent, Sprite sprite)
+    {
+        GD.Print(parent.Name + " entered scene!");
+        sprite.Scale = Vector2.One * 4f;
     }
 
     public override void _Process(float delta)
