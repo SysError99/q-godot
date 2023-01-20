@@ -83,6 +83,8 @@ Importing is similar to GDScript variant, but instead it will be `QGodotSharp.cs
 Unlike GDScript, C# version utilises C#'s `Tuple` to query nodes. Again, first element will always be class reference of parent node:
 
 ```cs
+private static readonly Vector2 Target = new Vector2(512f, 300f);
+
 public override void _Ready()
 {
     await ToSignal(GetTree(), "idle_frame"); // On '_Ready()', it must wait at least one frame before query can occur
