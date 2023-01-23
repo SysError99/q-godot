@@ -29,16 +29,15 @@ class Query extends Node:
 
 
 class HalfQueryReference extends Object:
-	var parent: Node
+	var switch := false
 	var first_half := []
 	var second_half := []
-	func _init(p: Node) -> void:
-		parent = p
 	func iterate() -> Array:
-		if parent.get("second_frame"):
+		if switch:
 			return first_half
 		else:
 			return second_half
+		switch = not switch
 
 
 var second_frame := false
@@ -170,7 +169,7 @@ func query_half(component_names: Array) -> HalfQueryReference:
 	var query_name := __get_query_name(component_names)
 	if _query_half_cache.has(query_name):
 		return _query_half_cache[query_name]
-	var q := HalfQueryReference.new(self)
+	var q := HalfQueryReference.new()
 	var query := query(component_names)
 	var query_size := query.size()
 	var query_half_size := query_size / 2
