@@ -33,11 +33,11 @@ class HalfQueryReference extends Object:
 	var first_half := []
 	var second_half := []
 	func iterate() -> Array:
+		switch = not switch
 		if switch:
 			return first_half
 		else:
 			return second_half
-		switch = not switch
 
 
 var second_frame := false
