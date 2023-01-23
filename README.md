@@ -251,3 +251,21 @@ class Movement extends Node:
  		parent.look_at(TARGET)
  		sprite.scale *= 1.001
 ```
+
+---
+
+## Binding Query That Will Only Be Iterated Half Entities Each Frame (GDScript Only)
+If performance is a concern, and you don't really want to iterate all entities in single frame, you can also split query into half and iterate all of them in two frames. You can use `query_half()` to get `HalfQueryReference`, then use `HalfQueryReference.iterate()` to retrieve half of array for each frame.
+
+```gdscript
+onready var query := QGodot.query_half(["KinematicBody2D", "Icon"])
+
+
+func _process(delta: float) -> void:
+    for entity in query.iterate():
+        var vel := (entity.position.direction_to(TARGET) * 10.0) as Vector2
+        var icon := entity.get_meta("$Icon") as Sprite
+        icon.scale = icon.scale * 1.01
+		entity.move_and_slide(vel)
+		entity.look_at(TARGET)
+```

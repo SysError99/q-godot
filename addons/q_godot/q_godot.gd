@@ -28,7 +28,24 @@ class Query extends Node:
 		current_scene_subscribers.clear()
 
 
+class HalfQueryReference extends Object:
+	var parent: Node
+	var first_half := []
+	var second_half := []
+	func _init(p: Node) -> void:
+		parent = p
+	func iterate() -> Array:
+		if parent.get("second_frame"):
+			return first_half
+		else:
+			return second_half
+
+
+var second_frame := false
+
+
 var _query_cache := {}
+var _query_half_cache := {}
 var _regex := RegEx.new()
 var _root_ready := false
 var _root: Viewport
@@ -110,6 +127,12 @@ func __bind_to_query_node(entity: Node, query_node: Query, subscribers: Array) -
 			if query_name in _query_cache:
 				var cache := _query_cache[query_name] as Array
 				cache.push_back(entity)
+				if query_name in _query_half_cache:
+					var half_cache := _query_half_cache[query_name] as HalfQueryReference
+					if cache.size() % 2 == 0:
+						half_cache.second_half.push_back(entity)
+					else:
+						half_cache.first_half.push_back(entity)
 	var system_instance_name := entity.name + query_name
 	for system_ref in subscribers:
 		var system := system_ref[_SYSTEM_CLASS] as Object
@@ -140,6 +163,22 @@ func query(component_names: Array) -> Array:
 			bind_query(component_names)
 		_query_cache[query_name] = _tree.get_nodes_in_group(query_name)
 	return _query_cache[query_name]
+
+
+# API
+func query_half(component_names: Array) -> HalfQueryReference:
+	var query_name := __get_query_name(component_names)
+	if _query_half_cache.has(query_name):
+		return _query_half_cache[query_name]
+	var q := HalfQueryReference.new(self)
+	var query := query(component_names)
+	var query_size := query.size()
+	var query_half_size := query_size / 2
+	q.first_half = query.slice(0, query_half_size - 1)
+	if query_size > 1:
+		q.second_half = query.slice(query_half_size, query.size())
+	_query_half_cache[query_name] = q
+	return q
 
 
 # API
@@ -209,6 +248,10 @@ func _entity_component_removed(entity: Node, component_name: String, bound_queri
 		if query_name in _query_cache:
 			var cache := _query_cache[query_name] as Array
 			cache.erase(entity)
+			if query_name in _query_half_cache:
+				var half_cache := _query_half_cache[query_name] as HalfQueryReference
+				half_cache.first_half.erase(entity)
+				half_cache.second_half.erase(entity)
 		var system_instance_name := entity.name + query_name as String
 		for system in system_instances:
 			if not system.has_meta(system_instance_name):
@@ -239,3 +282,7 @@ func _ready() -> void:
 	yield(_root, "ready")
 	_root_ready = true
 	__post_change_scene(_tree.current_scene)
+
+
+func _process(_delta: float) -> void:
+	second_frame = not second_frame
