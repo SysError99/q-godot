@@ -1314,7 +1314,7 @@ namespace SysError99
             var binds = entity.GetMeta(queryName + "#", new Godot.Collections.Array()) as Godot.Collections.Array;
             var boundQueries = entity.GetMeta(_BoundQueries, new Godot.Collections.Array()) as Godot.Collections.Array;
             var queryObjects = entity.GetMeta(queryName + "$", new Godot.Collections.Array()) as Godot.Collections.Array;
-            var queryObject = new QueryObject();
+            QueryObject queryObject;
             if (!boundQueries.Contains(queryName))
             {
                 componentNames = new List<string>(componentNames);
