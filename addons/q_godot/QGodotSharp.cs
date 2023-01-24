@@ -1331,8 +1331,8 @@ namespace SysError99
                 {
                     entity.AddToGroup(queryName);
                     entity.SetMeta(queryName + "#", binds);
-                    entity.SetMeta(_BoundQueries, boundQueries);
                     entity.SetMeta(queryName + "$", queryObjects);
+                    entity.SetMeta(_BoundQueries, boundQueries);
                     boundQueries.Add(queryName);
                 }
             }

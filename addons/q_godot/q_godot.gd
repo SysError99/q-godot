@@ -117,8 +117,8 @@ func __bind_to_query_node(entity: Node, query_node: Query, subscribers: Array) -
 		if binds.size() == component_names.size() - number_of_groups:
 			entity.add_to_group(query_name)
 			entity.set_meta(query_name + "#", binds)
-			entity.set_meta(_BOUND_QUERIES, bound_queries)
 			entity.set_meta(query_name + "$", system_instances)
+			entity.set_meta(_BOUND_QUERIES, bound_queries)
 			bound_queries.push_back(query_name)
 			if query_name in _query_cache:
 				var cache := _query_cache[query_name] as Array
