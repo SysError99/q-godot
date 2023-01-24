@@ -497,6 +497,49 @@ namespace SysError99
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
         }
 
+                private static void BindQuery(string queryName, List<string> componentNames, Object system, string functionName, bool toCurrentScene)
+        {
+            var systemBinder = new SystemOneshotBinder(system, functionName);
+            if (!SubscribedSystems.ContainsKey(queryName))
+            {
+                SubscribedSystems.Add(queryName, new List<SystemOneshotBinder>() { systemBinder });
+            }
+            else
+            {
+                SubscribedSystems[queryName].Add(systemBinder);
+            }
+            if (toCurrentScene)
+            {
+                if (!CurrentSceneSubscribedSystems.ContainsKey(queryName))
+                {
+                    CurrentSceneSubscribedSystems.Add(queryName, new List<SystemOneshotBinder>() { systemBinder });
+                }
+                else
+                {
+                    CurrentSceneSubscribedSystems[queryName].Add(systemBinder);
+                }
+            }
+            switch (componentNames.Count)
+            {
+                case 1: if (!Queries0.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 2: if (!Queries1.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 3: if (!Queries2.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 4: if (!Queries3.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 5: if (!Queries4.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 6: if (!Queries5.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 7: if (!Queries6.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 8: if (!Queries7.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 9: if (!Queries8.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 10: if (!Queries9.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 11: if (!Queries10.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 12: if (!Queries11.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 13: if (!Queries12.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 14: if (!Queries13.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 15: if (!Queries14.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 16: if (!Queries15.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+                case 17: if (!Queries16.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
+            }
+        }
         # endregion
 
         #region Query
@@ -1198,57 +1241,6 @@ namespace SysError99
             yield break;
         }
 
-        #endregion
-
-        private static string GetQueryName(List<string> componentNames)
-        {
-            return System.String.Join("_", componentNames);
-        }
-
-        private static void BindQuery(string queryName, List<string> componentNames, Object system, string functionName, bool toCurrentScene)
-        {
-            var systemBinder = new SystemOneshotBinder(system, functionName);
-            if (!SubscribedSystems.ContainsKey(queryName))
-            {
-                SubscribedSystems.Add(queryName, new List<SystemOneshotBinder>() { systemBinder });
-            }
-            else
-            {
-                SubscribedSystems[queryName].Add(systemBinder);
-            }
-            if (toCurrentScene)
-            {
-                if (!CurrentSceneSubscribedSystems.ContainsKey(queryName))
-                {
-                    CurrentSceneSubscribedSystems.Add(queryName, new List<SystemOneshotBinder>() { systemBinder });
-                }
-                else
-                {
-                    CurrentSceneSubscribedSystems[queryName].Add(systemBinder);
-                }
-            }
-            switch (componentNames.Count)
-            {
-                case 1: if (!Queries0.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 2: if (!Queries1.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 3: if (!Queries2.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 4: if (!Queries3.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 5: if (!Queries4.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 6: if (!Queries5.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 7: if (!Queries6.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 8: if (!Queries7.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 9: if (!Queries8.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 10: if (!Queries9.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 11: if (!Queries10.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 12: if (!Queries11.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 13: if (!Queries12.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 14: if (!Queries13.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 15: if (!Queries14.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 16: if (!Queries15.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 17: if (!Queries16.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-            }
-        }
-
         private static void QueryBuild(string queryName, in List<string> componentNames)
         {
             var registeredScenes = Self.GetTree().GetNodesInGroup(_RegisteredScene);
@@ -1261,6 +1253,12 @@ namespace SysError99
                     BindToQueryObjectList(entity, queryName);
                 }
             }
+        }
+        #endregion
+
+        private static string GetQueryName(List<string> componentNames)
+        {
+            return System.String.Join("_", componentNames);
         }
 
         public static async void ChangeScene(string path)
