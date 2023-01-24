@@ -2,7 +2,7 @@ using Godot;
 using SysError99;
 
 
-public class ScnTestGodotSharpGroups : Node2D
+public class ScnTestGodotSharp : Node2D
 {
     private static readonly Vector2 Target = new Vector2(512, 300);
 
