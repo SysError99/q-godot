@@ -269,3 +269,9 @@ func _process(delta: float) -> void:
 		entity.move_and_slide(vel)
 		entity.look_at(TARGET)
 ```
+
+*Note: due to how it works, this should NOT be used with entities that has critical physics calculation elements since it may cause unexpected results.*
+
+*Note II: in low frame (below 60), it will cause horrible jittery artifacts when there's a movement of entities.*
+
+*Note III: you should always multiply value by 2 in movement vectors to compensate frame skipping.*
