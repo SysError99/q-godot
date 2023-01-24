@@ -5,6 +5,7 @@ namespace SysError99
 {
     public class QGodotSharp : Node
     {
+        private const string _Entity = "#E";
         private const string _BoundQueries = "#QN";
         private const string _RegisteredScene = "#RS";
         private const string _UnregisteredScene = "registered_scene";
@@ -32,6 +33,8 @@ namespace SysError99
         private static Dictionary<string, List<string>> ComponentNames = new();
         private static Dictionary<string, List<SystemOneshotBinder>> SubscribedSystems = new();
         private static Dictionary<string, List<SystemOneshotBinder>> CurrentSceneSubscribedSystems = new();
+
+        private static bool SceneChanging = false;
 
         # region Query Bind
 
@@ -513,6 +516,7 @@ namespace SysError99
             }
             else
             {
+                Queries0.Add(queryName, new Dictionary<string, QueryObject0>());
                 QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T>())
                 {
@@ -539,6 +543,7 @@ namespace SysError99
             }
             else
             {
+                Queries1.Add(queryName, new Dictionary<string, QueryObject1>());
                 QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1>())
                 {
@@ -567,6 +572,7 @@ namespace SysError99
             }
             else
             {
+                Queries2.Add(queryName, new Dictionary<string, QueryObject2>());
                 QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2>())
                 {
@@ -597,6 +603,7 @@ namespace SysError99
             }
             else
             {
+                Queries3.Add(queryName, new Dictionary<string, QueryObject3>());
                 QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2, T3>())
                 {
@@ -629,6 +636,7 @@ namespace SysError99
             }
             else
             {
+                Queries4.Add(queryName, new Dictionary<string, QueryObject4>());
                 QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2, T3, T4>())
                 {
@@ -663,6 +671,7 @@ namespace SysError99
             }
             else
             {
+                Queries5.Add(queryName, new Dictionary<string, QueryObject5>());
                 QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2, T3, T4, T5>())
                 {
@@ -699,6 +708,7 @@ namespace SysError99
             }
             else
             {
+                Queries6.Add(queryName, new Dictionary<string, QueryObject6>());
                 QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6>())
                 {
@@ -737,6 +747,7 @@ namespace SysError99
             }
             else
             {
+                Queries7.Add(queryName, new Dictionary<string, QueryObject7>());
                 QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7>())
                 {
@@ -777,6 +788,7 @@ namespace SysError99
             }
             else
             {
+                Queries8.Add(queryName, new Dictionary<string, QueryObject8>());
                 QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8>())
                 {
@@ -819,6 +831,7 @@ namespace SysError99
             }
             else
             {
+                Queries9.Add(queryName, new Dictionary<string, QueryObject9>());
                 QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>())
                 {
@@ -863,6 +876,7 @@ namespace SysError99
             }
             else
             {
+                Queries10.Add(queryName, new Dictionary<string, QueryObject10>());
                 QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>())
                 {
@@ -909,6 +923,7 @@ namespace SysError99
             }
             else
             {
+                Queries11.Add(queryName, new Dictionary<string, QueryObject11>());
                 QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>())
                 {
@@ -957,6 +972,7 @@ namespace SysError99
             }
             else
             {
+                Queries12.Add(queryName, new Dictionary<string, QueryObject12>());
                 QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>())
                 {
@@ -1007,6 +1023,7 @@ namespace SysError99
             }
             else
             {
+                Queries13.Add(queryName, new Dictionary<string, QueryObject13>());
                 QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>())
                 {
@@ -1059,6 +1076,7 @@ namespace SysError99
             }
             else
             {
+                Queries14.Add(queryName, new Dictionary<string, QueryObject14>());
                 QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>())
                 {
@@ -1113,6 +1131,7 @@ namespace SysError99
             }
             else
             {
+                Queries15.Add(queryName, new Dictionary<string, QueryObject15>());
                 QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>())
                 {
@@ -1169,6 +1188,7 @@ namespace SysError99
             }
             else
             {
+                Queries16.Add(queryName, new Dictionary<string, QueryObject16>());
                 QueryBuild(queryName, componentNames);
                 foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>())
                 {
@@ -1228,7 +1248,7 @@ namespace SysError99
                 case 17: if (!Queries16.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
             }
         }
-        
+
         private static void QueryBuild(string queryName, in List<string> componentNames)
         {
             var registeredScenes = Self.GetTree().GetNodesInGroup(_RegisteredScene);
@@ -1242,11 +1262,13 @@ namespace SysError99
                 }
             }
         }
-        
+
         public static async void ChangeScene(string path)
         {
+            SceneChanging = true;
             var currentScene = MainTree.CurrentScene;
             var inst = GD.Load<PackedScene>(path).Instance();
+            RemoveEntitiesFromCurrentScene(currentScene);
             foreach (var queryName in CurrentSceneSubscribedSystems.Keys)
             {
                 var systems = SubscribedSystems[queryName];
@@ -1263,6 +1285,55 @@ namespace SysError99
             MainTree.SetDeferred("current_scene", inst);
             await Self.ToSignal(inst, "ready");
             PostChangeScene();
+            SceneChanging = false;
+        }
+
+        private static void RemoveEntitiesFromCurrentScene(Node scene)
+        {
+            var entities = scene.GetChildren();
+            if (scene.IsInGroup("persistent_scene")) return;
+            foreach (Node entity in entities)
+            {
+                if (entity.IsInGroup(_RegisteredScene))
+                {
+                    RemoveEntitiesFromCurrentScene(entity);
+                    continue;
+                }
+                if (!entity.HasMeta(_BoundQueries)) continue;
+                foreach (string queryName in entity.GetMeta(_BoundQueries) as Godot.Collections.Array)
+                {
+                    var queryObjects = entity.GetMeta(queryName + "$", new Godot.Collections.Array()) as Godot.Collections.Array;
+                    foreach (QueryObject queryObject in queryObjects)
+                    {
+                        QueryObjectRemove(entity.Name, queryName, queryObject);
+                    }
+                }
+            }
+        }
+
+        private static void QueryObjectRemove(string entityName, string queryName, QueryObject queryObject)
+        {
+            switch (queryObject)
+            {
+                case QueryObject0 queryObject0: Queries0[queryName].Remove(entityName); break;
+                case QueryObject1 queryObject1: Queries1[queryName].Remove(entityName); break;
+                case QueryObject2 queryObject2: Queries2[queryName].Remove(entityName); break;
+                case QueryObject3 queryObject3: Queries3[queryName].Remove(entityName); break;
+                case QueryObject4 queryObject4: Queries4[queryName].Remove(entityName); break;
+                case QueryObject5 queryObject5: Queries5[queryName].Remove(entityName); break;
+                case QueryObject6 queryObject6: Queries6[queryName].Remove(entityName); break;
+                case QueryObject7 queryObject7: Queries7[queryName].Remove(entityName); break;
+                case QueryObject8 queryObject8: Queries8[queryName].Remove(entityName); break;
+                case QueryObject9 queryObject9: Queries9[queryName].Remove(entityName); break;
+                case QueryObject10 queryObject10: Queries10[queryName].Remove(entityName); break;
+                case QueryObject11 queryObject11: Queries11[queryName].Remove(entityName); break;
+                case QueryObject12 queryObject12: Queries12[queryName].Remove(entityName); break;
+                case QueryObject13 queryObject13: Queries13[queryName].Remove(entityName); break;
+                case QueryObject14 queryObject14: Queries14[queryName].Remove(entityName); break;
+                case QueryObject15 queryObject15: Queries15[queryName].Remove(entityName); break;
+                case QueryObject16 queryObject16: Queries16[queryName].Remove(entityName); break;
+            }
+            queryObject.Free();
         }
 
         private static void PostChangeScene()
@@ -1294,8 +1365,10 @@ namespace SysError99
 
         private static void RegisterEntity(Node entity)
         {
+            if (entity.IsInGroup(_Entity)) return;
             entity.Connect("child_entered_tree", Self, nameof(_EntityComponentAdded), new Godot.Collections.Array { entity });
             BindToQueryObjectLists(entity);
+            entity.AddToGroup(_Entity);
         }
 
         private static void BindToQueryObjectLists(Node entity)
@@ -1358,12 +1431,8 @@ namespace SysError99
                         queryObject = gObj;
                         queryObjects.Add(queryObject);
                         gObj._obj0 = binds[0] as Node;
-                        if (Queries0.ContainsKey(queryName))
-                        {
-                            var query = Queries0[queryName];
-                            if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
-                        }
-                        else Queries0.Add(queryName, new Dictionary<string, QueryObject0> { [entity.Name] = gObj });
+                        var query = Queries0[queryName];
+                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
                     }
                     break;
 
@@ -1374,13 +1443,8 @@ namespace SysError99
                         queryObjects.Add(queryObject);
                         gObj._obj0 = binds[0] as Node;
                         gObj._obj1 = binds[1] as Node;
-                        if (Queries1.ContainsKey(queryName))
-                        {
-                            var query = Queries1[queryName];
-                            if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
-                            
-                        }
-                        else Queries1.Add(queryName, new Dictionary<string, QueryObject1> { [entity.Name] = gObj });
+                        var query = Queries1[queryName];
+                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
                     }
                     break;
                 case 3:
@@ -1391,12 +1455,8 @@ namespace SysError99
                         gObj._obj0 = binds[0] as Node;
                         gObj._obj1 = binds[1] as Node;
                         gObj._obj2 = binds[2] as Node;
-                        if (Queries2.ContainsKey(queryName))
-                        {
-                            var query = Queries2[queryName];
-                            if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
-                        }
-                        else Queries2.Add(queryName, new Dictionary<string, QueryObject2> { [entity.Name] = gObj });
+                        var query = Queries2[queryName];
+                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
                     }
                     break;
                 case 4:
@@ -1408,12 +1468,8 @@ namespace SysError99
                         gObj._obj1 = binds[1] as Node;
                         gObj._obj2 = binds[2] as Node;
                         gObj._obj3 = binds[3] as Node;
-                        if (Queries3.ContainsKey(queryName))
-                        {
-                            var query = Queries3[queryName];
-                            if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
-                        }
-                        else Queries3.Add(queryName, new Dictionary<string, QueryObject3> { [entity.Name] = gObj });
+                        var query = Queries3[queryName];
+                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
                     }
                     break;
                 case 5:
@@ -1426,12 +1482,8 @@ namespace SysError99
                         gObj._obj2 = binds[2] as Node;
                         gObj._obj3 = binds[3] as Node;
                         gObj._obj4 = binds[4] as Node;
-                        if (Queries4.ContainsKey(queryName))
-                        {
-                            var query = Queries4[queryName];
-                            if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
-                        }
-                        else Queries4.Add(queryName, new Dictionary<string, QueryObject4> { [entity.Name] = gObj });
+                        var query = Queries4[queryName];
+                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
                     }
                     break;
                 case 6:
@@ -1445,12 +1497,8 @@ namespace SysError99
                         gObj._obj3 = binds[3] as Node;
                         gObj._obj4 = binds[4] as Node;
                         gObj._obj5 = binds[5] as Node;
-                        if (Queries5.ContainsKey(queryName))
-                        {
-                            var query = Queries5[queryName];
-                            if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
-                        }
-                        else Queries5.Add(queryName, new Dictionary<string, QueryObject5> { [entity.Name] = gObj });
+                        var query = Queries5[queryName];
+                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
                     }
                     break;
                 case 7:
@@ -1465,12 +1513,8 @@ namespace SysError99
                         gObj._obj4 = binds[4] as Node;
                         gObj._obj5 = binds[5] as Node;
                         gObj._obj6 = binds[6] as Node;
-                        if (Queries6.ContainsKey(queryName))
-                        {
-                            var query = Queries6[queryName];
-                            if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
-                        }
-                        else Queries6.Add(queryName, new Dictionary<string, QueryObject6> { [entity.Name] = gObj });
+                        var query = Queries6[queryName];
+                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
                     }
                     break;
                 case 8:
@@ -1486,12 +1530,8 @@ namespace SysError99
                         gObj._obj5 = binds[5] as Node;
                         gObj._obj6 = binds[6] as Node;
                         gObj._obj7 = binds[7] as Node;
-                        if (Queries7.ContainsKey(queryName))
-                        {
-                            var query = Queries7[queryName];
-                            if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
-                        }
-                        else Queries7.Add(queryName, new Dictionary<string, QueryObject7> { [entity.Name] = gObj });
+                        var query = Queries7[queryName];
+                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
                     }
                     break;
                 case 9:
@@ -1508,12 +1548,8 @@ namespace SysError99
                         gObj._obj6 = binds[6] as Node;
                         gObj._obj7 = binds[7] as Node;
                         gObj._obj8 = binds[8] as Node;
-                        if (Queries8.ContainsKey(queryName))
-                        {
-                            var query = Queries8[queryName];
-                            if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
-                        }
-                        else Queries8.Add(queryName, new Dictionary<string, QueryObject8> { [entity.Name] = gObj });
+                        var query = Queries8[queryName];
+                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
                     }
                     break;
                 case 10:
@@ -1531,12 +1567,8 @@ namespace SysError99
                         gObj._obj7 = binds[7] as Node;
                         gObj._obj8 = binds[8] as Node;
                         gObj._obj9 = binds[9] as Node;
-                        if (Queries9.ContainsKey(queryName))
-                        {
-                            var query = Queries9[queryName];
-                            if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
-                        }
-                        else Queries9.Add(queryName, new Dictionary<string, QueryObject9> { [entity.Name] = gObj });
+                        var query = Queries9[queryName];
+                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
                     }
                     break;
                 case 11:
@@ -1555,12 +1587,8 @@ namespace SysError99
                         gObj._obj8 = binds[8] as Node;
                         gObj._obj9 = binds[9] as Node;
                         gObj._obj10 = binds[10] as Node;
-                        if (Queries10.ContainsKey(queryName))
-                        {
-                            var query = Queries10[queryName];
-                            if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
-                        }
-                        else Queries10.Add(queryName, new Dictionary<string, QueryObject10> { [entity.Name] = gObj });
+                        var query = Queries10[queryName];
+                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
                     }
                     break;
                 case 12:
@@ -1580,12 +1608,8 @@ namespace SysError99
                         gObj._obj9 = binds[9] as Node;
                         gObj._obj10 = binds[10] as Node;
                         gObj._obj11 = binds[11] as Node;
-                        if (Queries11.ContainsKey(queryName))
-                        {
-                            var query = Queries11[queryName];
-                            if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
-                        }
-                        else Queries11.Add(queryName, new Dictionary<string, QueryObject11> { [entity.Name] = gObj });
+                        var query = Queries11[queryName];
+                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
                     }
                     break;
                 case 13:
@@ -1606,12 +1630,8 @@ namespace SysError99
                         gObj._obj10 = binds[10] as Node;
                         gObj._obj11 = binds[11] as Node;
                         gObj._obj12 = binds[12] as Node;
-                        if (Queries12.ContainsKey(queryName))
-                        {
-                            var query = Queries12[queryName];
-                            if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
-                        }
-                        else Queries12.Add(queryName, new Dictionary<string, QueryObject12> { [entity.Name] = gObj });
+                        var query = Queries12[queryName];
+                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
                     }
                     break;
                 case 14:
@@ -1633,12 +1653,8 @@ namespace SysError99
                         gObj._obj11 = binds[11] as Node;
                         gObj._obj12 = binds[12] as Node;
                         gObj._obj13 = binds[13] as Node;
-                        if (Queries13.ContainsKey(queryName))
-                        {
-                            var query = Queries13[queryName];
-                            if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
-                        }
-                        else Queries13.Add(queryName, new Dictionary<string, QueryObject13> { [entity.Name] = gObj });
+                        var query = Queries13[queryName];
+                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
                     }
                     break;
                 case 15:
@@ -1661,12 +1677,8 @@ namespace SysError99
                         gObj._obj12 = binds[12] as Node;
                         gObj._obj13 = binds[13] as Node;
                         gObj._obj14 = binds[14] as Node;
-                        if (Queries14.ContainsKey(queryName))
-                        {
-                            var query = Queries14[queryName];
-                            if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
-                        }
-                        else Queries14.Add(queryName, new Dictionary<string, QueryObject14> { [entity.Name] = gObj });
+                        var query = Queries14[queryName];
+                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
                     }
                     break;
                 case 16:
@@ -1690,12 +1702,8 @@ namespace SysError99
                         gObj._obj13 = binds[13] as Node;
                         gObj._obj14 = binds[14] as Node;
                         gObj._obj15 = binds[15] as Node;
-                        if (Queries15.ContainsKey(queryName))
-                        {
-                            var query = Queries15[queryName];
-                            if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
-                        }
-                        else Queries15.Add(queryName, new Dictionary<string, QueryObject15> { [entity.Name] = gObj });
+                        var query = Queries15[queryName];
+                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
                     }
                     break;
                 case 17:
@@ -1720,17 +1728,11 @@ namespace SysError99
                         gObj._obj14 = binds[14] as Node;
                         gObj._obj15 = binds[15] as Node;
                         gObj._obj16 = binds[16] as Node;
-                        
-                        if (Queries16.ContainsKey(queryName))
-                        {
-                            var query = Queries16[queryName];
-                            if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
-                        }
-                        else Queries16.Add(queryName, new Dictionary<string, QueryObject16> { [entity.Name] = gObj });
+                        var query = Queries16[queryName];
+                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
                     }
                     break;
             }
-            
             #endregion
             binds.RemoveAt(0);
         }
@@ -1774,27 +1776,7 @@ namespace SysError99
                 }
                 foreach (QueryObject queryObject in queryObjects)
                 {
-                    switch (queryObject)
-                    {
-                        case QueryObject0 queryObject0: Queries0[queryName].Remove(entity.Name); break;
-                        case QueryObject1 queryObject1: Queries1[queryName].Remove(entity.Name); break;
-                        case QueryObject2 queryObject2: Queries2[queryName].Remove(entity.Name); break;
-                        case QueryObject3 queryObject3: Queries3[queryName].Remove(entity.Name); break;
-                        case QueryObject4 queryObject4: Queries4[queryName].Remove(entity.Name); break;
-                        case QueryObject5 queryObject5: Queries5[queryName].Remove(entity.Name); break;
-                        case QueryObject6 queryObject6: Queries6[queryName].Remove(entity.Name); break;
-                        case QueryObject7 queryObject7: Queries7[queryName].Remove(entity.Name); break;
-                        case QueryObject8 queryObject8: Queries8[queryName].Remove(entity.Name); break;
-                        case QueryObject9 queryObject9: Queries9[queryName].Remove(entity.Name); break;
-                        case QueryObject10 queryObject10: Queries10[queryName].Remove(entity.Name); break;
-                        case QueryObject11 queryObject11: Queries11[queryName].Remove(entity.Name); break;
-                        case QueryObject12 queryObject12: Queries12[queryName].Remove(entity.Name); break;
-                        case QueryObject13 queryObject13: Queries13[queryName].Remove(entity.Name); break;
-                        case QueryObject14 queryObject14: Queries14[queryName].Remove(entity.Name); break;
-                        case QueryObject15 queryObject15: Queries15[queryName].Remove(entity.Name); break;
-                        case QueryObject16 queryObject16: Queries16[queryName].Remove(entity.Name); break;
-                    }
-                    queryObject.Free();
+                    QueryObjectRemove(entity.Name, queryName, queryObject);
                 }
                 ArrayEraseDeferred(boundQueries, queryName);
                 queryObjects.Clear();
@@ -1813,7 +1795,7 @@ namespace SysError99
         }
     }
 
-    internal class SystemOneshotBinder
+    public class SystemOneshotBinder
     {
         internal Object _system;
         internal string _functionName;
