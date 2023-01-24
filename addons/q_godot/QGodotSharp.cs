@@ -46,6 +46,7 @@ namespace SysError99
             };
             var queryName = GetQueryName(componentNames);
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            Query<T>();
         }
 
         public static void BindQuery<T0, T1>(Object system, string functionName, bool toCurrentScene = false)
@@ -59,6 +60,7 @@ namespace SysError99
             };
             var queryName = GetQueryName(componentNames);
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            Query<T0, T1>();
         }
 
         public static void BindQuery<T0, T1, T2>(Object system, string functionName, bool toCurrentScene = false)
@@ -74,6 +76,7 @@ namespace SysError99
             };
             var queryName = GetQueryName(componentNames);
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            Query<T0, T1, T2>();
         }
 
         public static void BindQuery<T0, T1, T2, T3>(Object system, string functionName, bool toCurrentScene = false)
@@ -91,6 +94,7 @@ namespace SysError99
             };
             var queryName = GetQueryName(componentNames);
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            Query<T0, T1, T2, T3>();
         }
 
         public static void BindQuery<T0, T1, T2, T3, T4>(Object system, string functionName, bool toCurrentScene = false)
@@ -110,6 +114,7 @@ namespace SysError99
             };
             var queryName = GetQueryName(componentNames);
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            Query<T0, T1, T2, T3, T4>();
         }
 
         public static void BindQuery<T0, T1, T2, T3, T4, T5>(Object system, string functionName, bool toCurrentScene = false)
@@ -131,6 +136,7 @@ namespace SysError99
             };
             var queryName = GetQueryName(componentNames);
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            Query<T0, T1, T2, T3, T4, T5>();
         }
 
         public static void BindQuery<T0, T1, T2, T3, T4, T5, T6>(Object system, string functionName, bool toCurrentScene = false)
@@ -154,6 +160,7 @@ namespace SysError99
             };
             var queryName = GetQueryName(componentNames);
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            Query<T0, T1, T2, T3, T4, T5, T6>();
         }
 
         public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7>(Object system, string functionName, bool toCurrentScene = false)
@@ -179,6 +186,7 @@ namespace SysError99
             };
             var queryName = GetQueryName(componentNames);
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            Query<T0, T1, T2, T3, T4, T5, T6, T7>();
         }
 
         public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8>(Object system, string functionName, bool toCurrentScene = false)
@@ -206,6 +214,7 @@ namespace SysError99
             };
             var queryName = GetQueryName(componentNames);
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            Query<T0, T1, T2, T3, T4, T5, T6, T7, T8>();
         }
 
         public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>(Object system, string functionName, bool toCurrentScene = false)
@@ -235,6 +244,7 @@ namespace SysError99
             };
             var queryName = GetQueryName(componentNames);
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>();
         }
 
         public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(Object system, string functionName, bool toCurrentScene = false)
@@ -266,6 +276,7 @@ namespace SysError99
             };
             var queryName = GetQueryName(componentNames);
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>();
         }
 
         public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(Object system, string functionName, bool toCurrentScene = false)
@@ -299,6 +310,7 @@ namespace SysError99
             };
             var queryName = GetQueryName(componentNames);
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>();
         }
 
         public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(Object system, string functionName, bool toCurrentScene = false)
@@ -334,6 +346,7 @@ namespace SysError99
             };
             var queryName = GetQueryName(componentNames);
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>();
         }
 
         public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(Object system, string functionName, bool toCurrentScene = false)
@@ -371,6 +384,7 @@ namespace SysError99
             };
             var queryName = GetQueryName(componentNames);
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>();
         }
 
         public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(Object system, string functionName, bool toCurrentScene = false)
@@ -410,6 +424,7 @@ namespace SysError99
             };
             var queryName = GetQueryName(componentNames);
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>();
         }
 
         public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(Object system, string functionName, bool toCurrentScene = false)
@@ -451,6 +466,7 @@ namespace SysError99
             };
             var queryName = GetQueryName(componentNames);
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>();
         }
 
         public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(Object system, string functionName, bool toCurrentScene = false)
@@ -494,6 +510,7 @@ namespace SysError99
             };
             var queryName = GetQueryName(componentNames);
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>();
         }
 
         private static void BindQuery(string queryName, List<string> componentNames, Object system, string functionName, bool toCurrentScene)
@@ -517,26 +534,6 @@ namespace SysError99
                 {
                     CurrentSceneSubscribedSystems[queryName].Add(systemBinder);
                 }
-            }
-            switch (componentNames.Count)
-            {
-                case 1: if (!Queries0.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 2: if (!Queries1.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 3: if (!Queries2.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 4: if (!Queries3.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 5: if (!Queries4.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 6: if (!Queries5.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 7: if (!Queries6.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 8: if (!Queries7.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 9: if (!Queries8.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 10: if (!Queries9.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 11: if (!Queries10.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 12: if (!Queries11.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 13: if (!Queries12.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 14: if (!Queries13.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 15: if (!Queries14.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 16: if (!Queries15.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
-                case 17: if (!Queries16.ContainsKey(queryName)) QueryBuild(queryName, componentNames); break;
             }
         }
         # endregion
