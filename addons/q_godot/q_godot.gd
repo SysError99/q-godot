@@ -231,9 +231,9 @@ func _entity_component_removed(entity: Node, component_name: String, bound_queri
 		if not component_name in query_name:
 			continue
 		var system_instances := entity.get_meta(query_name + "$", []) as Array
+		entity.remove_from_group(query_name)
 		entity.remove_meta(query_name + "#")
 		entity.remove_meta(query_name + "$")
-		entity.remove_from_group(query_name)
 		if query_name in _query_cache:
 			var cache := _query_cache[query_name] as Array
 			cache.erase(entity)

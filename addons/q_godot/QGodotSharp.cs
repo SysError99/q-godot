@@ -1762,9 +1762,9 @@ namespace SysError99
                     continue;
                 }
                 var queryObjects = entity.GetMeta(queryName + "$", new Godot.Collections.Array()) as Godot.Collections.Array;
+                entity.RemoveFromGroup(queryName);
                 entity.RemoveMeta(queryName + "#");
                 entity.RemoveMeta(queryName + "$");
-                entity.RemoveFromGroup(queryName);
                 if (SubscribedSystems.ContainsKey(queryName))
                 {
                     foreach (var systemBinder in SubscribedSystems[queryName])
