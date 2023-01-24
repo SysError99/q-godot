@@ -37,7 +37,6 @@ namespace SysError99
         private static bool SceneChanging = false;
 
         # region Query Bind
-
         public static void BindQuery<T>(Object system, string functionName, bool toCurrentScene = false)
             where T : Object
         {
@@ -497,7 +496,7 @@ namespace SysError99
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
         }
 
-                private static void BindQuery(string queryName, List<string> componentNames, Object system, string functionName, bool toCurrentScene)
+        private static void BindQuery(string queryName, List<string> componentNames, Object system, string functionName, bool toCurrentScene)
         {
             var systemBinder = new SystemOneshotBinder(system, functionName);
             if (!SubscribedSystems.ContainsKey(queryName))
