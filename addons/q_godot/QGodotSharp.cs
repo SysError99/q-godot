@@ -1779,6 +1779,7 @@ namespace SysError99
                     QueryObjectRemove(entity.Name, queryName, queryObject);
                 }
                 ArrayEraseDeferred(boundQueries, queryName);
+                boundQueries.Remove(queryName);
                 queryObjects.Clear();
             }
         }

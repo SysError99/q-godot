@@ -276,6 +276,7 @@ func _entity_component_removed(entity: Node, component_name: String, bound_queri
 			if is_instance_valid(system_inst) and system_inst != system:
 				system_inst.call_deferred("free")
 		__array_erase_deferred(bound_queries, query_name);
+		bound_queries.erase(query_name)
 		system_instances.clear()
 
 
