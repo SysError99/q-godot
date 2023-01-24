@@ -109,7 +109,7 @@ func __bind_to_query_node(entity: Node, query_node: Query, subscribers: Array) -
 				continue
 			var component := entity.get_node_or_null(component_name) as Node
 			if not is_instance_valid(component):
-				return
+				break
 			entity.set_meta("$" + component_name, component)
 			binds.push_back(component)
 			if not component.is_connected("tree_exited", self, "_entity_component_removed"):
@@ -207,7 +207,6 @@ func __post_change_scene(current_scene: Node) -> void:
 func register_as_scene(node: Node) -> void:
 	node.add_to_group(_REGISTERED_SCENE)
 	node.connect("child_entered_tree", self, "_entity_entered_scene")
-	node.connect("child_exiting_tree", self, "_entity_exiting_scene")
 	for child_ref in node.get_children():
 		__register_entity(child_ref)
 
@@ -220,12 +219,6 @@ func __register_entity(entity: Node) -> void:
 func _entity_entered_scene(entity: Node) -> void:
 	yield(entity, "ready")
 	__register_entity(entity)
-
-
-func _entity_exiting_scene(entity: Node) -> void:
-	for component_ref in entity.get_children():
-		var component := component_ref as Node
-		component.emit_signal("tree_exited")
 
 
 func _entity_component_added(_new_component: Node, entity) -> void:
@@ -261,7 +254,7 @@ func _entity_component_removed(entity: Node, component_name: String, bound_queri
 
 
 func __array_erase_deferred(array: Array, element) -> void:
-	yield(get_tree(), "idle_frame")
+	yield(_tree, "idle_frame")
 	array.erase(element)
 
 
