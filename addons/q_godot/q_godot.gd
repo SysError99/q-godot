@@ -40,9 +40,6 @@ class HalfQueryReference extends Object:
 			return second_half
 
 
-var second_frame := false
-
-
 var _query_cache := {}
 var _query_half_cache := {}
 var _regex := RegEx.new()
@@ -281,7 +278,3 @@ func _ready() -> void:
 	yield(_root, "ready")
 	_root_ready = true
 	__post_change_scene(_tree.current_scene)
-
-
-func _process(_delta: float) -> void:
-	second_frame = not second_frame
