@@ -1268,7 +1268,10 @@ namespace SysError99
             SceneChanging = true;
             var currentScene = MainTree.CurrentScene;
             var inst = GD.Load<PackedScene>(path).Instance();
-            RemoveEntitiesFromCurrentScene(currentScene);
+            foreach (Node scene in MainTree.GetNodesInGroup(_RegisteredScene))
+            {
+                RemoveEntitiesFromCurrentScene(scene);
+            }
             foreach (var queryName in CurrentSceneSubscribedSystems.Keys)
             {
                 var systems = SubscribedSystems[queryName];

@@ -184,7 +184,8 @@ func change_scene(path: String) -> void:
 	_scene_changing = true
 	var current_scene := _tree.current_scene
 	var inst := (load(path) as PackedScene).instance()
-	__remove_entity_from_current_scene(current_scene)
+	for scene in _tree.get_nodes_in_group(_REGISTERED_SCENE):
+		__remove_entity_from_current_scene(scene)
 	for query_node in _tree.get_nodes_in_group(_ITERATOR):
 		query_node.call("remove_current_scene_subscribers")
 	current_scene.queue_free()
