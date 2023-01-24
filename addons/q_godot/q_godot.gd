@@ -167,7 +167,7 @@ func query(component_names: Array) -> Array:
 # API
 func query_half(component_names: Array) -> HalfQueryReference:
 	var query_name := __get_query_name(component_names)
-	if _query_half_cache.has(query_name):
+	if  query_name in _query_half_cache:
 		return _query_half_cache[query_name]
 	var q := HalfQueryReference.new()
 	var query := query(component_names)
