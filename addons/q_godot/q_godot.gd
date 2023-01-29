@@ -50,7 +50,7 @@ func __get_query_name(component_names: Array) -> String:
 	return _QUERY + "_" + PoolStringArray(component_names).join("_")
 
 
-# API
+# Bind a query to an object or an instantiable object. If you bind a query to instantiated object, 'shared' parameter will be function name string.
 func bind_query(component_names: Array, system: Object = null, shared = null, to_current_scene: bool = false) -> void:
 	if not _root_ready:
 		yield(_root, "ready")
@@ -79,7 +79,7 @@ func bind_query(component_names: Array, system: Object = null, shared = null, to
 			__bind_to_query_node(entity, query_name, query, subscribers)
 
 
-# API
+# Bind a query to an object or an instantiable object for current scene. If you bind a query to instantiated object, 'shared' parameter will be function name string.
 func bind_query_to_current_scene(component_names: Array, system: Object = null, shared = null) -> void:
 	bind_query(component_names, system, shared, true)
 
@@ -142,7 +142,7 @@ func __bind_to_query_node(entity: Node, query_name: String, query: Query, subscr
 			system.set_meta(entity_name, system)
 
 
-# API
+# Obtain a query array.
 func query(component_names: Array) -> Array:
 	var query_name := __get_query_name(component_names)
 	if not query_name in _query_cache:
@@ -152,7 +152,7 @@ func query(component_names: Array) -> Array:
 	return _query_cache[query_name]
 
 
-# API
+# Obtain a half-iteratable query.
 func query_half(component_names: Array) -> HalfQueryReference:
 	var query_name := __get_query_name(component_names)
 	if  query_name in _query_half_cache:
@@ -168,7 +168,7 @@ func query_half(component_names: Array) -> HalfQueryReference:
 	return q
 
 
-# API
+# Change scene with internal function, mandatory to make querying system working properly!
 func change_scene(path: String) -> void:
 	_scene_changing = true
 	var current_scene := _tree.current_scene
@@ -198,10 +198,10 @@ func __remove_entity_from_current_scene(scene: Node) -> void:
 		if not entity.has_meta(_BOUND_QUERIES):
 			continue
 		for query_name in entity.get_meta(_BOUND_QUERIES):
-			remove_entity_from_cache(entity, query_name)
+			__remove_entity_from_cache(entity, query_name)
 
 
-func remove_entity_from_cache(entity: Node, query_name: String) -> void:
+func __remove_entity_from_cache(entity: Node, query_name: String) -> void:
 	if query_name in _query_cache:
 		_query_cache[query_name].erase(entity)
 		if query_name in _query_half_cache:
@@ -221,7 +221,7 @@ func __post_change_scene(current_scene: Node) -> void:
 		register_as_scene(current_scene)
 
 
-# API
+# Register specified node as a scene node.
 func register_as_scene(node: Node) -> void:
 	node.add_to_group(_REGISTERED_SCENE)
 	node.connect("child_entered_tree", self, "_entity_entered_scene")
@@ -264,7 +264,7 @@ func _entity_component_removed(entity: Node, component_name: String, bound_queri
 		entity.remove_from_group(query_name)
 		entity.remove_meta(query_name + "#")
 		entity.remove_meta(query_name + "$")
-		remove_entity_from_cache(entity, query_name)
+		__remove_entity_from_cache(entity, query_name)
 		var entity_name := entity.name
 		for system in bound_systems:
 			var system_inst := system.get_meta(entity_name) as Object
