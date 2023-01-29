@@ -5,24 +5,19 @@ const _COMP_ZERO_ERR = "'component_names' must have at least one member!"
 
 
 const _BOUND_QUERIES = "#BQN"
-const _COMP_NAME = "#CN"
 const _ENTITY = "#E"
-const _ITERATOR = "#I"
 const _QUERY = "#Q"
-const _QUERY_NODES := "#QN"
 const _REGISTERED_SCENE = "#RS"
 const _SHARED_VAR = 1
 const _SYSTEM_CLASS = 0
-const _SYSTEM_BASE_CLASS = "#BC"
+const _SYSTEM_INSTANCE = "#SI"
 const _UNREGISTERED_SCENE = "registered_scene"
 
 
-class Query extends Node:
+class Query extends Object:
 	var component_names := []
 	var current_scene_subscribers := []
 	var subscribers := []
-	func _init() -> void:
-		add_to_group(_ITERATOR)
 	func remove_current_scene_subscribers() -> void:
 		for element in current_scene_subscribers:
 			subscribers.erase(element)
@@ -41,6 +36,7 @@ class HalfQueryReference extends Object:
 			return second_half
 
 
+var _queries := {}
 var _query_cache := {}
 var _query_half_cache := {}
 var _regex := RegEx.new()
@@ -61,26 +57,26 @@ func bind_query(component_names: Array, system: Object = null, shared = null, to
 	assert(component_names.size() > 0, _COMP_ZERO_ERR)
 	var registered_scenes := _tree.get_nodes_in_group(_REGISTERED_SCENE)
 	var query_name := __get_query_name(component_names)
-	var query_node := _root.get_node_or_null(query_name) as Query
 	var subscribers := []
-	if not is_instance_valid(query_node):
-		query_node = Query.new()
-		query_node.name = query_name
-		query_node.component_names = component_names
-		query_node.add_to_group(_QUERY_NODES)
-		_root.add_child(query_node)
+	var query: Query
+	if query_name in _queries:
+		query = _queries[query_name] as Query
+	else:
+		query = Query.new()
+		query.component_names = component_names
+		_queries[query_name] = query
 	if is_instance_valid(system):
 		var new_subscriber := [system, shared]
-		query_node.subscribers.push_back(new_subscriber)
+		query.subscribers.push_back(new_subscriber)
 		if to_current_scene:
-			query_node.current_scene_subscribers.push_back(new_subscriber)
+			query.current_scene_subscribers.push_back(new_subscriber)
 		subscribers = [ new_subscriber ]
 	for scene_ref in registered_scenes:
 		var scene := scene_ref as Node
 		for entity in scene.get_children():
 			if entity.is_in_group(_REGISTERED_SCENE):
 				continue
-			__bind_to_query_node(entity, query_node, subscribers)
+			__bind_to_query_node(entity, query_name, query, subscribers)
 
 
 # API
@@ -88,21 +84,14 @@ func bind_query_to_current_scene(component_names: Array, system: Object = null, 
 	bind_query(component_names, system, shared, true)
 
 
-func __bind_to_query_nodes(entity: Node):
-	for query_node in _tree.get_nodes_in_group(_QUERY_NODES):
-		__bind_to_query_node(entity, query_node, query_node.subscribers)
-
-
-func __bind_to_query_node(entity: Node, query_node: Query, subscribers: Array) -> void:
-	var query_name := query_node.name
-	var component_names := query_node.component_names
-	if entity.get_class() != component_names[0]:
+func __bind_to_query_node(entity: Node, query_name: String, query: Query, subscribers: Array) -> void:
+	if entity.get_class() != query.component_names[0]:
 		return
 	var binds := entity.get_meta(query_name + "#", []) as Array
 	var bound_queries := entity.get_meta(_BOUND_QUERIES, []) as Array
-	var system_instances := entity.get_meta(query_name + "$", []) as Array
+	var bound_systems := entity.get_meta(query_name + "$", []) as Array
 	if not query_name in bound_queries:
-		component_names = component_names.duplicate()
+		var component_names = query.component_names.duplicate()
 		component_names.remove(0)
 		var number_of_groups := 0
 		for component_name in component_names:
@@ -119,8 +108,7 @@ func __bind_to_query_node(entity: Node, query_node: Query, subscribers: Array) -
 		if binds.size() == component_names.size() - number_of_groups:
 			entity.add_to_group(query_name)
 			entity.set_meta(query_name + "#", binds)
-			entity.set_meta(query_name + "$", system_instances)
-			entity.set_meta(_BOUND_QUERIES, bound_queries)
+			entity.set_meta(query_name + "$", bound_systems)
 			bound_queries.push_back(query_name)
 			if query_name in _query_cache:
 				var cache := _query_cache[query_name] as Array
@@ -136,7 +124,7 @@ func __bind_to_query_node(entity: Node, query_node: Query, subscribers: Array) -
 		var system := system_ref[_SYSTEM_CLASS] as Object
 		if system.has_meta(entity_name):
 			continue
-		system_instances.push_back(system)
+		bound_systems.push_back(system)
 		if system.has_method("new"):
 			var system_inst := system.new() as Object
 			system_inst.set("parent", entity)
@@ -145,6 +133,7 @@ func __bind_to_query_node(entity: Node, query_node: Query, subscribers: Array) -
 				var bind_name := _regex.sub(component.name, "_$1", true).to_lower()
 				system_inst.set(bind_name.substr(1, bind_name.length()), component)
 			system.set_meta(entity_name, system_inst)
+			system.set_meta(_SYSTEM_INSTANCE, true)
 			entity.add_child(system_inst)
 		else:
 			binds = binds.duplicate()
@@ -186,8 +175,8 @@ func change_scene(path: String) -> void:
 	var inst := (load(path) as PackedScene).instance()
 	for scene in _tree.get_nodes_in_group(_REGISTERED_SCENE):
 		__remove_entity_from_current_scene(scene)
-	for query_node in _tree.get_nodes_in_group(_ITERATOR):
-		query_node.call("remove_current_scene_subscribers")
+	for query_name in _queries:
+		_queries[query_name].call("remove_current_scene_subscribers")
 	current_scene.queue_free()
 	yield(current_scene, "tree_exited")
 	_root.set_meta("current_scene", inst)
@@ -244,8 +233,11 @@ func __register_entity(entity: Node) -> void:
 	if entity.is_in_group(_ENTITY):
 		return
 	entity.connect("child_entered_tree", self, "_entity_component_added", [ entity ])
-	__bind_to_query_nodes(entity)
+	entity.set_meta(_BOUND_QUERIES, [])
 	entity.add_to_group(_ENTITY)
+	for query_name in _queries:
+		var query := _queries[query_name] as Query
+		__bind_to_query_node(entity, query_name, query, query.subscribers)
 
 
 func _entity_entered_scene(entity: Node) -> void:
@@ -254,7 +246,11 @@ func _entity_entered_scene(entity: Node) -> void:
 
 
 func _entity_component_added(_new_component: Node, entity) -> void:
-	__bind_to_query_nodes(entity)
+	var component_name := _new_component.name
+	for query_name in _queries:
+		if component_name in query_name:
+			var query := _queries[query_name] as Query
+			__bind_to_query_node(entity, query_name, query, query.subscribers)
 
 
 func _entity_component_removed(entity: Node, component_name: String, bound_queries: Array) -> void:
@@ -264,20 +260,20 @@ func _entity_component_removed(entity: Node, component_name: String, bound_queri
 	for query_name in bound_queries:
 		if not component_name in query_name:
 			continue
-		var system_instances := entity.get_meta(query_name + "$", []) as Array
+		var bound_systems := entity.get_meta(query_name + "$", []) as Array
 		entity.remove_from_group(query_name)
 		entity.remove_meta(query_name + "#")
 		entity.remove_meta(query_name + "$")
 		remove_entity_from_cache(entity, query_name)
 		var entity_name := entity.name
-		for system in system_instances:
+		for system in bound_systems:
 			var system_inst := system.get_meta(entity_name) as Object
 			system.remove_meta(entity_name)
-			if is_instance_valid(system_inst) and system_inst != system:
+			if system_inst.get_meta(_SYSTEM_INSTANCE, false):
 				system_inst.call_deferred("free")
 		__array_erase_deferred(bound_queries, query_name);
 		bound_queries.erase(query_name)
-		system_instances.clear()
+		bound_systems.clear()
 
 
 func __array_erase_deferred(array: Array, element) -> void:

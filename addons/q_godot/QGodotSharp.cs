@@ -1364,29 +1364,23 @@ namespace SysError99
         {
             if (entity.IsInGroup(_Entity)) return;
             entity.Connect("child_entered_tree", Self, nameof(_EntityComponentAdded), new Godot.Collections.Array { entity });
-            BindToQueryObjectLists(entity);
             entity.AddToGroup(_Entity);
-        }
-
-        private static void BindToQueryObjectLists(Node entity)
-        {
-            foreach (var subTemplate in ComponentNames)
+            foreach (var queryName in ComponentNames.Keys)
             {
-                BindToQueryObjectList(entity, subTemplate.Key);
+                BindToQueryObjectList(entity, queryName);
             }
         }
 
         private static void BindToQueryObjectList(Node entity, string queryName)
         {
-            var componentNames = ComponentNames[queryName];
-            if (entity.GetType().Name != componentNames[0]) return;
+            if (entity.GetType().Name != ComponentNames[queryName][0]) return;
             var binds = entity.GetMeta(queryName + "#", new Godot.Collections.Array()) as Godot.Collections.Array;
             var boundQueries = entity.GetMeta(_BoundQueries, new Godot.Collections.Array()) as Godot.Collections.Array;
             var queryObjects = entity.GetMeta(queryName + "$", new Godot.Collections.Array()) as Godot.Collections.Array;
             QueryObject queryObject;
             if (!boundQueries.Contains(queryName))
             {
-                componentNames = new List<string>(componentNames);
+                var componentNames = new List<string>(ComponentNames[queryName]);
                 componentNames.RemoveAt(0);
                 foreach (var componentName in componentNames)
                 {
@@ -1749,7 +1743,14 @@ namespace SysError99
 
         private void _EntityComponentAdded(Node newComponent, Node entity)
         {
-            BindToQueryObjectLists(entity);
+            var componentName = newComponent.Name;
+            foreach (var queryName in ComponentNames.Keys)
+            {
+                if (queryName.Contains(componentName))
+                {
+                    BindToQueryObjectList(entity, queryName);
+                }
+            }
         }
 
         private void _EntityComponentRemoved(Node entity, string componentName, Godot.Collections.Array boundQueries)
