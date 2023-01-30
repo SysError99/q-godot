@@ -1,50 +1,54 @@
 using Godot;
+using System.Linq;
 using System.Collections.Generic;
+using Array = Godot.Collections.Array;
+using String = System.String;
+using ArgumentOutOfRangeException = System.ArgumentOutOfRangeException;
+using NullReferenceException = System.NullReferenceException;
+using RankException = System.RankException;
 
 namespace SysError99
 {
     public class QGodotSharp : Node
     {
-        private const string _Entity = "#E";
-        private const string _BoundQueries = "#QN";
-        private const string _RegisteredScene = "#RS";
-        private const string _UnregisteredScene = "registered_scene";
+        private const string QGodotNotReadyExceptionMessage = "QGodot core isn't ready yet, consider await next frame before challing this funciton.";
 
+        private static Object QGodot;
         private static Viewport Root;
         private static SceneTree MainTree;
         private static QGodotSharp Self;
-        private static Dictionary<string, Dictionary<string, QueryObject0>> Queries0 = new();
-        private static Dictionary<string, Dictionary<string, QueryObject1>> Queries1 = new();
-        private static Dictionary<string, Dictionary<string, QueryObject2>> Queries2 = new();
-        private static Dictionary<string, Dictionary<string, QueryObject3>> Queries3 = new();
-        private static Dictionary<string, Dictionary<string, QueryObject4>> Queries4 = new();
-        private static Dictionary<string, Dictionary<string, QueryObject5>> Queries5 = new();
-        private static Dictionary<string, Dictionary<string, QueryObject6>> Queries6 = new();
-        private static Dictionary<string, Dictionary<string, QueryObject7>> Queries7 = new();
-        private static Dictionary<string, Dictionary<string, QueryObject8>> Queries8 = new();
-        private static Dictionary<string, Dictionary<string, QueryObject9>> Queries9 = new();
-        private static Dictionary<string, Dictionary<string, QueryObject10>> Queries10 = new();
-        private static Dictionary<string, Dictionary<string, QueryObject11>> Queries11 = new();
-        private static Dictionary<string, Dictionary<string, QueryObject12>> Queries12 = new();
-        private static Dictionary<string, Dictionary<string, QueryObject13>> Queries13 = new();
-        private static Dictionary<string, Dictionary<string, QueryObject14>> Queries14 = new();
-        private static Dictionary<string, Dictionary<string, QueryObject15>> Queries15 = new();
-        private static Dictionary<string, Dictionary<string, QueryObject16>> Queries16 = new();
-        private static Dictionary<string, List<string>> ComponentNames = new();
+        private static Dictionary<string, Dictionary<ulong, QueryObject0>> Queries0 = new();
+        private static Dictionary<string, Dictionary<ulong, QueryObject1>> Queries1 = new();
+        private static Dictionary<string, Dictionary<ulong, QueryObject2>> Queries2 = new();
+        private static Dictionary<string, Dictionary<ulong, QueryObject3>> Queries3 = new();
+        private static Dictionary<string, Dictionary<ulong, QueryObject4>> Queries4 = new();
+        private static Dictionary<string, Dictionary<ulong, QueryObject5>> Queries5 = new();
+        private static Dictionary<string, Dictionary<ulong, QueryObject6>> Queries6 = new();
+        private static Dictionary<string, Dictionary<ulong, QueryObject7>> Queries7 = new();
+        private static Dictionary<string, Dictionary<ulong, QueryObject8>> Queries8 = new();
+        private static Dictionary<string, Dictionary<ulong, QueryObject9>> Queries9 = new();
+        private static Dictionary<string, Dictionary<ulong, QueryObject10>> Queries10 = new();
+        private static Dictionary<string, Dictionary<ulong, QueryObject11>> Queries11 = new();
+        private static Dictionary<string, Dictionary<ulong, QueryObject12>> Queries12 = new();
+        private static Dictionary<string, Dictionary<ulong, QueryObject13>> Queries13 = new();
+        private static Dictionary<string, Dictionary<ulong, QueryObject14>> Queries14 = new();
+        private static Dictionary<string, Dictionary<ulong, QueryObject15>> Queries15 = new();
+        private static Dictionary<string, Dictionary<ulong, QueryObject16>> Queries16 = new();
         private static Dictionary<string, List<SystemOneshotBinder>> SubscribedSystems = new();
         private static Dictionary<string, List<SystemOneshotBinder>> CurrentSceneSubscribedSystems = new();
 
-        private static bool SceneChanging = false;
+        private static List<Array> PreQueryList = new();
 
         # region Query Bind
         public static void BindQuery<T>(Object system, string functionName, bool toCurrentScene = false)
             where T : Object
         {
-            var componentNames = new List<string>
-            {
-                typeof(T).Name,
-            };
-            var queryName = GetQueryName(componentNames);
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
+                {
+                    typeof(T).Name,
+                }
+            );
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
             Query<T>();
         }
@@ -53,12 +57,11 @@ namespace SysError99
             where T0 : Object
             where T1 : Object
         {
-            var componentNames = new List<string>
+            var (queryName, componentNames) = PrepareQuery(new Array
             {
                 typeof(T0).Name,
                 typeof(T1).Name,
-            };
-            var queryName = GetQueryName(componentNames);
+            });
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
             Query<T0, T1>();
         }
@@ -68,13 +71,12 @@ namespace SysError99
             where T1 : Object
             where T2 : Object
         {
-            var componentNames = new List<string>
+            var (queryName, componentNames) = PrepareQuery(new Array
             {
                 typeof(T0).Name,
                 typeof(T1).Name,
                 typeof(T2).Name,
-            };
-            var queryName = GetQueryName(componentNames);
+            });
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
             Query<T0, T1, T2>();
         }
@@ -85,14 +87,13 @@ namespace SysError99
             where T2 : Object
             where T3 : Object
         {
-            var componentNames = new List<string>
+            var (queryName, componentNames) = PrepareQuery(new Array
             {
                 typeof(T0).Name,
                 typeof(T1).Name,
                 typeof(T2).Name,
                 typeof(T3).Name,
-            };
-            var queryName = GetQueryName(componentNames);
+            });
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
             Query<T0, T1, T2, T3>();
         }
@@ -104,15 +105,14 @@ namespace SysError99
             where T3 : Object
             where T4 : Object
         {
-            var componentNames = new List<string>
+            var (queryName, componentNames) = PrepareQuery(new Array
             {
                 typeof(T0).Name,
                 typeof(T1).Name,
                 typeof(T2).Name,
                 typeof(T3).Name,
                 typeof(T4).Name,
-            };
-            var queryName = GetQueryName(componentNames);
+            });
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
             Query<T0, T1, T2, T3, T4>();
         }
@@ -125,7 +125,7 @@ namespace SysError99
             where T4 : Object
             where T5 : Object
         {
-            var componentNames = new List<string>
+            var (queryName, componentNames) = PrepareQuery(new Array
             {
                 typeof(T0).Name,
                 typeof(T1).Name,
@@ -133,8 +133,7 @@ namespace SysError99
                 typeof(T3).Name,
                 typeof(T4).Name,
                 typeof(T5).Name,
-            };
-            var queryName = GetQueryName(componentNames);
+            });
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
             Query<T0, T1, T2, T3, T4, T5>();
         }
@@ -148,7 +147,7 @@ namespace SysError99
             where T5 : Object
             where T6 : Object
         {
-            var componentNames = new List<string>
+            var (queryName, componentNames) = PrepareQuery(new Array
             {
                 typeof(T0).Name,
                 typeof(T1).Name,
@@ -157,8 +156,7 @@ namespace SysError99
                 typeof(T4).Name,
                 typeof(T5).Name,
                 typeof(T6).Name,
-            };
-            var queryName = GetQueryName(componentNames);
+            });
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
             Query<T0, T1, T2, T3, T4, T5, T6>();
         }
@@ -173,7 +171,7 @@ namespace SysError99
             where T6 : Object
             where T7 : Object
         {
-            var componentNames = new List<string>
+            var (queryName, componentNames) = PrepareQuery(new Array
             {
                 typeof(T0).Name,
                 typeof(T1).Name,
@@ -183,8 +181,7 @@ namespace SysError99
                 typeof(T5).Name,
                 typeof(T6).Name,
                 typeof(T7).Name,
-            };
-            var queryName = GetQueryName(componentNames);
+            });
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
             Query<T0, T1, T2, T3, T4, T5, T6, T7>();
         }
@@ -200,7 +197,7 @@ namespace SysError99
             where T7 : Object
             where T8 : Object
         {
-            var componentNames = new List<string>
+            var (queryName, componentNames) = PrepareQuery(new Array
             {
                 typeof(T0).Name,
                 typeof(T1).Name,
@@ -211,8 +208,7 @@ namespace SysError99
                 typeof(T6).Name,
                 typeof(T7).Name,
                 typeof(T8).Name,
-            };
-            var queryName = GetQueryName(componentNames);
+            });
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
             Query<T0, T1, T2, T3, T4, T5, T6, T7, T8>();
         }
@@ -229,7 +225,7 @@ namespace SysError99
             where T8 : Object
             where T9 : Object
         {
-            var componentNames = new List<string>
+            var (queryName, componentNames) = PrepareQuery(new Array
             {
                 typeof(T0).Name,
                 typeof(T1).Name,
@@ -241,8 +237,7 @@ namespace SysError99
                 typeof(T7).Name,
                 typeof(T8).Name,
                 typeof(T9).Name,
-            };
-            var queryName = GetQueryName(componentNames);
+            });
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
             Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>();
         }
@@ -260,7 +255,7 @@ namespace SysError99
             where T9 : Object
             where T10 : Object
         {
-            var componentNames = new List<string>
+            var (queryName, componentNames) = PrepareQuery(new Array
             {
                 typeof(T0).Name,
                 typeof(T1).Name,
@@ -273,8 +268,7 @@ namespace SysError99
                 typeof(T8).Name,
                 typeof(T9).Name,
                 typeof(T10).Name,
-            };
-            var queryName = GetQueryName(componentNames);
+            });
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
             Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>();
         }
@@ -293,7 +287,7 @@ namespace SysError99
             where T10 : Object
             where T11 : Object
         {
-            var componentNames = new List<string>
+            var (queryName, componentNames) = PrepareQuery(new Array
             {
                 typeof(T0).Name,
                 typeof(T1).Name,
@@ -307,8 +301,7 @@ namespace SysError99
                 typeof(T9).Name,
                 typeof(T10).Name,
                 typeof(T11).Name,
-            };
-            var queryName = GetQueryName(componentNames);
+            });
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
             Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>();
         }
@@ -328,7 +321,7 @@ namespace SysError99
             where T11 : Object
             where T12 : Object
         {
-            var componentNames = new List<string>
+            var (queryName, componentNames) = PrepareQuery(new Array
             {
                 typeof(T0).Name,
                 typeof(T1).Name,
@@ -343,8 +336,7 @@ namespace SysError99
                 typeof(T10).Name,
                 typeof(T11).Name,
                 typeof(T12).Name,
-            };
-            var queryName = GetQueryName(componentNames);
+            });
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
             Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>();
         }
@@ -365,7 +357,7 @@ namespace SysError99
             where T12 : Object
             where T13 : Object
         {
-            var componentNames = new List<string>
+            var (queryName, componentNames) = PrepareQuery(new Array
             {
                 typeof(T0).Name,
                 typeof(T1).Name,
@@ -381,8 +373,7 @@ namespace SysError99
                 typeof(T11).Name,
                 typeof(T12).Name,
                 typeof(T13).Name,
-            };
-            var queryName = GetQueryName(componentNames);
+            });
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
             Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>();
         }
@@ -404,7 +395,7 @@ namespace SysError99
             where T13 : Object
             where T14 : Object
         {
-            var componentNames = new List<string>
+            var (queryName, componentNames) = PrepareQuery(new Array
             {
                 typeof(T0).Name,
                 typeof(T1).Name,
@@ -421,8 +412,7 @@ namespace SysError99
                 typeof(T12).Name,
                 typeof(T13).Name,
                 typeof(T14).Name,
-            };
-            var queryName = GetQueryName(componentNames);
+            });
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
             Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>();
         }
@@ -445,7 +435,7 @@ namespace SysError99
             where T14 : Object
             where T15 : Object
         {
-            var componentNames = new List<string>
+            var (queryName, componentNames) = PrepareQuery(new Array
             {
                 typeof(T0).Name,
                 typeof(T1).Name,
@@ -463,8 +453,7 @@ namespace SysError99
                 typeof(T13).Name,
                 typeof(T14).Name,
                 typeof(T15).Name,
-            };
-            var queryName = GetQueryName(componentNames);
+            });
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
             Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>();
         }
@@ -488,7 +477,7 @@ namespace SysError99
             where T15 : Object
             where T16 : Object
         {
-            var componentNames = new List<string>
+            var (queryName, componentNames) = PrepareQuery(new Array
             {
                 typeof(T0).Name,
                 typeof(T1).Name,
@@ -507,13 +496,12 @@ namespace SysError99
                 typeof(T14).Name,
                 typeof(T15).Name,
                 typeof(T16).Name,
-            };
-            var queryName = GetQueryName(componentNames);
+            });
             BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
             Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>();
         }
 
-        private static void BindQuery(string queryName, List<string> componentNames, Object system, string functionName, bool toCurrentScene)
+        private static void BindQuery(string queryName, Array componentNames, Object system, string functionName, bool toCurrentScene)
         {
             var systemBinder = new SystemOneshotBinder(system, functionName);
             if (!SubscribedSystems.ContainsKey(queryName))
@@ -535,61 +523,56 @@ namespace SysError99
                     CurrentSceneSubscribedSystems[queryName].Add(systemBinder);
                 }
             }
+            if (!IsInstanceValid(QGodot))
+            {
+                throw new NullReferenceException(QGodotNotReadyExceptionMessage);
+            }
+            else
+            {
+                QGodot.Call("bind_query", componentNames, system, functionName, toCurrentScene);
+            }
         }
         # endregion
 
         #region Query
-
-        public static IEnumerable<T> Query<T>()
-            where T : Object
+        public static IEnumerable<T0> Query<T0>()
+            where T0 : Object
         {
-            var componentNames = new List<string>
-            {
-                typeof(T).Name,
-            };
-            var queryName = GetQueryName(componentNames);
-            if (Queries0.ContainsKey(queryName))
-            {
-                foreach (var obj in Queries0[queryName].Values)
-                    yield return obj.Get<T>();
-            }
-            else
-            {
-                Queries0.Add(queryName, new Dictionary<string, QueryObject0>());
-                QueryBuild(queryName, componentNames);
-                foreach (var obj in Query<T>())
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
                 {
-                    yield return obj;
-                }
+                    typeof(T0).Name,
+                }  
+            );
+            if (!Queries0.ContainsKey(queryName))
+            {
+                Query(queryName, componentNames);
             }
-            yield break;
+            foreach (var q in Queries0[queryName].Values)
+            {
+                yield return q.Get<T0>();
+            }
         }
 
         public static IEnumerable<(T0, T1)> Query<T0, T1>()
             where T0 : Object
             where T1 : Object
         {
-            var componentNames = new List<string>
-            {
-                typeof(T0).Name,
-                typeof(T1).Name,
-            };
-            var queryName = GetQueryName(componentNames);
-            if (Queries1.ContainsKey(queryName))
-            {
-                foreach (var obj in Queries1[queryName].Values)
-                    yield return obj.Get<T0, T1>();
-            }
-            else
-            {
-                Queries1.Add(queryName, new Dictionary<string, QueryObject1>());
-                QueryBuild(queryName, componentNames);
-                foreach (var obj in Query<T0, T1>())
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
                 {
-                    yield return obj;
-                }
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                }  
+            );
+            if (!Queries1.ContainsKey(queryName))
+            {
+                Query(queryName, componentNames);
             }
-            yield break;
+            foreach (var q in Queries1[queryName].Values)
+            {
+                yield return q.Get<T0, T1>();
+            }
         }
 
         public static IEnumerable<(T0, T1, T2)> Query<T0, T1, T2>()
@@ -597,28 +580,22 @@ namespace SysError99
             where T1 : Object
             where T2 : Object
         {
-            var componentNames = new List<string>
-            {
-                typeof(T0).Name,
-                typeof(T1).Name,
-                typeof(T2).Name,
-            };
-            var queryName = GetQueryName(componentNames);
-            if (Queries2.ContainsKey(queryName))
-            {
-                foreach (var obj in Queries2[queryName].Values)
-                    yield return obj.Get<T0, T1, T2>();
-            }
-            else
-            {
-                Queries2.Add(queryName, new Dictionary<string, QueryObject2>());
-                QueryBuild(queryName, componentNames);
-                foreach (var obj in Query<T0, T1, T2>())
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
                 {
-                    yield return obj;
-                }
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                }  
+            );
+            if (!Queries2.ContainsKey(queryName))
+            {
+                Query(queryName, componentNames);
             }
-            yield break;
+            foreach (var q in Queries2[queryName].Values)
+            {
+                yield return q.Get<T0, T1, T2>();
+            }
         }
 
         public static IEnumerable<(T0, T1, T2, T3)> Query<T0, T1, T2, T3>()
@@ -627,29 +604,23 @@ namespace SysError99
             where T2 : Object
             where T3 : Object
         {
-            var componentNames = new List<string>
-            {
-                typeof(T0).Name,
-                typeof(T1).Name,
-                typeof(T2).Name,
-                typeof(T3).Name,
-            };
-            var queryName = GetQueryName(componentNames);
-            if (Queries3.ContainsKey(queryName))
-            {
-                foreach (var obj in Queries3[queryName].Values)
-                    yield return obj.Get<T0, T1, T2, T3>();
-            }
-            else
-            {
-                Queries3.Add(queryName, new Dictionary<string, QueryObject3>());
-                QueryBuild(queryName, componentNames);
-                foreach (var obj in Query<T0, T1, T2, T3>())
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
                 {
-                    yield return obj;
-                }
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                    typeof(T3).Name,
+                }  
+            );
+            if (!Queries3.ContainsKey(queryName))
+            {
+                Query(queryName, componentNames);
             }
-            yield break;
+            foreach (var q in Queries3[queryName].Values)
+            {
+                yield return q.Get<T0, T1, T2, T3>();
+            }
         }
 
         public static IEnumerable<(T0, T1, T2, T3, T4)> Query<T0, T1, T2, T3, T4>()
@@ -659,30 +630,24 @@ namespace SysError99
             where T3 : Object
             where T4 : Object
         {
-            var componentNames = new List<string>
-            {
-                typeof(T0).Name,
-                typeof(T1).Name,
-                typeof(T2).Name,
-                typeof(T3).Name,
-                typeof(T4).Name,
-            };
-            var queryName = GetQueryName(componentNames);
-            if (Queries4.ContainsKey(queryName))
-            {
-                foreach (var obj in Queries4[queryName].Values)
-                    yield return obj.Get<T0, T1, T2, T3, T4>();
-            }
-            else
-            {
-                Queries4.Add(queryName, new Dictionary<string, QueryObject4>());
-                QueryBuild(queryName, componentNames);
-                foreach (var obj in Query<T0, T1, T2, T3, T4>())
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
                 {
-                    yield return obj;
-                }
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                    typeof(T3).Name,
+                    typeof(T4).Name,
+                }  
+            );
+            if (!Queries4.ContainsKey(queryName))
+            {
+                Query(queryName, componentNames);
             }
-            yield break;
+            foreach (var q in Queries4[queryName].Values)
+            {
+                yield return q.Get<T0, T1, T2, T3, T4>();
+            }
         }
 
         public static IEnumerable<(T0, T1, T2, T3, T4, T5)> Query<T0, T1, T2, T3, T4, T5>()
@@ -693,31 +658,25 @@ namespace SysError99
             where T4 : Object
             where T5 : Object
         {
-            var componentNames = new List<string>
-            {
-                typeof(T0).Name,
-                typeof(T1).Name,
-                typeof(T2).Name,
-                typeof(T3).Name,
-                typeof(T4).Name,
-                typeof(T5).Name,
-            };
-            var queryName = GetQueryName(componentNames);
-            if (Queries5.ContainsKey(queryName))
-            {
-                foreach (var obj in Queries5[queryName].Values)
-                    yield return obj.Get<T0, T1, T2, T3, T4, T5>();
-            }
-            else
-            {
-                Queries5.Add(queryName, new Dictionary<string, QueryObject5>());
-                QueryBuild(queryName, componentNames);
-                foreach (var obj in Query<T0, T1, T2, T3, T4, T5>())
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
                 {
-                    yield return obj;
-                }
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                    typeof(T3).Name,
+                    typeof(T4).Name,
+                    typeof(T5).Name,
+                }  
+            );
+            if (!Queries5.ContainsKey(queryName))
+            {
+                Query(queryName, componentNames);
             }
-            yield break;
+            foreach (var q in Queries5[queryName].Values)
+            {
+                yield return q.Get<T0, T1, T2, T3, T4, T5>();
+            }
         }
 
         public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6)> Query<T0, T1, T2, T3, T4, T5, T6>()
@@ -729,32 +688,26 @@ namespace SysError99
             where T5 : Object
             where T6 : Object
         {
-            var componentNames = new List<string>
-            {
-                typeof(T0).Name,
-                typeof(T1).Name,
-                typeof(T2).Name,
-                typeof(T3).Name,
-                typeof(T4).Name,
-                typeof(T5).Name,
-                typeof(T6).Name,
-            };
-            var queryName = GetQueryName(componentNames);
-            if (Queries6.ContainsKey(queryName))
-            {
-                foreach (var obj in Queries6[queryName].Values)
-                    yield return obj.Get<T0, T1, T2, T3, T4, T5, T6>();
-            }
-            else
-            {
-                Queries6.Add(queryName, new Dictionary<string, QueryObject6>());
-                QueryBuild(queryName, componentNames);
-                foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6>())
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
                 {
-                    yield return obj;
-                }
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                    typeof(T3).Name,
+                    typeof(T4).Name,
+                    typeof(T5).Name,
+                    typeof(T6).Name,
+                }  
+            );
+            if (!Queries6.ContainsKey(queryName))
+            {
+                Query(queryName, componentNames);
             }
-            yield break;
+            foreach (var q in Queries6[queryName].Values)
+            {
+                yield return q.Get<T0, T1, T2, T3, T4, T5, T6>();
+            }
         }
 
         public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7)> Query<T0, T1, T2, T3, T4, T5, T6, T7>()
@@ -767,33 +720,27 @@ namespace SysError99
             where T6 : Object
             where T7 : Object
         {
-            var componentNames = new List<string>
-            {
-                typeof(T0).Name,
-                typeof(T1).Name,
-                typeof(T2).Name,
-                typeof(T3).Name,
-                typeof(T4).Name,
-                typeof(T5).Name,
-                typeof(T6).Name,
-                typeof(T7).Name,
-            };
-            var queryName = GetQueryName(componentNames);
-            if (Queries7.ContainsKey(queryName))
-            {
-                foreach (var obj in Queries7[queryName].Values)
-                    yield return obj.Get<T0, T1, T2, T3, T4, T5, T6, T7>();
-            }
-            else
-            {
-                Queries7.Add(queryName, new Dictionary<string, QueryObject7>());
-                QueryBuild(queryName, componentNames);
-                foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7>())
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
                 {
-                    yield return obj;
-                }
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                    typeof(T3).Name,
+                    typeof(T4).Name,
+                    typeof(T5).Name,
+                    typeof(T6).Name,
+                    typeof(T7).Name,
+                }  
+            );
+            if (!Queries7.ContainsKey(queryName))
+            {
+                Query(queryName, componentNames);
             }
-            yield break;
+            foreach (var q in Queries7[queryName].Values)
+            {
+                yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7>();
+            }
         }
 
         public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8)> Query<T0, T1, T2, T3, T4, T5, T6, T7, T8>()
@@ -807,34 +754,28 @@ namespace SysError99
             where T7 : Object
             where T8 : Object
         {
-            var componentNames = new List<string>
-            {
-                typeof(T0).Name,
-                typeof(T1).Name,
-                typeof(T2).Name,
-                typeof(T3).Name,
-                typeof(T4).Name,
-                typeof(T5).Name,
-                typeof(T6).Name,
-                typeof(T7).Name,
-                typeof(T8).Name,
-            };
-            var queryName = GetQueryName(componentNames);
-            if (Queries8.ContainsKey(queryName))
-            {
-                foreach (var obj in Queries8[queryName].Values)
-                    yield return obj.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8>();
-            }
-            else
-            {
-                Queries8.Add(queryName, new Dictionary<string, QueryObject8>());
-                QueryBuild(queryName, componentNames);
-                foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8>())
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
                 {
-                    yield return obj;
-                }
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                    typeof(T3).Name,
+                    typeof(T4).Name,
+                    typeof(T5).Name,
+                    typeof(T6).Name,
+                    typeof(T7).Name,
+                    typeof(T8).Name,
+                }  
+            );
+            if (!Queries8.ContainsKey(queryName))
+            {
+                Query(queryName, componentNames);
             }
-            yield break;
+            foreach (var q in Queries8[queryName].Values)
+            {
+                yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8>();
+            }
         }
 
         public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9)> Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>()
@@ -849,35 +790,29 @@ namespace SysError99
             where T8 : Object
             where T9 : Object
         {
-            var componentNames = new List<string>
-            {
-                typeof(T0).Name,
-                typeof(T1).Name,
-                typeof(T2).Name,
-                typeof(T3).Name,
-                typeof(T4).Name,
-                typeof(T5).Name,
-                typeof(T6).Name,
-                typeof(T7).Name,
-                typeof(T8).Name,
-                typeof(T9).Name,
-            };
-            var queryName = GetQueryName(componentNames);
-            if (Queries9.ContainsKey(queryName))
-            {
-                foreach (var obj in Queries9[queryName].Values)
-                    yield return obj.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>();
-            }
-            else
-            {
-                Queries9.Add(queryName, new Dictionary<string, QueryObject9>());
-                QueryBuild(queryName, componentNames);
-                foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>())
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
                 {
-                    yield return obj;
-                }
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                    typeof(T3).Name,
+                    typeof(T4).Name,
+                    typeof(T5).Name,
+                    typeof(T6).Name,
+                    typeof(T7).Name,
+                    typeof(T8).Name,
+                    typeof(T9).Name,
+                }  
+            );
+            if (!Queries9.ContainsKey(queryName))
+            {
+                Query(queryName, componentNames);
             }
-            yield break;
+            foreach (var q in Queries9[queryName].Values)
+            {
+                yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>();
+            }
         }
 
         public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)> Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>()
@@ -893,36 +828,30 @@ namespace SysError99
             where T9 : Object
             where T10 : Object
         {
-            var componentNames = new List<string>
-            {
-                typeof(T0).Name,
-                typeof(T1).Name,
-                typeof(T2).Name,
-                typeof(T3).Name,
-                typeof(T4).Name,
-                typeof(T5).Name,
-                typeof(T6).Name,
-                typeof(T7).Name,
-                typeof(T8).Name,
-                typeof(T9).Name,
-                typeof(T10).Name,
-            };
-            var queryName = GetQueryName(componentNames);
-            if (Queries10.ContainsKey(queryName))
-            {
-                foreach (var obj in Queries10[queryName].Values)
-                    yield return obj.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>();
-            }
-            else
-            {
-                Queries10.Add(queryName, new Dictionary<string, QueryObject10>());
-                QueryBuild(queryName, componentNames);
-                foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>())
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
                 {
-                    yield return obj;
-                }
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                    typeof(T3).Name,
+                    typeof(T4).Name,
+                    typeof(T5).Name,
+                    typeof(T6).Name,
+                    typeof(T7).Name,
+                    typeof(T8).Name,
+                    typeof(T9).Name,
+                    typeof(T10).Name,
+                }  
+            );
+            if (!Queries10.ContainsKey(queryName))
+            {
+                Query(queryName, componentNames);
             }
-            yield break;
+            foreach (var q in Queries10[queryName].Values)
+            {
+                yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>();
+            }
         }
 
         public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11)> Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>()
@@ -939,37 +868,31 @@ namespace SysError99
             where T10 : Object
             where T11 : Object
         {
-            var componentNames = new List<string>
-            {
-                typeof(T0).Name,
-                typeof(T1).Name,
-                typeof(T2).Name,
-                typeof(T3).Name,
-                typeof(T4).Name,
-                typeof(T5).Name,
-                typeof(T6).Name,
-                typeof(T7).Name,
-                typeof(T8).Name,
-                typeof(T9).Name,
-                typeof(T10).Name,
-                typeof(T11).Name,
-            };
-            var queryName = GetQueryName(componentNames);
-            if (Queries11.ContainsKey(queryName))
-            {
-                foreach (var obj in Queries11[queryName].Values)
-                    yield return obj.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>();
-            }
-            else
-            {
-                Queries11.Add(queryName, new Dictionary<string, QueryObject11>());
-                QueryBuild(queryName, componentNames);
-                foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>())
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
                 {
-                    yield return obj;
-                }
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                    typeof(T3).Name,
+                    typeof(T4).Name,
+                    typeof(T5).Name,
+                    typeof(T6).Name,
+                    typeof(T7).Name,
+                    typeof(T8).Name,
+                    typeof(T9).Name,
+                    typeof(T10).Name,
+                    typeof(T11).Name,
+                }  
+            );
+            if (!Queries11.ContainsKey(queryName))
+            {
+                Query(queryName, componentNames);
             }
-            yield break;
+            foreach (var q in Queries11[queryName].Values)
+            {
+                yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>();
+            }
         }
 
         public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12)> Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>()
@@ -987,38 +910,32 @@ namespace SysError99
             where T11 : Object
             where T12 : Object
         {
-            var componentNames = new List<string>
-            {
-                typeof(T0).Name,
-                typeof(T1).Name,
-                typeof(T2).Name,
-                typeof(T3).Name,
-                typeof(T4).Name,
-                typeof(T5).Name,
-                typeof(T6).Name,
-                typeof(T7).Name,
-                typeof(T8).Name,
-                typeof(T9).Name,
-                typeof(T10).Name,
-                typeof(T11).Name,
-                typeof(T12).Name,
-            };
-            var queryName = GetQueryName(componentNames);
-            if (Queries12.ContainsKey(queryName))
-            {
-                foreach (var obj in Queries12[queryName].Values)
-                    yield return obj.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>();
-            }
-            else
-            {
-                Queries12.Add(queryName, new Dictionary<string, QueryObject12>());
-                QueryBuild(queryName, componentNames);
-                foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>())
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
                 {
-                    yield return obj;
-                }
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                    typeof(T3).Name,
+                    typeof(T4).Name,
+                    typeof(T5).Name,
+                    typeof(T6).Name,
+                    typeof(T7).Name,
+                    typeof(T8).Name,
+                    typeof(T9).Name,
+                    typeof(T10).Name,
+                    typeof(T11).Name,
+                    typeof(T12).Name,
+                }  
+            );
+            if (!Queries12.ContainsKey(queryName))
+            {
+                Query(queryName, componentNames);
             }
-            yield break;
+            foreach (var q in Queries12[queryName].Values)
+            {
+                yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>();
+            }
         }
 
         public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13)> Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>()
@@ -1037,39 +954,33 @@ namespace SysError99
             where T12 : Object
             where T13 : Object
         {
-            var componentNames = new List<string>
-            {
-                typeof(T0).Name,
-                typeof(T1).Name,
-                typeof(T2).Name,
-                typeof(T3).Name,
-                typeof(T4).Name,
-                typeof(T5).Name,
-                typeof(T6).Name,
-                typeof(T7).Name,
-                typeof(T8).Name,
-                typeof(T9).Name,
-                typeof(T10).Name,
-                typeof(T11).Name,
-                typeof(T12).Name,
-                typeof(T13).Name,
-            };
-            var queryName = GetQueryName(componentNames);
-            if (Queries13.ContainsKey(queryName))
-            {
-                foreach (var obj in Queries13[queryName].Values)
-                    yield return obj.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>();
-            }
-            else
-            {
-                Queries13.Add(queryName, new Dictionary<string, QueryObject13>());
-                QueryBuild(queryName, componentNames);
-                foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>())
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
                 {
-                    yield return obj;
-                }
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                    typeof(T3).Name,
+                    typeof(T4).Name,
+                    typeof(T5).Name,
+                    typeof(T6).Name,
+                    typeof(T7).Name,
+                    typeof(T8).Name,
+                    typeof(T9).Name,
+                    typeof(T10).Name,
+                    typeof(T11).Name,
+                    typeof(T12).Name,
+                    typeof(T13).Name,
+                }  
+            );
+            if (!Queries13.ContainsKey(queryName))
+            {
+                Query(queryName, componentNames);
             }
-            yield break;
+            foreach (var q in Queries13[queryName].Values)
+            {
+                yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>();
+            }
         }
 
         public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14)> Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>()
@@ -1089,40 +1000,34 @@ namespace SysError99
             where T13 : Object
             where T14 : Object
         {
-            var componentNames = new List<string>
-            {
-                typeof(T0).Name,
-                typeof(T1).Name,
-                typeof(T2).Name,
-                typeof(T3).Name,
-                typeof(T4).Name,
-                typeof(T5).Name,
-                typeof(T6).Name,
-                typeof(T7).Name,
-                typeof(T8).Name,
-                typeof(T9).Name,
-                typeof(T10).Name,
-                typeof(T11).Name,
-                typeof(T12).Name,
-                typeof(T13).Name,
-                typeof(T14).Name,
-            };
-            var queryName = GetQueryName(componentNames);
-            if (Queries14.ContainsKey(queryName))
-            {
-                foreach (var obj in Queries14[queryName].Values)
-                    yield return obj.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>();
-            }
-            else
-            {
-                Queries14.Add(queryName, new Dictionary<string, QueryObject14>());
-                QueryBuild(queryName, componentNames);
-                foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>())
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
                 {
-                    yield return obj;
-                }
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                    typeof(T3).Name,
+                    typeof(T4).Name,
+                    typeof(T5).Name,
+                    typeof(T6).Name,
+                    typeof(T7).Name,
+                    typeof(T8).Name,
+                    typeof(T9).Name,
+                    typeof(T10).Name,
+                    typeof(T11).Name,
+                    typeof(T12).Name,
+                    typeof(T13).Name,
+                    typeof(T14).Name,
+                }  
+            );
+            if (!Queries14.ContainsKey(queryName))
+            {
+                Query(queryName, componentNames);
             }
-            yield break;
+            foreach (var q in Queries14[queryName].Values)
+            {
+                yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>();
+            }
         }
 
         public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15)> Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>()
@@ -1143,41 +1048,35 @@ namespace SysError99
             where T14 : Object
             where T15 : Object
         {
-            var componentNames = new List<string>
-            {
-                typeof(T0).Name,
-                typeof(T1).Name,
-                typeof(T2).Name,
-                typeof(T3).Name,
-                typeof(T4).Name,
-                typeof(T5).Name,
-                typeof(T6).Name,
-                typeof(T7).Name,
-                typeof(T8).Name,
-                typeof(T9).Name,
-                typeof(T10).Name,
-                typeof(T11).Name,
-                typeof(T12).Name,
-                typeof(T13).Name,
-                typeof(T14).Name,
-                typeof(T15).Name,
-            };
-            var queryName = GetQueryName(componentNames);
-            if (Queries15.ContainsKey(queryName))
-            {
-                foreach (var obj in Queries15[queryName].Values)
-                    yield return obj.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>();
-            }
-            else
-            {
-                Queries15.Add(queryName, new Dictionary<string, QueryObject15>());
-                QueryBuild(queryName, componentNames);
-                foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>())
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
                 {
-                    yield return obj;
-                }
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                    typeof(T3).Name,
+                    typeof(T4).Name,
+                    typeof(T5).Name,
+                    typeof(T6).Name,
+                    typeof(T7).Name,
+                    typeof(T8).Name,
+                    typeof(T9).Name,
+                    typeof(T10).Name,
+                    typeof(T11).Name,
+                    typeof(T12).Name,
+                    typeof(T13).Name,
+                    typeof(T14).Name,
+                    typeof(T15).Name,
+                }  
+            );
+            if (!Queries15.ContainsKey(queryName))
+            {
+                Query(queryName, componentNames);
             }
-            yield break;
+            foreach (var q in Queries15[queryName].Values)
+            {
+                yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>();
+            }
         }
 
         public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16)> Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>()
@@ -1199,73 +1098,53 @@ namespace SysError99
             where T15 : Object
             where T16 : Object
         {
-            var componentNames = new List<string>
-            {
-                typeof(T0).Name,
-                typeof(T1).Name,
-                typeof(T2).Name,
-                typeof(T3).Name,
-                typeof(T4).Name,
-                typeof(T5).Name,
-                typeof(T6).Name,
-                typeof(T7).Name,
-                typeof(T8).Name,
-                typeof(T9).Name,
-                typeof(T10).Name,
-                typeof(T11).Name,
-                typeof(T12).Name,
-                typeof(T13).Name,
-                typeof(T14).Name,
-                typeof(T15).Name,
-                typeof(T16).Name,
-            };
-            var queryName = GetQueryName(componentNames);
-            if (Queries15.ContainsKey(queryName))
-            {
-                foreach (var obj in Queries16[queryName].Values)
-                    yield return obj.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>();
-            }
-            else
-            {
-                Queries16.Add(queryName, new Dictionary<string, QueryObject16>());
-                QueryBuild(queryName, componentNames);
-                foreach (var obj in Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>())
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
                 {
-                    yield return obj;
-                }
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                    typeof(T3).Name,
+                    typeof(T4).Name,
+                    typeof(T5).Name,
+                    typeof(T6).Name,
+                    typeof(T7).Name,
+                    typeof(T8).Name,
+                    typeof(T9).Name,
+                    typeof(T10).Name,
+                    typeof(T11).Name,
+                    typeof(T12).Name,
+                    typeof(T13).Name,
+                    typeof(T14).Name,
+                    typeof(T15).Name,
+                    typeof(T16).Name,
+                }  
+            );
+            if (!Queries16.ContainsKey(queryName))
+            {
+                Query(queryName, componentNames);
             }
-            yield break;
+            foreach (var q in Queries16[queryName].Values)
+            {
+                yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>();
+            }
         }
 
-        private static void QueryBuild(string queryName, in List<string> componentNames)
+        private static void Query(string queryName, Array componentNames)
         {
-            var registeredScenes = Self.GetTree().GetNodesInGroup(_RegisteredScene);
-            ComponentNames[queryName] = componentNames;
-            foreach (Node scene in registeredScenes)
+            if (IsInstanceValid(QGodot))
             {
-                foreach (Node entity in scene.GetChildren())
-                {
-                    if (entity.IsInGroup(_RegisteredScene)) continue;
-                    BindToQueryObjectList(entity, queryName);
-                }
+                QGodot.Call("query", componentNames);
+                return;
             }
+            QueryAdd(queryName, componentNames.Count);
+            PreQueryList.Add(componentNames);
+            return;
         }
         #endregion
-
-        private static string GetQueryName(List<string> componentNames)
+        
+        public static void ChangeScene(string path)
         {
-            return System.String.Join("_", componentNames);
-        }
-
-        public static async void ChangeScene(string path)
-        {
-            SceneChanging = true;
-            var currentScene = MainTree.CurrentScene;
-            var inst = GD.Load<PackedScene>(path).Instance();
-            foreach (Node scene in MainTree.GetNodesInGroup(_RegisteredScene))
-            {
-                RemoveEntitiesFromCurrentScene(scene);
-            }
             foreach (var queryName in CurrentSceneSubscribedSystems.Keys)
             {
                 var systems = SubscribedSystems[queryName];
@@ -1275,457 +1154,409 @@ namespace SysError99
                 }
             }
             CurrentSceneSubscribedSystems.Clear();
-            currentScene.QueueFree();
-            await Self.ToSignal(currentScene, "tree_exited");
-            Root.SetMeta("current_scene", inst);
-            Root.CallDeferred("add_child", inst);
-            MainTree.SetDeferred("current_scene", inst);
-            await Self.ToSignal(inst, "ready");
-            PostChangeScene();
-            SceneChanging = false;
-        }
-
-        private static void RemoveEntitiesFromCurrentScene(Node scene)
-        {
-            var entities = scene.GetChildren();
-            if (scene.IsInGroup("persistent_scene")) return;
-            foreach (Node entity in entities)
+            if (!IsInstanceValid(QGodot))
             {
-                if (entity.IsInGroup(_RegisteredScene))
-                {
-                    RemoveEntitiesFromCurrentScene(entity);
-                    continue;
-                }
-                if (!entity.HasMeta(_BoundQueries)) continue;
-                foreach (string queryName in entity.GetMeta(_BoundQueries) as Godot.Collections.Array)
-                {
-                    var queryObjects = entity.GetMeta(queryName + "$", new Godot.Collections.Array()) as Godot.Collections.Array;
-                    foreach (QueryObject queryObject in queryObjects)
-                    {
-                        QueryObjectRemove(entity.Name, queryName, queryObject);
-                    }
-                }
-            }
-        }
-
-        private static void QueryObjectRemove(string entityName, string queryName, QueryObject queryObject)
-        {
-            switch (queryObject)
-            {
-                case QueryObject0 queryObject0: Queries0[queryName].Remove(entityName); break;
-                case QueryObject1 queryObject1: Queries1[queryName].Remove(entityName); break;
-                case QueryObject2 queryObject2: Queries2[queryName].Remove(entityName); break;
-                case QueryObject3 queryObject3: Queries3[queryName].Remove(entityName); break;
-                case QueryObject4 queryObject4: Queries4[queryName].Remove(entityName); break;
-                case QueryObject5 queryObject5: Queries5[queryName].Remove(entityName); break;
-                case QueryObject6 queryObject6: Queries6[queryName].Remove(entityName); break;
-                case QueryObject7 queryObject7: Queries7[queryName].Remove(entityName); break;
-                case QueryObject8 queryObject8: Queries8[queryName].Remove(entityName); break;
-                case QueryObject9 queryObject9: Queries9[queryName].Remove(entityName); break;
-                case QueryObject10 queryObject10: Queries10[queryName].Remove(entityName); break;
-                case QueryObject11 queryObject11: Queries11[queryName].Remove(entityName); break;
-                case QueryObject12 queryObject12: Queries12[queryName].Remove(entityName); break;
-                case QueryObject13 queryObject13: Queries13[queryName].Remove(entityName); break;
-                case QueryObject14 queryObject14: Queries14[queryName].Remove(entityName); break;
-                case QueryObject15 queryObject15: Queries15[queryName].Remove(entityName); break;
-                case QueryObject16 queryObject16: Queries16[queryName].Remove(entityName); break;
-            }
-            queryObject.Free();
-        }
-
-        private static void PostChangeScene()
-        {
-            var registeredScenes = MainTree.GetNodesInGroup(_UnregisteredScene);
-            if (registeredScenes.Count > 0)
-            {
-                foreach (Node scene in registeredScenes)
-                {
-                    scene.RemoveFromGroup(_UnregisteredScene);
-                    RegisterAsScene(scene);
-                }
+                throw new NullReferenceException(QGodotNotReadyExceptionMessage);
             }
             else
             {
-                RegisterAsScene(MainTree.CurrentScene);
+                QGodot.Call("change_scene", path);
             }
         }
 
-        public static void RegisterAsScene(Node scene)
+        public static void RegisterAsScene(Node node)
         {
-            scene.AddToGroup(_RegisteredScene);
-            scene.Connect("child_entered_tree", Self, nameof(_EntityEnteredScene));
-            foreach (Node child in scene.GetChildren())
+            if (!IsInstanceValid(QGodot))
             {
-                RegisterEntity(child);
+                throw new NullReferenceException(QGodotNotReadyExceptionMessage);
+            }
+            else
+            {
+                QGodot.Call("register_as_scene", node);
+            }
+        }
+        
+        private static (string, Array) PrepareQuery(Array componentNames)
+        {
+            return (String.Join("_", Enumerable.Cast<string>(componentNames)), componentNames);
+        }
+
+        private static void QueryAdd(string queryName, int bindsSize)
+        {
+            switch (bindsSize)
+            {
+                case 0:
+                    throw new RankException("Bind size cannot be zero");
+                case 1:
+                    if (Queries0.ContainsKey(queryName)) return;
+                    Queries0.Add(queryName, new Dictionary<ulong, QueryObject0>());
+                    break;
+                case 2:
+                    if (Queries1.ContainsKey(queryName)) return;
+                    Queries1.Add(queryName, new Dictionary<ulong, QueryObject1>());
+                    break;
+                case 3:
+                    if (Queries2.ContainsKey(queryName)) return;
+                    Queries2.Add(queryName, new Dictionary<ulong, QueryObject2>());
+                    break;
+                case 4:
+                    if (Queries3.ContainsKey(queryName)) return;
+                    Queries3.Add(queryName, new Dictionary<ulong, QueryObject3>());
+                    break;
+                case 5:
+                    if (Queries4.ContainsKey(queryName)) return;
+                    Queries4.Add(queryName, new Dictionary<ulong, QueryObject4>());
+                    break;
+                case 6:
+                    if (Queries5.ContainsKey(queryName)) return;
+                    Queries5.Add(queryName, new Dictionary<ulong, QueryObject5>());
+                    break;
+                case 7:
+                    if (Queries6.ContainsKey(queryName)) return;
+                    Queries6.Add(queryName, new Dictionary<ulong, QueryObject6>());
+                    break;
+                case 8:
+                    if (Queries7.ContainsKey(queryName)) return;
+                    Queries7.Add(queryName, new Dictionary<ulong, QueryObject7>());
+                    break;
+                case 9:
+                    if (Queries8.ContainsKey(queryName)) return;
+                    Queries8.Add(queryName, new Dictionary<ulong, QueryObject8>());
+                    break;
+                case 10:
+                    if (Queries9.ContainsKey(queryName)) return;
+                    Queries9.Add(queryName, new Dictionary<ulong, QueryObject9>());
+                    break;
+                case 11:
+                    if (Queries10.ContainsKey(queryName)) return;
+                    Queries10.Add(queryName, new Dictionary<ulong, QueryObject10>());
+                    break;
+                case 12:
+                    if (Queries11.ContainsKey(queryName)) return;
+                    Queries11.Add(queryName, new Dictionary<ulong, QueryObject11>());
+                    break;
+                case 13:
+                    if (Queries12.ContainsKey(queryName)) return;
+                    Queries12.Add(queryName, new Dictionary<ulong, QueryObject12>());
+                    break;
+                case 14:
+                    if (Queries13.ContainsKey(queryName)) return;
+                    Queries13.Add(queryName, new Dictionary<ulong, QueryObject13>());
+                    break;
+                case 15:
+                    if (Queries14.ContainsKey(queryName)) return;
+                    Queries14.Add(queryName, new Dictionary<ulong, QueryObject14>());
+                    break;
+                case 16:
+                    if (Queries15.ContainsKey(queryName)) return;
+                    Queries15.Add(queryName, new Dictionary<ulong, QueryObject15>());
+                    break;
+                case 17:
+                    if (Queries16.ContainsKey(queryName)) return;
+                    Queries16.Add(queryName, new Dictionary<ulong, QueryObject16>());
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("Tuple count can be maximum at 17!");
             }
         }
 
-        private static void RegisterEntity(Node entity)
+        private static void AddToQuery(string queryName, Array binds)
         {
-            if (entity.IsInGroup(_Entity)) return;
-            entity.Connect("child_entered_tree", Self, nameof(_EntityComponentAdded), new Godot.Collections.Array { entity });
-            entity.AddToGroup(_Entity);
-            foreach (var queryName in ComponentNames.Keys)
-            {
-                BindToQueryObjectList(entity, queryName);
-            }
-        }
-
-        private static void BindToQueryObjectList(Node entity, string queryName)
-        {
-            if (entity.GetType().Name != ComponentNames[queryName][0]) return;
-            var binds = entity.GetMeta(queryName + "#", new Godot.Collections.Array()) as Godot.Collections.Array;
-            var boundQueries = entity.GetMeta(_BoundQueries, new Godot.Collections.Array()) as Godot.Collections.Array;
-            var queryObjects = entity.GetMeta(queryName + "$", new Godot.Collections.Array()) as Godot.Collections.Array;
-            QueryObject queryObject;
-            if (!boundQueries.Contains(queryName))
-            {
-                var componentNames = new List<string>(ComponentNames[queryName]);
-                componentNames.RemoveAt(0);
-                foreach (var componentName in componentNames)
-                {
-                    if (entity.GetNodeOrNull(componentName) is not Node component) break;
-                    binds.Add(component);
-                    if (!entity.IsConnected("tree_exited", Self, nameof(_EntityComponentRemoved)))
-                    {
-                        component.Connect("tree_exited", Self, nameof(_EntityComponentRemoved), new Godot.Collections.Array { entity, componentName, boundQueries }, (uint)ConnectFlags.Oneshot);
-                    }
-                }
-                if (binds.Count == componentNames.Count)
-                {
-                    entity.AddToGroup(queryName);
-                    entity.SetMeta(queryName + "#", binds);
-                    entity.SetMeta(queryName + "$", queryObjects);
-                    entity.SetMeta(_BoundQueries, boundQueries);
-                    boundQueries.Add(queryName);
-                }
-            }
-            var entityName = entity.Name;
-            binds.Insert(0, entity);
-            # region One-shot call
-            if (SubscribedSystems.ContainsKey(queryName))
-            {
-                foreach (var systemBinder in SubscribedSystems[queryName])
-                {
-                    if (systemBinder._entitityNames.Contains(entityName)) continue;
-                    systemBinder._system.Callv(systemBinder._functionName, binds);
-                    systemBinder._entitityNames.Add(entityName);
-                }
-            }
-            # endregion
-            # region Add To QueryObject(s)
+            var entityId = (binds[0] as Object).GetInstanceId();
             switch (binds.Count)
             {
+                case 0:
+                    throw new RankException("Bind size cannot be zero.");
                 case 1:
                     {
-                        var gObj = new QueryObject0();
-                        queryObject = gObj;
-                        queryObjects.Add(queryObject);
-                        gObj._obj0 = binds[0] as Node;
-                        var query = Queries0[queryName];
-                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
+                        var queries = Queries0[queryName];
+                        if (queries.ContainsKey(entityId)) return;
+                        var query = new QueryObject0();
+                        query.Object0 = binds[0] as Object;
+                        queries.Add(entityId, query);
                     }
                     break;
-
                 case 2:
                     {
-                        var gObj = new QueryObject1();
-                        queryObject = gObj;
-                        queryObjects.Add(queryObject);
-                        gObj._obj0 = binds[0] as Node;
-                        gObj._obj1 = binds[1] as Node;
-                        var query = Queries1[queryName];
-                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
+                        var queries = Queries1[queryName];
+                        if (queries.ContainsKey(entityId)) return;
+                        var query = new QueryObject1();
+                        query.Object0 = binds[0] as Object;
+                        query.Object1 = binds[1] as Object;
+                        queries.Add(entityId, query);
                     }
                     break;
                 case 3:
                     {
-                        var gObj = new QueryObject2();
-                        queryObject = gObj;
-                        queryObjects.Add(queryObject);
-                        gObj._obj0 = binds[0] as Node;
-                        gObj._obj1 = binds[1] as Node;
-                        gObj._obj2 = binds[2] as Node;
-                        var query = Queries2[queryName];
-                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
+                        var queries = Queries2[queryName];
+                        if (queries.ContainsKey(entityId)) return;
+                        var query = new QueryObject2();
+                        query.Object0 = binds[0] as Object;
+                        query.Object1 = binds[1] as Object;
+                        query.Object2 = binds[2] as Object;
+                        queries.Add(entityId, query);
                     }
                     break;
                 case 4:
                     {
-                        var gObj = new QueryObject3();
-                        queryObject = gObj;
-                        queryObjects.Add(queryObject);
-                        gObj._obj0 = binds[0] as Node;
-                        gObj._obj1 = binds[1] as Node;
-                        gObj._obj2 = binds[2] as Node;
-                        gObj._obj3 = binds[3] as Node;
-                        var query = Queries3[queryName];
-                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
+                        var queries = Queries3[queryName];
+                        if (queries.ContainsKey(entityId)) return;
+                        var query = new QueryObject3();
+                        query.Object0 = binds[0] as Object;
+                        query.Object1 = binds[1] as Object;
+                        query.Object2 = binds[2] as Object;
+                        query.Object3 = binds[3] as Object;
+                        queries.Add(entityId, query);
                     }
                     break;
                 case 5:
                     {
-                        var gObj = new QueryObject4();
-                        queryObject = gObj;
-                        queryObjects.Add(queryObject);
-                        gObj._obj0 = binds[0] as Node;
-                        gObj._obj1 = binds[1] as Node;
-                        gObj._obj2 = binds[2] as Node;
-                        gObj._obj3 = binds[3] as Node;
-                        gObj._obj4 = binds[4] as Node;
-                        var query = Queries4[queryName];
-                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
+                        var queries = Queries4[queryName];
+                        if (queries.ContainsKey(entityId)) return;
+                        var query = new QueryObject4();
+                        query.Object0 = binds[0] as Object;
+                        query.Object1 = binds[1] as Object;
+                        query.Object2 = binds[2] as Object;
+                        query.Object3 = binds[3] as Object;
+                        query.Object4 = binds[4] as Object;
+                        queries.Add(entityId, query);
                     }
                     break;
                 case 6:
                     {
-                        var gObj = new QueryObject5();
-                        queryObject = gObj;
-                        queryObjects.Add(queryObject);
-                        gObj._obj0 = binds[0] as Node;
-                        gObj._obj1 = binds[1] as Node;
-                        gObj._obj2 = binds[2] as Node;
-                        gObj._obj3 = binds[3] as Node;
-                        gObj._obj4 = binds[4] as Node;
-                        gObj._obj5 = binds[5] as Node;
-                        var query = Queries5[queryName];
-                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
+                        var queries = Queries5[queryName];
+                        if (queries.ContainsKey(entityId)) return;
+                        var query = new QueryObject5();
+                        query.Object0 = binds[0] as Object;
+                        query.Object1 = binds[1] as Object;
+                        query.Object2 = binds[2] as Object;
+                        query.Object3 = binds[3] as Object;
+                        query.Object4 = binds[4] as Object;
+                        query.Object5 = binds[5] as Object;
+                        queries.Add(entityId, query);
                     }
                     break;
                 case 7:
                     {
-                        var gObj = new QueryObject6();
-                        queryObject = gObj;
-                        queryObjects.Add(queryObject);
-                        gObj._obj0 = binds[0] as Node;
-                        gObj._obj1 = binds[1] as Node;
-                        gObj._obj2 = binds[2] as Node;
-                        gObj._obj3 = binds[3] as Node;
-                        gObj._obj4 = binds[4] as Node;
-                        gObj._obj5 = binds[5] as Node;
-                        gObj._obj6 = binds[6] as Node;
-                        var query = Queries6[queryName];
-                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
+                        var queries = Queries6[queryName];
+                        if (queries.ContainsKey(entityId)) return;
+                        var query = new QueryObject6();
+                        query.Object0 = binds[0] as Object;
+                        query.Object1 = binds[1] as Object;
+                        query.Object2 = binds[2] as Object;
+                        query.Object3 = binds[3] as Object;
+                        query.Object4 = binds[4] as Object;
+                        query.Object5 = binds[5] as Object;
+                        query.Object6 = binds[6] as Object;
+                        queries.Add(entityId, query);
                     }
                     break;
                 case 8:
                     {
-                        var gObj = new QueryObject7();
-                        queryObject = gObj;
-                        queryObjects.Add(queryObject);
-                        gObj._obj0 = binds[0] as Node;
-                        gObj._obj1 = binds[1] as Node;
-                        gObj._obj2 = binds[2] as Node;
-                        gObj._obj3 = binds[3] as Node;
-                        gObj._obj4 = binds[4] as Node;
-                        gObj._obj5 = binds[5] as Node;
-                        gObj._obj6 = binds[6] as Node;
-                        gObj._obj7 = binds[7] as Node;
-                        var query = Queries7[queryName];
-                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
+                        var queries = Queries7[queryName];
+                        if (queries.ContainsKey(entityId)) return;
+                        var query = new QueryObject7();
+                        query.Object0 = binds[0] as Object;
+                        query.Object1 = binds[1] as Object;
+                        query.Object2 = binds[2] as Object;
+                        query.Object3 = binds[3] as Object;
+                        query.Object4 = binds[4] as Object;
+                        query.Object5 = binds[5] as Object;
+                        query.Object6 = binds[6] as Object;
+                        query.Object7 = binds[7] as Object;
+                        queries.Add(entityId, query);
                     }
                     break;
                 case 9:
                     {
-                        var gObj = new QueryObject8();
-                        queryObject = gObj;
-                        queryObjects.Add(queryObject);
-                        gObj._obj0 = binds[0] as Node;
-                        gObj._obj1 = binds[1] as Node;
-                        gObj._obj2 = binds[2] as Node;
-                        gObj._obj3 = binds[3] as Node;
-                        gObj._obj4 = binds[4] as Node;
-                        gObj._obj5 = binds[5] as Node;
-                        gObj._obj6 = binds[6] as Node;
-                        gObj._obj7 = binds[7] as Node;
-                        gObj._obj8 = binds[8] as Node;
-                        var query = Queries8[queryName];
-                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
+                        var queries = Queries8[queryName];
+                        if (queries.ContainsKey(entityId)) return;
+                        var query = new QueryObject8();
+                        query.Object0 = binds[0] as Object;
+                        query.Object1 = binds[1] as Object;
+                        query.Object2 = binds[2] as Object;
+                        query.Object3 = binds[3] as Object;
+                        query.Object4 = binds[4] as Object;
+                        query.Object5 = binds[5] as Object;
+                        query.Object6 = binds[6] as Object;
+                        query.Object7 = binds[7] as Object;
+                        query.Object8 = binds[8] as Object;
+                        queries.Add(entityId, query);
                     }
                     break;
                 case 10:
                     {
-                        var gObj = new QueryObject9();
-                        queryObject = gObj;
-                        queryObjects.Add(queryObject);
-                        gObj._obj0 = binds[0] as Node;
-                        gObj._obj1 = binds[1] as Node;
-                        gObj._obj2 = binds[2] as Node;
-                        gObj._obj3 = binds[3] as Node;
-                        gObj._obj4 = binds[4] as Node;
-                        gObj._obj5 = binds[5] as Node;
-                        gObj._obj6 = binds[6] as Node;
-                        gObj._obj7 = binds[7] as Node;
-                        gObj._obj8 = binds[8] as Node;
-                        gObj._obj9 = binds[9] as Node;
-                        var query = Queries9[queryName];
-                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
+                        var queries = Queries9[queryName];
+                        if (queries.ContainsKey(entityId)) return;
+                        var query = new QueryObject9();
+                        query.Object0 = binds[0] as Object;
+                        query.Object1 = binds[1] as Object;
+                        query.Object2 = binds[2] as Object;
+                        query.Object3 = binds[3] as Object;
+                        query.Object4 = binds[4] as Object;
+                        query.Object5 = binds[5] as Object;
+                        query.Object6 = binds[6] as Object;
+                        query.Object7 = binds[7] as Object;
+                        query.Object8 = binds[8] as Object;
+                        query.Object9 = binds[9] as Object;
+                        queries.Add(entityId, query);
                     }
                     break;
                 case 11:
                     {
-                        var gObj = new QueryObject10();
-                        queryObject = gObj;
-                        queryObjects.Add(queryObject);
-                        gObj._obj0 = binds[0] as Node;
-                        gObj._obj1 = binds[1] as Node;
-                        gObj._obj2 = binds[2] as Node;
-                        gObj._obj3 = binds[3] as Node;
-                        gObj._obj4 = binds[4] as Node;
-                        gObj._obj5 = binds[5] as Node;
-                        gObj._obj6 = binds[6] as Node;
-                        gObj._obj7 = binds[7] as Node;
-                        gObj._obj8 = binds[8] as Node;
-                        gObj._obj9 = binds[9] as Node;
-                        gObj._obj10 = binds[10] as Node;
-                        var query = Queries10[queryName];
-                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
+                        var queries = Queries10[queryName];
+                        if (queries.ContainsKey(entityId)) return;
+                        var query = new QueryObject10();
+                        query.Object0 = binds[0] as Object;
+                        query.Object1 = binds[1] as Object;
+                        query.Object2 = binds[2] as Object;
+                        query.Object3 = binds[3] as Object;
+                        query.Object4 = binds[4] as Object;
+                        query.Object5 = binds[5] as Object;
+                        query.Object6 = binds[6] as Object;
+                        query.Object7 = binds[7] as Object;
+                        query.Object8 = binds[8] as Object;
+                        query.Object9 = binds[9] as Object;
+                        query.Object10 = binds[10] as Object;
+                        queries.Add(entityId, query);
                     }
                     break;
                 case 12:
                     {
-                        var gObj = new QueryObject11();
-                        queryObject = gObj;
-                        queryObjects.Add(queryObject);
-                        gObj._obj0 = binds[0] as Node;
-                        gObj._obj1 = binds[1] as Node;
-                        gObj._obj2 = binds[2] as Node;
-                        gObj._obj3 = binds[3] as Node;
-                        gObj._obj4 = binds[4] as Node;
-                        gObj._obj5 = binds[5] as Node;
-                        gObj._obj6 = binds[6] as Node;
-                        gObj._obj7 = binds[7] as Node;
-                        gObj._obj8 = binds[8] as Node;
-                        gObj._obj9 = binds[9] as Node;
-                        gObj._obj10 = binds[10] as Node;
-                        gObj._obj11 = binds[11] as Node;
-                        var query = Queries11[queryName];
-                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
+                        var queries = Queries11[queryName];
+                        if (queries.ContainsKey(entityId)) return;
+                        var query = new QueryObject11();
+                        query.Object0 = binds[0] as Object;
+                        query.Object1 = binds[1] as Object;
+                        query.Object2 = binds[2] as Object;
+                        query.Object3 = binds[3] as Object;
+                        query.Object4 = binds[4] as Object;
+                        query.Object5 = binds[5] as Object;
+                        query.Object6 = binds[6] as Object;
+                        query.Object7 = binds[7] as Object;
+                        query.Object8 = binds[8] as Object;
+                        query.Object9 = binds[9] as Object;
+                        query.Object10 = binds[10] as Object;
+                        query.Object11 = binds[11] as Object;
+                        queries.Add(entityId, query);
                     }
                     break;
                 case 13:
                     {
-                        var gObj = new QueryObject12();
-                        queryObject = gObj;
-                        queryObjects.Add(queryObject);
-                        gObj._obj0 = binds[0] as Node;
-                        gObj._obj1 = binds[1] as Node;
-                        gObj._obj2 = binds[2] as Node;
-                        gObj._obj3 = binds[3] as Node;
-                        gObj._obj4 = binds[4] as Node;
-                        gObj._obj5 = binds[5] as Node;
-                        gObj._obj6 = binds[6] as Node;
-                        gObj._obj7 = binds[7] as Node;
-                        gObj._obj8 = binds[8] as Node;
-                        gObj._obj9 = binds[9] as Node;
-                        gObj._obj10 = binds[10] as Node;
-                        gObj._obj11 = binds[11] as Node;
-                        gObj._obj12 = binds[12] as Node;
-                        var query = Queries12[queryName];
-                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
+                        var queries = Queries12[queryName];
+                        if (queries.ContainsKey(entityId)) return;
+                        var query = new QueryObject12();
+                        query.Object0 = binds[0] as Object;
+                        query.Object1 = binds[1] as Object;
+                        query.Object2 = binds[2] as Object;
+                        query.Object3 = binds[3] as Object;
+                        query.Object4 = binds[4] as Object;
+                        query.Object5 = binds[5] as Object;
+                        query.Object6 = binds[6] as Object;
+                        query.Object7 = binds[7] as Object;
+                        query.Object8 = binds[8] as Object;
+                        query.Object9 = binds[9] as Object;
+                        query.Object10 = binds[10] as Object;
+                        query.Object11 = binds[11] as Object;
+                        query.Object12 = binds[12] as Object;
+                        queries.Add(entityId, query);
                     }
                     break;
                 case 14:
                     {
-                        var gObj = new QueryObject13();
-                        queryObject = gObj;
-                        queryObjects.Add(queryObject);
-                        gObj._obj0 = binds[0] as Node;
-                        gObj._obj1 = binds[1] as Node;
-                        gObj._obj2 = binds[2] as Node;
-                        gObj._obj3 = binds[3] as Node;
-                        gObj._obj4 = binds[4] as Node;
-                        gObj._obj5 = binds[5] as Node;
-                        gObj._obj6 = binds[6] as Node;
-                        gObj._obj7 = binds[7] as Node;
-                        gObj._obj8 = binds[8] as Node;
-                        gObj._obj9 = binds[9] as Node;
-                        gObj._obj10 = binds[10] as Node;
-                        gObj._obj11 = binds[11] as Node;
-                        gObj._obj12 = binds[12] as Node;
-                        gObj._obj13 = binds[13] as Node;
-                        var query = Queries13[queryName];
-                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
+                        var queries = Queries13[queryName];
+                        if (queries.ContainsKey(entityId)) return;
+                        var query = new QueryObject13();
+                        query.Object0 = binds[0] as Object;
+                        query.Object1 = binds[1] as Object;
+                        query.Object2 = binds[2] as Object;
+                        query.Object3 = binds[3] as Object;
+                        query.Object4 = binds[4] as Object;
+                        query.Object5 = binds[5] as Object;
+                        query.Object6 = binds[6] as Object;
+                        query.Object7 = binds[7] as Object;
+                        query.Object8 = binds[8] as Object;
+                        query.Object9 = binds[9] as Object;
+                        query.Object10 = binds[10] as Object;
+                        query.Object11 = binds[11] as Object;
+                        query.Object12 = binds[12] as Object;
+                        query.Object13 = binds[13] as Object;
+                        queries.Add(entityId, query);
                     }
                     break;
                 case 15:
                     {
-                        var gObj = new QueryObject14();
-                        queryObject = gObj;
-                        queryObjects.Add(queryObject);
-                        gObj._obj0 = binds[0] as Node;
-                        gObj._obj1 = binds[1] as Node;
-                        gObj._obj2 = binds[2] as Node;
-                        gObj._obj3 = binds[3] as Node;
-                        gObj._obj4 = binds[4] as Node;
-                        gObj._obj5 = binds[5] as Node;
-                        gObj._obj6 = binds[6] as Node;
-                        gObj._obj7 = binds[7] as Node;
-                        gObj._obj8 = binds[8] as Node;
-                        gObj._obj9 = binds[9] as Node;
-                        gObj._obj10 = binds[10] as Node;
-                        gObj._obj11 = binds[11] as Node;
-                        gObj._obj12 = binds[12] as Node;
-                        gObj._obj13 = binds[13] as Node;
-                        gObj._obj14 = binds[14] as Node;
-                        var query = Queries14[queryName];
-                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
+                        var queries = Queries14[queryName];
+                        if (queries.ContainsKey(entityId)) return;
+                        var query = new QueryObject14();
+                        query.Object0 = binds[0] as Object;
+                        query.Object1 = binds[1] as Object;
+                        query.Object2 = binds[2] as Object;
+                        query.Object3 = binds[3] as Object;
+                        query.Object4 = binds[4] as Object;
+                        query.Object5 = binds[5] as Object;
+                        query.Object6 = binds[6] as Object;
+                        query.Object7 = binds[7] as Object;
+                        query.Object8 = binds[8] as Object;
+                        query.Object9 = binds[9] as Object;
+                        query.Object10 = binds[10] as Object;
+                        query.Object11 = binds[11] as Object;
+                        query.Object12 = binds[12] as Object;
+                        query.Object13 = binds[13] as Object;
+                        query.Object14 = binds[14] as Object;
+                        queries.Add(entityId, query);
                     }
                     break;
                 case 16:
                     {
-                        var gObj = new QueryObject15();
-                        queryObject = gObj;
-                        queryObjects.Add(queryObject);
-                        gObj._obj0 = binds[0] as Node;
-                        gObj._obj1 = binds[1] as Node;
-                        gObj._obj2 = binds[2] as Node;
-                        gObj._obj3 = binds[3] as Node;
-                        gObj._obj4 = binds[4] as Node;
-                        gObj._obj5 = binds[5] as Node;
-                        gObj._obj6 = binds[6] as Node;
-                        gObj._obj7 = binds[7] as Node;
-                        gObj._obj8 = binds[8] as Node;
-                        gObj._obj9 = binds[9] as Node;
-                        gObj._obj10 = binds[10] as Node;
-                        gObj._obj11 = binds[11] as Node;
-                        gObj._obj12 = binds[12] as Node;
-                        gObj._obj13 = binds[13] as Node;
-                        gObj._obj14 = binds[14] as Node;
-                        gObj._obj15 = binds[15] as Node;
-                        var query = Queries15[queryName];
-                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
+                        var queries = Queries15[queryName];
+                        if (queries.ContainsKey(entityId)) return;
+                        var query = new QueryObject15();
+                        query.Object0 = binds[0] as Object;
+                        query.Object1 = binds[1] as Object;
+                        query.Object2 = binds[2] as Object;
+                        query.Object3 = binds[3] as Object;
+                        query.Object4 = binds[4] as Object;
+                        query.Object5 = binds[5] as Object;
+                        query.Object6 = binds[6] as Object;
+                        query.Object7 = binds[7] as Object;
+                        query.Object8 = binds[8] as Object;
+                        query.Object9 = binds[9] as Object;
+                        query.Object10 = binds[10] as Object;
+                        query.Object11 = binds[11] as Object;
+                        query.Object12 = binds[12] as Object;
+                        query.Object13 = binds[13] as Object;
+                        query.Object14 = binds[14] as Object;
+                        query.Object15 = binds[15] as Object;
+                        queries.Add(entityId, query);
                     }
                     break;
                 case 17:
                     {
-                        var gObj = new QueryObject16();
-                        queryObject = gObj;
-                        queryObjects.Add(queryObject);
-                        gObj._obj0 = binds[0] as Node;
-                        gObj._obj1 = binds[1] as Node;
-                        gObj._obj2 = binds[2] as Node;
-                        gObj._obj3 = binds[3] as Node;
-                        gObj._obj4 = binds[4] as Node;
-                        gObj._obj5 = binds[5] as Node;
-                        gObj._obj6 = binds[6] as Node;
-                        gObj._obj7 = binds[7] as Node;
-                        gObj._obj8 = binds[8] as Node;
-                        gObj._obj9 = binds[9] as Node;
-                        gObj._obj10 = binds[10] as Node;
-                        gObj._obj11 = binds[11] as Node;
-                        gObj._obj12 = binds[12] as Node;
-                        gObj._obj13 = binds[13] as Node;
-                        gObj._obj14 = binds[14] as Node;
-                        gObj._obj15 = binds[15] as Node;
-                        gObj._obj16 = binds[16] as Node;
-                        var query = Queries16[queryName];
-                        if (!query.ContainsKey(entityName)) query.Add(entityName, gObj);
+                        var queries = Queries16[queryName];
+                        if (queries.ContainsKey(entityId)) return;
+                        var query = new QueryObject16();
+                        query.Object0 = binds[0] as Object;
+                        query.Object1 = binds[1] as Object;
+                        query.Object2 = binds[2] as Object;
+                        query.Object3 = binds[3] as Object;
+                        query.Object4 = binds[4] as Object;
+                        query.Object5 = binds[5] as Object;
+                        query.Object6 = binds[6] as Object;
+                        query.Object7 = binds[7] as Object;
+                        query.Object8 = binds[8] as Object;
+                        query.Object9 = binds[9] as Object;
+                        query.Object10 = binds[10] as Object;
+                        query.Object11 = binds[11] as Object;
+                        query.Object12 = binds[12] as Object;
+                        query.Object13 = binds[13] as Object;
+                        query.Object14 = binds[14] as Object;
+                        query.Object15 = binds[15] as Object;
+                        query.Object16 = binds[16] as Object;
+                        queries.Add(entityId, query);
                     }
                     break;
             }
-            #endregion
-            binds.RemoveAt(0);
         }
 
         public override void _EnterTree()
@@ -1733,70 +1564,61 @@ namespace SysError99
             MainTree = GetTree();
             Root = MainTree.Root;
             Self = this;
-        }
-
-        private async void _EntityEnteredScene(Node entity)
-        {
-            await ToSignal(entity, "ready");
-            RegisterEntity(entity);
-        }
-
-        private void _EntityComponentAdded(Node newComponent, Node entity)
-        {
-            var componentName = newComponent.Name;
-            foreach (var queryName in ComponentNames.Keys)
+            foreach (Object core in MainTree.GetNodesInGroup("#q-godot"))
             {
-                if (queryName.Contains(componentName))
+                QGodot = core;
+                core.Connect("added_to_query", this, nameof(_AddToQuery));
+                core.Connect("query_added", this, nameof(_QueryAdd));
+                core.Connect("removed_from_query", this, nameof(_RemoveFromQuery));
+                core.Disconnect("added_to_query", core, "_added_to_query");
+                core.Disconnect("removed_from_query", core, "_removed_from_query");
+                core.Set("_cache_enabled", false);
+                foreach (var componentNames in PreQueryList)
                 {
-                    BindToQueryObjectList(entity, queryName);
+                    QGodot.Call("query", componentNames);
                 }
+                PreQueryList.Clear();
             }
         }
 
-        private void _EntityComponentRemoved(Node entity, string componentName, Godot.Collections.Array boundQueries)
+        private void _QueryAdd(string queryName, int bindsSize)
         {
-            foreach (string queryName in boundQueries)
+            QueryAdd(queryName, bindsSize);
+        }
+
+        private void _AddToQuery(string queryName, Array binds)
+        {
+            AddToQuery(queryName, binds);
+        }
+
+        private void _RemoveFromQuery(string queryName, Array binds)
+        {
+            var entityId = (binds[0] as Object).GetInstanceId();
+            switch (queryName.Split('_').Length)
             {
-                if (!queryName.Contains(componentName))
-                {
-                    continue;
-                }
-                var queryObjects = entity.GetMeta(queryName + "$", new Godot.Collections.Array()) as Godot.Collections.Array;
-                entity.RemoveFromGroup(queryName);
-                entity.RemoveMeta(queryName + "#");
-                entity.RemoveMeta(queryName + "$");
-                if (SubscribedSystems.ContainsKey(queryName))
-                {
-                    foreach (var systemBinder in SubscribedSystems[queryName])
-                    {
-                        systemBinder._entitityNames.Remove(entity.Name);
-                    }
-                }
-                foreach (QueryObject queryObject in queryObjects)
-                {
-                    QueryObjectRemove(entity.Name, queryName, queryObject);
-                }
-                ArrayEraseDeferred(boundQueries, queryName);
-                boundQueries.Remove(queryName);
-                queryObjects.Clear();
+                case 1: Queries0[queryName].Remove(entityId); break;
+                case 2: Queries1[queryName].Remove(entityId); break;
+                case 3: Queries2[queryName].Remove(entityId); break;
+                case 4: Queries3[queryName].Remove(entityId); break;
+                case 5: Queries4[queryName].Remove(entityId); break;
+                case 6: Queries5[queryName].Remove(entityId); break;
+                case 7: Queries6[queryName].Remove(entityId); break;
+                case 8: Queries7[queryName].Remove(entityId); break;
+                case 9: Queries8[queryName].Remove(entityId); break;
+                case 10: Queries9[queryName].Remove(entityId); break;
+                case 11: Queries10[queryName].Remove(entityId); break;
+                case 12: Queries11[queryName].Remove(entityId); break;
+                case 13: Queries12[queryName].Remove(entityId); break;
+                case 14: Queries13[queryName].Remove(entityId); break;
+                case 15: Queries14[queryName].Remove(entityId); break;
+                case 16: Queries15[queryName].Remove(entityId); break;
             }
-        }
-
-        private async void ArrayEraseDeferred(Godot.Collections.Array array, object element)
-        {
-            await ToSignal(MainTree, "idle_frame");
-            array.Remove(element);
-        }
-
-        public override void _Ready()
-        {
-            PostChangeScene();
         }
     }
 
     public class SystemOneshotBinder
     {
-        internal Object _system;
+        public Object _system;
         internal string _functionName;
         internal List<string> _entitityNames = new();
 
@@ -1808,45 +1630,44 @@ namespace SysError99
     }
 
     #region Query Class
-
-    internal class QueryObject : Object
+    public class QueryObject : Object
     {
     }
 
-    internal class QueryObject0 : QueryObject
+    public class QueryObject0 : QueryObject
     {
-        internal Object _obj0;
-        public T Get<T>() where T : Object => _obj0 as T;
+        public Object Object0;
+        public T Get<T>() where T : Object => Object0 as T;
     }
 
-    internal class QueryObject1 : QueryObject
+    public class QueryObject1 : QueryObject
     {
-        internal Object _obj0;
-        internal Object _obj1;
+        public Object Object0;
+        public Object Object1;
         public (T0, T1) Get<T0, T1>()
             where T0 : Object
             where T1 : Object
-            => (_obj0 as T0, _obj1 as T1);
+            => (Object0 as T0, Object1 as T1);
     }
 
-    internal class QueryObject2 : QueryObject
+    public class QueryObject2 : QueryObject
     {
-        internal Object _obj0;
-        internal Object _obj1;
-        internal Object _obj2;
+        public Object Object0;
+        public Object Object1;
+        public Object Object2;
         public (T0, T1, T2) Get<T0, T1, T2>()
             where T0 : Object
             where T1 : Object
             where T2 : Object
-            => (_obj0 as T0, _obj1 as T1, _obj2 as T2);
+            => (Object0 as T0, Object1 as T1, Object2 as T2);
     }
 
-    internal class QueryObject3 : QueryObject
+    public class QueryObject3 : QueryObject
     {
-        internal Object _obj0;
-        internal Object _obj1;
-        internal Object _obj2;
-        internal Object _obj3;
+        public Object Object0;
+        public Object Object1;
+        public Object Object2;
+        public Object Object3;
         public (T0, T1, T2, T3) Get<T0, T1, T2, T3>()
             where T0 : Object
             where T1 : Object
@@ -1854,20 +1675,20 @@ namespace SysError99
             where T3 : Object
             =>
             (
-                _obj0 as T0,
-                _obj1 as T1,
-                _obj2 as T2,
-                _obj3 as T3
+                Object0 as T0,
+                Object1 as T1,
+                Object2 as T2,
+                Object3 as T3
             );
     }
 
-    internal class QueryObject4 : QueryObject
+    public class QueryObject4 : QueryObject
     {
-        internal Object _obj0;
-        internal Object _obj1;
-        internal Object _obj2;
-        internal Object _obj3;
-        internal Object _obj4;
+        public Object Object0;
+        public Object Object1;
+        public Object Object2;
+        public Object Object3;
+        public Object Object4;
         public (T0, T1, T2, T3, T4) Get<T0, T1, T2, T3, T4>()
             where T0 : Object
             where T1 : Object
@@ -1876,22 +1697,22 @@ namespace SysError99
             where T4 : Object
             =>
             (
-                _obj0 as T0,
-                _obj1 as T1,
-                _obj2 as T2,
-                _obj3 as T3,
-                _obj4 as T4
+                Object0 as T0,
+                Object1 as T1,
+                Object2 as T2,
+                Object3 as T3,
+                Object4 as T4
             );
     }
 
-    internal class QueryObject5 : QueryObject
+    public class QueryObject5 : QueryObject
     {
-        internal Object _obj0;
-        internal Object _obj1;
-        internal Object _obj2;
-        internal Object _obj3;
-        internal Object _obj4;
-        internal Object _obj5;
+        public Object Object0;
+        public Object Object1;
+        public Object Object2;
+        public Object Object3;
+        public Object Object4;
+        public Object Object5;
         public (T0, T1, T2, T3, T4, T5) Get<T0, T1, T2, T3, T4, T5>()
             where T0 : Object
             where T1 : Object
@@ -1901,24 +1722,24 @@ namespace SysError99
             where T5 : Object
             =>
             (
-                _obj0 as T0,
-                _obj1 as T1,
-                _obj2 as T2,
-                _obj3 as T3,
-                _obj4 as T4,
-                _obj5 as T5
+                Object0 as T0,
+                Object1 as T1,
+                Object2 as T2,
+                Object3 as T3,
+                Object4 as T4,
+                Object5 as T5
             );
     }
 
-    internal class QueryObject6 : QueryObject
+    public class QueryObject6 : QueryObject
     {
-        internal Object _obj0;
-        internal Object _obj1;
-        internal Object _obj2;
-        internal Object _obj3;
-        internal Object _obj4;
-        internal Object _obj5;
-        internal Object _obj6;
+        public Object Object0;
+        public Object Object1;
+        public Object Object2;
+        public Object Object3;
+        public Object Object4;
+        public Object Object5;
+        public Object Object6;
         public (T0, T1, T2, T3, T4, T5, T6) Get<T0, T1, T2, T3, T4, T5, T6>()
            where T0 : Object
            where T1 : Object
@@ -1929,26 +1750,26 @@ namespace SysError99
            where T6 : Object
            =>
            (
-               _obj0 as T0,
-               _obj1 as T1,
-               _obj2 as T2,
-               _obj3 as T3,
-               _obj4 as T4,
-               _obj5 as T5,
-               _obj6 as T6
+               Object0 as T0,
+               Object1 as T1,
+               Object2 as T2,
+               Object3 as T3,
+               Object4 as T4,
+               Object5 as T5,
+               Object6 as T6
            );
     }
 
-    internal class QueryObject7 : QueryObject
+    public class QueryObject7 : QueryObject
     {
-        internal Object _obj0;
-        internal Object _obj1;
-        internal Object _obj2;
-        internal Object _obj3;
-        internal Object _obj4;
-        internal Object _obj5;
-        internal Object _obj6;
-        internal Object _obj7;
+        public Object Object0;
+        public Object Object1;
+        public Object Object2;
+        public Object Object3;
+        public Object Object4;
+        public Object Object5;
+        public Object Object6;
+        public Object Object7;
         public (T0, T1, T2, T3, T4, T5, T6, T7) Get<T0, T1, T2, T3, T4, T5, T6, T7>()
             where T0 : Object
             where T1 : Object
@@ -1960,28 +1781,28 @@ namespace SysError99
             where T7 : Object
             =>
             (
-                _obj0 as T0,
-                _obj1 as T1,
-                _obj2 as T2,
-                _obj3 as T3,
-                _obj4 as T4,
-                _obj5 as T5,
-                _obj6 as T6,
-                _obj7 as T7
+                Object0 as T0,
+                Object1 as T1,
+                Object2 as T2,
+                Object3 as T3,
+                Object4 as T4,
+                Object5 as T5,
+                Object6 as T6,
+                Object7 as T7
             );
     }
 
-    internal class QueryObject8 : QueryObject
+    public class QueryObject8 : QueryObject
     {
-        internal Object _obj0;
-        internal Object _obj1;
-        internal Object _obj2;
-        internal Object _obj3;
-        internal Object _obj4;
-        internal Object _obj5;
-        internal Object _obj6;
-        internal Object _obj7;
-        internal Object _obj8;
+        public Object Object0;
+        public Object Object1;
+        public Object Object2;
+        public Object Object3;
+        public Object Object4;
+        public Object Object5;
+        public Object Object6;
+        public Object Object7;
+        public Object Object8;
         public (T0, T1, T2, T3, T4, T5, T6, T7, T8) Get<T0, T1, T2, T3, T4, T5, T6, T7, T8>()
             where T0 : Object
             where T1 : Object
@@ -1994,30 +1815,30 @@ namespace SysError99
             where T8 : Object
             =>
             (
-                _obj0 as T0,
-                _obj1 as T1,
-                _obj2 as T2,
-                _obj3 as T3,
-                _obj4 as T4,
-                _obj5 as T5,
-                _obj6 as T6,
-                _obj7 as T7,
-                _obj8 as T8
+                Object0 as T0,
+                Object1 as T1,
+                Object2 as T2,
+                Object3 as T3,
+                Object4 as T4,
+                Object5 as T5,
+                Object6 as T6,
+                Object7 as T7,
+                Object8 as T8
             );
     }
 
-    internal class QueryObject9 : QueryObject
+    public class QueryObject9 : QueryObject
     {
-        internal Object _obj0;
-        internal Object _obj1;
-        internal Object _obj2;
-        internal Object _obj3;
-        internal Object _obj4;
-        internal Object _obj5;
-        internal Object _obj6;
-        internal Object _obj7;
-        internal Object _obj8;
-        internal Object _obj9;
+        public Object Object0;
+        public Object Object1;
+        public Object Object2;
+        public Object Object3;
+        public Object Object4;
+        public Object Object5;
+        public Object Object6;
+        public Object Object7;
+        public Object Object8;
+        public Object Object9;
         public (T0, T1, T2, T3, T4, T5, T6, T7, T8, T9) Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>()
         where T0 : Object
         where T1 : Object
@@ -2031,32 +1852,32 @@ namespace SysError99
         where T9 : Object
         =>
         (
-            _obj0 as T0,
-            _obj1 as T1,
-            _obj2 as T2,
-            _obj3 as T3,
-            _obj4 as T4,
-            _obj5 as T5,
-            _obj6 as T6,
-            _obj7 as T7,
-            _obj8 as T8,
-            _obj9 as T9
+            Object0 as T0,
+            Object1 as T1,
+            Object2 as T2,
+            Object3 as T3,
+            Object4 as T4,
+            Object5 as T5,
+            Object6 as T6,
+            Object7 as T7,
+            Object8 as T8,
+            Object9 as T9
         );
     }
 
-    internal class QueryObject10 : QueryObject
+    public class QueryObject10 : QueryObject
     {
-        internal Object _obj0;
-        internal Object _obj1;
-        internal Object _obj2;
-        internal Object _obj3;
-        internal Object _obj4;
-        internal Object _obj5;
-        internal Object _obj6;
-        internal Object _obj7;
-        internal Object _obj8;
-        internal Object _obj9;
-        internal Object _obj10;
+        public Object Object0;
+        public Object Object1;
+        public Object Object2;
+        public Object Object3;
+        public Object Object4;
+        public Object Object5;
+        public Object Object6;
+        public Object Object7;
+        public Object Object8;
+        public Object Object9;
+        public Object Object10;
         public (T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>()
             where T0 : Object
             where T1 : Object
@@ -2071,34 +1892,34 @@ namespace SysError99
             where T10 : Object
             =>
             (
-                _obj0 as T0,
-                _obj1 as T1,
-                _obj2 as T2,
-                _obj3 as T3,
-                _obj4 as T4,
-                _obj5 as T5,
-                _obj6 as T6,
-                _obj7 as T7,
-                _obj8 as T8,
-                _obj9 as T9,
-                _obj10 as T10
+                Object0 as T0,
+                Object1 as T1,
+                Object2 as T2,
+                Object3 as T3,
+                Object4 as T4,
+                Object5 as T5,
+                Object6 as T6,
+                Object7 as T7,
+                Object8 as T8,
+                Object9 as T9,
+                Object10 as T10
             );
     }
 
-    internal class QueryObject11 : QueryObject
+    public class QueryObject11 : QueryObject
     {
-        internal Object _obj0;
-        internal Object _obj1;
-        internal Object _obj2;
-        internal Object _obj3;
-        internal Object _obj4;
-        internal Object _obj5;
-        internal Object _obj6;
-        internal Object _obj7;
-        internal Object _obj8;
-        internal Object _obj9;
-        internal Object _obj10;
-        internal Object _obj11;
+        public Object Object0;
+        public Object Object1;
+        public Object Object2;
+        public Object Object3;
+        public Object Object4;
+        public Object Object5;
+        public Object Object6;
+        public Object Object7;
+        public Object Object8;
+        public Object Object9;
+        public Object Object10;
+        public Object Object11;
         public (T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11) Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>()
             where T0 : Object
             where T1 : Object
@@ -2114,36 +1935,36 @@ namespace SysError99
             where T11 : Object
             =>
             (
-                _obj0 as T0,
-                _obj1 as T1,
-                _obj2 as T2,
-                _obj3 as T3,
-                _obj4 as T4,
-                _obj5 as T5,
-                _obj6 as T6,
-                _obj7 as T7,
-                _obj8 as T8,
-                _obj9 as T9,
-                _obj10 as T10,
-                _obj11 as T11
+                Object0 as T0,
+                Object1 as T1,
+                Object2 as T2,
+                Object3 as T3,
+                Object4 as T4,
+                Object5 as T5,
+                Object6 as T6,
+                Object7 as T7,
+                Object8 as T8,
+                Object9 as T9,
+                Object10 as T10,
+                Object11 as T11
             );
     }
 
-    internal class QueryObject12 : QueryObject
+    public class QueryObject12 : QueryObject
     {
-        internal Object _obj0;
-        internal Object _obj1;
-        internal Object _obj2;
-        internal Object _obj3;
-        internal Object _obj4;
-        internal Object _obj5;
-        internal Object _obj6;
-        internal Object _obj7;
-        internal Object _obj8;
-        internal Object _obj9;
-        internal Object _obj10;
-        internal Object _obj11;
-        internal Object _obj12;
+        public Object Object0;
+        public Object Object1;
+        public Object Object2;
+        public Object Object3;
+        public Object Object4;
+        public Object Object5;
+        public Object Object6;
+        public Object Object7;
+        public Object Object8;
+        public Object Object9;
+        public Object Object10;
+        public Object Object11;
+        public Object Object12;
         public (T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12) Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>()
             where T0 : Object
             where T1 : Object
@@ -2160,38 +1981,38 @@ namespace SysError99
             where T12 : Object
             =>
             (
-                _obj0 as T0,
-                _obj1 as T1,
-                _obj2 as T2,
-                _obj3 as T3,
-                _obj4 as T4,
-                _obj5 as T5,
-                _obj6 as T6,
-                _obj7 as T7,
-                _obj8 as T8,
-                _obj9 as T9,
-                _obj10 as T10,
-                _obj11 as T11,
-                _obj12 as T12
+                Object0 as T0,
+                Object1 as T1,
+                Object2 as T2,
+                Object3 as T3,
+                Object4 as T4,
+                Object5 as T5,
+                Object6 as T6,
+                Object7 as T7,
+                Object8 as T8,
+                Object9 as T9,
+                Object10 as T10,
+                Object11 as T11,
+                Object12 as T12
             );
     }
 
-    internal class QueryObject13 : QueryObject
+    public class QueryObject13 : QueryObject
     {
-        internal Object _obj0;
-        internal Object _obj1;
-        internal Object _obj2;
-        internal Object _obj3;
-        internal Object _obj4;
-        internal Object _obj5;
-        internal Object _obj6;
-        internal Object _obj7;
-        internal Object _obj8;
-        internal Object _obj9;
-        internal Object _obj10;
-        internal Object _obj11;
-        internal Object _obj12;
-        internal Object _obj13;
+        public Object Object0;
+        public Object Object1;
+        public Object Object2;
+        public Object Object3;
+        public Object Object4;
+        public Object Object5;
+        public Object Object6;
+        public Object Object7;
+        public Object Object8;
+        public Object Object9;
+        public Object Object10;
+        public Object Object11;
+        public Object Object12;
+        public Object Object13;
         public (T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13) Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>()
             where T0 : Object
             where T1 : Object
@@ -2209,40 +2030,40 @@ namespace SysError99
             where T13 : Object
             =>
             (
-                _obj0 as T0,
-                _obj1 as T1,
-                _obj2 as T2,
-                _obj3 as T3,
-                _obj4 as T4,
-                _obj5 as T5,
-                _obj6 as T6,
-                _obj7 as T7,
-                _obj8 as T8,
-                _obj9 as T9,
-                _obj10 as T10,
-                _obj11 as T11,
-                _obj12 as T12,
-                _obj13 as T13
+                Object0 as T0,
+                Object1 as T1,
+                Object2 as T2,
+                Object3 as T3,
+                Object4 as T4,
+                Object5 as T5,
+                Object6 as T6,
+                Object7 as T7,
+                Object8 as T8,
+                Object9 as T9,
+                Object10 as T10,
+                Object11 as T11,
+                Object12 as T12,
+                Object13 as T13
             );
     }
 
-    internal class QueryObject14 : QueryObject
+    public class QueryObject14 : QueryObject
     {
-        internal Object _obj0;
-        internal Object _obj1;
-        internal Object _obj2;
-        internal Object _obj3;
-        internal Object _obj4;
-        internal Object _obj5;
-        internal Object _obj6;
-        internal Object _obj7;
-        internal Object _obj8;
-        internal Object _obj9;
-        internal Object _obj10;
-        internal Object _obj11;
-        internal Object _obj12;
-        internal Object _obj13;
-        internal Object _obj14;
+        public Object Object0;
+        public Object Object1;
+        public Object Object2;
+        public Object Object3;
+        public Object Object4;
+        public Object Object5;
+        public Object Object6;
+        public Object Object7;
+        public Object Object8;
+        public Object Object9;
+        public Object Object10;
+        public Object Object11;
+        public Object Object12;
+        public Object Object13;
+        public Object Object14;
         public (T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14) Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>()
             where T0 : Object
             where T1 : Object
@@ -2261,42 +2082,42 @@ namespace SysError99
             where T14 : Object
             =>
             (
-                _obj0 as T0,
-                _obj1 as T1,
-                _obj2 as T2,
-                _obj3 as T3,
-                _obj4 as T4,
-                _obj5 as T5,
-                _obj6 as T6,
-                _obj7 as T7,
-                _obj8 as T8,
-                _obj9 as T9,
-                _obj10 as T10,
-                _obj11 as T11,
-                _obj12 as T12,
-                _obj13 as T13,
-                _obj14 as T14
+                Object0 as T0,
+                Object1 as T1,
+                Object2 as T2,
+                Object3 as T3,
+                Object4 as T4,
+                Object5 as T5,
+                Object6 as T6,
+                Object7 as T7,
+                Object8 as T8,
+                Object9 as T9,
+                Object10 as T10,
+                Object11 as T11,
+                Object12 as T12,
+                Object13 as T13,
+                Object14 as T14
             );
     }
 
-    internal class QueryObject15 : QueryObject
+    public class QueryObject15 : QueryObject
     {
-        internal Object _obj0;
-        internal Object _obj1;
-        internal Object _obj2;
-        internal Object _obj3;
-        internal Object _obj4;
-        internal Object _obj5;
-        internal Object _obj6;
-        internal Object _obj7;
-        internal Object _obj8;
-        internal Object _obj9;
-        internal Object _obj10;
-        internal Object _obj11;
-        internal Object _obj12;
-        internal Object _obj13;
-        internal Object _obj14;
-        internal Object _obj15;
+        public Object Object0;
+        public Object Object1;
+        public Object Object2;
+        public Object Object3;
+        public Object Object4;
+        public Object Object5;
+        public Object Object6;
+        public Object Object7;
+        public Object Object8;
+        public Object Object9;
+        public Object Object10;
+        public Object Object11;
+        public Object Object12;
+        public Object Object13;
+        public Object Object14;
+        public Object Object15;
         public (T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15) Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>()
             where T0 : Object
             where T1 : Object
@@ -2316,44 +2137,44 @@ namespace SysError99
             where T15 : Object
             =>
             (
-                _obj0 as T0,
-                _obj1 as T1,
-                _obj2 as T2,
-                _obj3 as T3,
-                _obj4 as T4,
-                _obj5 as T5,
-                _obj6 as T6,
-                _obj7 as T7,
-                _obj8 as T8,
-                _obj9 as T9,
-                _obj10 as T10,
-                _obj11 as T11,
-                _obj12 as T12,
-                _obj13 as T13,
-                _obj14 as T14,
-                _obj15 as T15
+                Object0 as T0,
+                Object1 as T1,
+                Object2 as T2,
+                Object3 as T3,
+                Object4 as T4,
+                Object5 as T5,
+                Object6 as T6,
+                Object7 as T7,
+                Object8 as T8,
+                Object9 as T9,
+                Object10 as T10,
+                Object11 as T11,
+                Object12 as T12,
+                Object13 as T13,
+                Object14 as T14,
+                Object15 as T15
             );
     }
 
-    internal class QueryObject16 : QueryObject
+    public class QueryObject16 : QueryObject
     {
-        internal Object _obj0;
-        internal Object _obj1;
-        internal Object _obj2;
-        internal Object _obj3;
-        internal Object _obj4;
-        internal Object _obj5;
-        internal Object _obj6;
-        internal Object _obj7;
-        internal Object _obj8;
-        internal Object _obj9;
-        internal Object _obj10;
-        internal Object _obj11;
-        internal Object _obj12;
-        internal Object _obj13;
-        internal Object _obj14;
-        internal Object _obj15;
-        internal Object _obj16;
+        public Object Object0;
+        public Object Object1;
+        public Object Object2;
+        public Object Object3;
+        public Object Object4;
+        public Object Object5;
+        public Object Object6;
+        public Object Object7;
+        public Object Object8;
+        public Object Object9;
+        public Object Object10;
+        public Object Object11;
+        public Object Object12;
+        public Object Object13;
+        public Object Object14;
+        public Object Object15;
+        public Object Object16;
         public (T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16) Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>()
             where T0 : Object
             where T1 : Object
@@ -2374,23 +2195,23 @@ namespace SysError99
             where T16 : Object
             =>
             (
-                _obj0 as T0,
-                _obj1 as T1,
-                _obj2 as T2,
-                _obj3 as T3,
-                _obj4 as T4,
-                _obj5 as T5,
-                _obj6 as T6,
-                _obj7 as T7,
-                _obj8 as T8,
-                _obj9 as T9,
-                _obj10 as T10,
-                _obj11 as T11,
-                _obj12 as T12,
-                _obj13 as T13,
-                _obj14 as T14,
-                _obj15 as T15,
-                _obj16 as T16
+                Object0 as T0,
+                Object1 as T1,
+                Object2 as T2,
+                Object3 as T3,
+                Object4 as T4,
+                Object5 as T5,
+                Object6 as T6,
+                Object7 as T7,
+                Object8 as T8,
+                Object9 as T9,
+                Object10 as T10,
+                Object11 as T11,
+                Object12 as T12,
+                Object13 as T13,
+                Object14 as T14,
+                Object15 as T15,
+                Object16 as T16
             );
     }
 

@@ -78,31 +78,65 @@ When we start the project again, the icon now scales indefinitely!
 ---
 
 ## Quickstart (C#)
-Importing is similar to GDScript variant, but instead it will be `QGodotSharp.cs` for script, and `QGodotSharp` for class.
+You need to import `QGodotSharp.cs` along with `q_godot.gd` before using it. All C# variant functions are inside `SysError99.QGodotSharp`.
 
 Unlike GDScript, C# version utilises C#'s `Tuple` to query nodes. Again, first element will always be class reference of parent node:
 
 ```cs
-private static readonly Vector2 Target = new Vector2(512f, 300f);
+using Godot;
+using SysError99;
+using System.Collections.Generic;
 
-public override void _Ready()
+public class MySystem : Node
 {
-    await ToSignal(GetTree(), "idle_frame"); // On '_Ready()', it must wait at least one frame before query can occur
-    foreach (var (parent, sprite) in QGodotSharp.Query<KinematicBody2D, Sprite>())
+    private static readonly Vector2 Target = new Vector2(512f, 300f);
+
+    public override void _Ready()
     {
-        sprite.Scale = Vector2.One * 4f;
+        await ToSignal(GetTree(), "idle_frame"); // On '_Ready()', it must wait at least one frame before query can occur
+        foreach (var (parent, sprite) in QGodotSharp.Query<KinematicBody2D, Sprite>())
+        {
+            sprite.Scale = Vector2.One * 4f;
+        }
+    }
+
+    public override void _Process(float delta)
+    {
+        foreach (var (parent, sprite) in QGodotSharp.Query<KinematicBody2D, Sprite>())
+        {
+            var vel = parent.Position.DirectionTo(Target) * 10;
+            parent.MoveAndSlide(vel);
+            parent.LookAt(Target);
+        }
+        _label.Text = "FPS: " + Engine.GetFramesPerSecond();
     }
 }
-public override void _Process(float delta)
+
+```
+
+You can also use `System.Collections.Generic.IEnumerable<T>` to create a query before using it instead.
+
+```cs
+using Godot;
+using SysError99;
+using System.Collections.Generic;
+
+public class MySystem : Node
 {
-    foreach (var (parent, sprite) in QGodotSharp.Query<KinematicBody2D, Sprite>())
+    private static readonly Vector2 Target = new Vector2(512f, 300f);
+    private IEnumerable<(KinematicBody2D, Sprite)> _query = QGodotSharp.Query<KinematicBody2D, Sprite>();
+
+    public override void _Process(float delta)
     {
-        var vel = parent.Position.DirectionTo(Target) * 10;
-        parent.MoveAndSlide(vel);
-        parent.LookAt(Target);
+        foreach (var (parent, sprite) in _query)
+        {
+            var vel = parent.Position.DirectionTo(Target) * 10;
+            parent.MoveAndSlide(vel);
+            parent.LookAt(Target);
+        }
     }
-    _label.Text = "FPS: " + Engine.GetFramesPerSecond();
 }
+
 ```
 
 ---

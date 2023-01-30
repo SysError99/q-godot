@@ -1,5 +1,6 @@
 using Godot;
 using SysError99;
+using System.Collections.Generic;
 
 
 public class ScnTestGodotSharp : Node2D
@@ -7,6 +8,8 @@ public class ScnTestGodotSharp : Node2D
     private static readonly Vector2 Target = new Vector2(512, 300);
 
     private Label _label;
+
+    private IEnumerable<(KinematicBody2D, Sprite)> _query = QGodotSharp.Query<KinematicBody2D, Sprite>();
 
     public override void _Ready()
     {
@@ -38,12 +41,20 @@ public class ScnTestGodotSharp : Node2D
 
     public override void _Process(float delta)
     {
-        foreach (var (parent, sprite) in QGodotSharp.Query<KinematicBody2D, Sprite>())
+        foreach (var (parent, sprite) in _query)
         {
             var vel = parent.Position.DirectionTo(Target) * 10;
             parent.MoveAndSlide(vel);
             parent.LookAt(Target);
         }
         _label.Text = "FPS: " + Engine.GetFramesPerSecond();
+    }
+
+    public override void _Input(InputEvent @event)
+    {
+        if (@event.IsActionPressed("ui_home"))
+        {
+            QGodotSharp.ChangeScene("res://scn_next.tscn");
+        }
     }
 }
