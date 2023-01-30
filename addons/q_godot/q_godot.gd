@@ -46,10 +46,6 @@ var _scene_changing := false
 var _tree: SceneTree
 
 
-func __get_query_name(component_names: Array) -> String:
-	return _QUERY + "_" + PoolStringArray(component_names).join("_")
-
-
 # Bind a query to an object or an instantiable object. If you bind a query to instantiated object, 'shared' parameter will be function name string.
 func bind_query(component_names: Array, system: Object = null, shared = null, to_current_scene: bool = false) -> void:
 	if not _root_ready:
@@ -82,6 +78,63 @@ func bind_query(component_names: Array, system: Object = null, shared = null, to
 # Bind a query to an object or an instantiable object for current scene. If you bind a query to instantiated object, 'shared' parameter will be function name string.
 func bind_query_to_current_scene(component_names: Array, system: Object = null, shared = null) -> void:
 	bind_query(component_names, system, shared, true)
+
+
+# Obtain a query array.
+func query(component_names: Array) -> Array:
+	var query_name := __get_query_name(component_names)
+	if not query_name in _query_cache:
+		if not is_instance_valid(_root.get_node_or_null(query_name)):
+			bind_query(component_names)
+		_query_cache[query_name] = _tree.get_nodes_in_group(query_name)
+	return _query_cache[query_name]
+
+
+# Obtain a half-iteratable query.
+func query_half(component_names: Array) -> HalfQueryReference:
+	var query_name := __get_query_name(component_names)
+	if  query_name in _query_half_cache:
+		return _query_half_cache[query_name]
+	var q := HalfQueryReference.new()
+	var query := query(component_names)
+	var query_size := query.size()
+	var query_half_size := query_size / 2
+	q.first_half = query.slice(0, query_half_size - 1)
+	if query_size > 1:
+		q.second_half = query.slice(query_half_size, query.size())
+	_query_half_cache[query_name] = q
+	return q
+
+
+# Change scene with internal function, mandatory to make querying system working properly!
+func change_scene(path: String) -> void:
+	_scene_changing = true
+	var current_scene := _tree.current_scene
+	var inst := (load(path) as PackedScene).instance()
+	for scene in _tree.get_nodes_in_group(_REGISTERED_SCENE):
+		__remove_entity_from_current_scene(scene)
+	for query_name in _queries:
+		_queries[query_name].call("remove_current_scene_subscribers")
+	current_scene.queue_free()
+	yield(current_scene, "tree_exited")
+	_root.set_meta("current_scene", inst)
+	_root.call_deferred("add_child", inst)
+	_tree.set_deferred("current_scene", inst)
+	yield(inst, "ready")
+	__post_change_scene(inst)
+	_scene_changing = false
+
+
+# Register specified node as a scene node.
+func register_as_scene(node: Node) -> void:
+	node.add_to_group(_REGISTERED_SCENE)
+	node.connect("child_entered_tree", self, "_entity_entered_scene")
+	for child_ref in node.get_children():
+		__register_entity(child_ref)
+
+
+func __get_query_name(component_names: Array) -> String:
+	return _QUERY + "_" + PoolStringArray(component_names).join("_")
 
 
 func __bind_to_query_node(entity: Node, query_name: String, query: Query, subscribers: Array) -> void:
@@ -142,51 +195,6 @@ func __bind_to_query_node(entity: Node, query_name: String, query: Query, subscr
 			system.set_meta(entity_name, system)
 
 
-# Obtain a query array.
-func query(component_names: Array) -> Array:
-	var query_name := __get_query_name(component_names)
-	if not query_name in _query_cache:
-		if not is_instance_valid(_root.get_node_or_null(query_name)):
-			bind_query(component_names)
-		_query_cache[query_name] = _tree.get_nodes_in_group(query_name)
-	return _query_cache[query_name]
-
-
-# Obtain a half-iteratable query.
-func query_half(component_names: Array) -> HalfQueryReference:
-	var query_name := __get_query_name(component_names)
-	if  query_name in _query_half_cache:
-		return _query_half_cache[query_name]
-	var q := HalfQueryReference.new()
-	var query := query(component_names)
-	var query_size := query.size()
-	var query_half_size := query_size / 2
-	q.first_half = query.slice(0, query_half_size - 1)
-	if query_size > 1:
-		q.second_half = query.slice(query_half_size, query.size())
-	_query_half_cache[query_name] = q
-	return q
-
-
-# Change scene with internal function, mandatory to make querying system working properly!
-func change_scene(path: String) -> void:
-	_scene_changing = true
-	var current_scene := _tree.current_scene
-	var inst := (load(path) as PackedScene).instance()
-	for scene in _tree.get_nodes_in_group(_REGISTERED_SCENE):
-		__remove_entity_from_current_scene(scene)
-	for query_name in _queries:
-		_queries[query_name].call("remove_current_scene_subscribers")
-	current_scene.queue_free()
-	yield(current_scene, "tree_exited")
-	_root.set_meta("current_scene", inst)
-	_root.call_deferred("add_child", inst)
-	_tree.set_deferred("current_scene", inst)
-	yield(inst, "ready")
-	__post_change_scene(inst)
-	_scene_changing = false
-
-
 func __remove_entity_from_current_scene(scene: Node) -> void:
 	var entities := scene.get_children()
 	if scene.is_in_group("persistent_scene"):
@@ -219,14 +227,6 @@ func __post_change_scene(current_scene: Node) -> void:
 			register_as_scene(scn)
 	else:
 		register_as_scene(current_scene)
-
-
-# Register specified node as a scene node.
-func register_as_scene(node: Node) -> void:
-	node.add_to_group(_REGISTERED_SCENE)
-	node.connect("child_entered_tree", self, "_entity_entered_scene")
-	for child_ref in node.get_children():
-		__register_entity(child_ref)
 
 
 func __register_entity(entity: Node) -> void:
