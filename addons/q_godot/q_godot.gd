@@ -35,8 +35,8 @@ class HalfQueryReference extends Object:
 			return second_half
 
 
+signal query_added(query_name)
 signal added_to_query(query_name, binds)
-signal query_added(query_name, binds_size)
 signal removed_from_query(query_name, binds)
 
 
@@ -68,8 +68,7 @@ func bind_query(component_names: Array, system: Object = null, shared = null, to
 		query = Query.new()
 		query.component_names = component_names
 		_queries[query_name] = query
-		_query_cache[query_name] = []
-		emit_signal("query_added", query_name, component_names.size())
+		emit_signal("query_added", query_name)
 	if is_instance_valid(system):
 		var new_subscriber := [system, shared]
 		query.subscribers.push_back(new_subscriber)
