@@ -80,6 +80,8 @@ When we start the project again, the icon now scales indefinitely!
 ## Quickstart (C#)
 You need to import `QGodotSharp.cs` along with `q_godot.gd` before using it. All C# variant functions are inside `SysError99.QGodotSharp`.
 
+*NOTE: You will no longer be able to use GDScript APIs after adding the C# script as AutoLoad, since C# module will redirect all data from GDscript to it.*
+
 Unlike GDScript, C# version utilises C#'s `Tuple` to query nodes. Again, first element will always be class reference of parent node:
 
 ```cs
