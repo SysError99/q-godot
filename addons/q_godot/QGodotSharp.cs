@@ -17,23 +17,7 @@ namespace SysError99
         private static Viewport Root;
         private static SceneTree MainTree;
         private static QGodotSharp Self;
-        private static Dictionary<string, Dictionary<ulong, QueryObject0>> Queries0 = new();
-        private static Dictionary<string, Dictionary<ulong, QueryObject1>> Queries1 = new();
-        private static Dictionary<string, Dictionary<ulong, QueryObject2>> Queries2 = new();
-        private static Dictionary<string, Dictionary<ulong, QueryObject3>> Queries3 = new();
-        private static Dictionary<string, Dictionary<ulong, QueryObject4>> Queries4 = new();
-        private static Dictionary<string, Dictionary<ulong, QueryObject5>> Queries5 = new();
-        private static Dictionary<string, Dictionary<ulong, QueryObject6>> Queries6 = new();
-        private static Dictionary<string, Dictionary<ulong, QueryObject7>> Queries7 = new();
-        private static Dictionary<string, Dictionary<ulong, QueryObject8>> Queries8 = new();
-        private static Dictionary<string, Dictionary<ulong, QueryObject9>> Queries9 = new();
-        private static Dictionary<string, Dictionary<ulong, QueryObject10>> Queries10 = new();
-        private static Dictionary<string, Dictionary<ulong, QueryObject11>> Queries11 = new();
-        private static Dictionary<string, Dictionary<ulong, QueryObject12>> Queries12 = new();
-        private static Dictionary<string, Dictionary<ulong, QueryObject13>> Queries13 = new();
-        private static Dictionary<string, Dictionary<ulong, QueryObject14>> Queries14 = new();
-        private static Dictionary<string, Dictionary<ulong, QueryObject15>> Queries15 = new();
-        private static Dictionary<string, Dictionary<ulong, QueryObject16>> Queries16 = new();
+        private static Dictionary<string, Dictionary<ulong, object>> Queries = new();
         private static Dictionary<string, List<SystemOneshotBinder>> SubscribedSystems = new();
         private static Dictionary<string, List<SystemOneshotBinder>> CurrentSceneSubscribedSystems = new();
 
@@ -544,11 +528,8 @@ namespace SysError99
                     typeof(T0).Name,
                 }  
             );
-            if (!Queries0.ContainsKey(queryName))
-            {
-                Query(queryName, componentNames);
-            }
-            foreach (var q in Queries0[queryName].Values)
+            Query(queryName, componentNames);
+            foreach (QueryObject0 q in Queries[queryName].Values)
             {
                 yield return q.Get<T0>();
             }
@@ -565,11 +546,8 @@ namespace SysError99
                     typeof(T1).Name,
                 }  
             );
-            if (!Queries1.ContainsKey(queryName))
-            {
-                Query(queryName, componentNames);
-            }
-            foreach (var q in Queries1[queryName].Values)
+            Query(queryName, componentNames);
+            foreach (QueryObject1 q in Queries[queryName].Values)
             {
                 yield return q.Get<T0, T1>();
             }
@@ -588,11 +566,8 @@ namespace SysError99
                     typeof(T2).Name,
                 }  
             );
-            if (!Queries2.ContainsKey(queryName))
-            {
-                Query(queryName, componentNames);
-            }
-            foreach (var q in Queries2[queryName].Values)
+            Query(queryName, componentNames);
+            foreach (QueryObject2 q in Queries[queryName].Values)
             {
                 yield return q.Get<T0, T1, T2>();
             }
@@ -613,11 +588,8 @@ namespace SysError99
                     typeof(T3).Name,
                 }  
             );
-            if (!Queries3.ContainsKey(queryName))
-            {
-                Query(queryName, componentNames);
-            }
-            foreach (var q in Queries3[queryName].Values)
+            Query(queryName, componentNames);
+            foreach (QueryObject3 q in Queries[queryName].Values)
             {
                 yield return q.Get<T0, T1, T2, T3>();
             }
@@ -640,11 +612,8 @@ namespace SysError99
                     typeof(T4).Name,
                 }  
             );
-            if (!Queries4.ContainsKey(queryName))
-            {
-                Query(queryName, componentNames);
-            }
-            foreach (var q in Queries4[queryName].Values)
+            Query(queryName, componentNames);
+            foreach (QueryObject4 q in Queries[queryName].Values)
             {
                 yield return q.Get<T0, T1, T2, T3, T4>();
             }
@@ -669,11 +638,8 @@ namespace SysError99
                     typeof(T5).Name,
                 }  
             );
-            if (!Queries5.ContainsKey(queryName))
-            {
-                Query(queryName, componentNames);
-            }
-            foreach (var q in Queries5[queryName].Values)
+            Query(queryName, componentNames);
+            foreach (QueryObject5 q in Queries[queryName].Values)
             {
                 yield return q.Get<T0, T1, T2, T3, T4, T5>();
             }
@@ -700,11 +666,8 @@ namespace SysError99
                     typeof(T6).Name,
                 }  
             );
-            if (!Queries6.ContainsKey(queryName))
-            {
-                Query(queryName, componentNames);
-            }
-            foreach (var q in Queries6[queryName].Values)
+            Query(queryName, componentNames);
+            foreach (QueryObject6 q in Queries[queryName].Values)
             {
                 yield return q.Get<T0, T1, T2, T3, T4, T5, T6>();
             }
@@ -733,11 +696,8 @@ namespace SysError99
                     typeof(T7).Name,
                 }  
             );
-            if (!Queries7.ContainsKey(queryName))
-            {
-                Query(queryName, componentNames);
-            }
-            foreach (var q in Queries7[queryName].Values)
+            Query(queryName, componentNames);
+            foreach (QueryObject7 q in Queries[queryName].Values)
             {
                 yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7>();
             }
@@ -768,11 +728,8 @@ namespace SysError99
                     typeof(T8).Name,
                 }  
             );
-            if (!Queries8.ContainsKey(queryName))
-            {
-                Query(queryName, componentNames);
-            }
-            foreach (var q in Queries8[queryName].Values)
+            Query(queryName, componentNames);
+            foreach (QueryObject8 q in Queries[queryName].Values)
             {
                 yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8>();
             }
@@ -805,11 +762,8 @@ namespace SysError99
                     typeof(T9).Name,
                 }  
             );
-            if (!Queries9.ContainsKey(queryName))
-            {
-                Query(queryName, componentNames);
-            }
-            foreach (var q in Queries9[queryName].Values)
+            Query(queryName, componentNames);
+            foreach (QueryObject9 q in Queries[queryName].Values)
             {
                 yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>();
             }
@@ -844,11 +798,8 @@ namespace SysError99
                     typeof(T10).Name,
                 }  
             );
-            if (!Queries10.ContainsKey(queryName))
-            {
-                Query(queryName, componentNames);
-            }
-            foreach (var q in Queries10[queryName].Values)
+            Query(queryName, componentNames);
+            foreach (QueryObject10 q in Queries[queryName].Values)
             {
                 yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>();
             }
@@ -885,11 +836,8 @@ namespace SysError99
                     typeof(T11).Name,
                 }  
             );
-            if (!Queries11.ContainsKey(queryName))
-            {
-                Query(queryName, componentNames);
-            }
-            foreach (var q in Queries11[queryName].Values)
+            Query(queryName, componentNames);
+            foreach (QueryObject11 q in Queries[queryName].Values)
             {
                 yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>();
             }
@@ -928,11 +876,8 @@ namespace SysError99
                     typeof(T12).Name,
                 }  
             );
-            if (!Queries12.ContainsKey(queryName))
-            {
-                Query(queryName, componentNames);
-            }
-            foreach (var q in Queries12[queryName].Values)
+            Query(queryName, componentNames);
+            foreach (QueryObject12 q in Queries[queryName].Values)
             {
                 yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>();
             }
@@ -973,11 +918,8 @@ namespace SysError99
                     typeof(T13).Name,
                 }  
             );
-            if (!Queries13.ContainsKey(queryName))
-            {
-                Query(queryName, componentNames);
-            }
-            foreach (var q in Queries13[queryName].Values)
+            Query(queryName, componentNames);
+            foreach (QueryObject13 q in Queries[queryName].Values)
             {
                 yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>();
             }
@@ -1020,11 +962,8 @@ namespace SysError99
                     typeof(T14).Name,
                 }  
             );
-            if (!Queries14.ContainsKey(queryName))
-            {
-                Query(queryName, componentNames);
-            }
-            foreach (var q in Queries14[queryName].Values)
+            Query(queryName, componentNames);
+            foreach (QueryObject14 q in Queries[queryName].Values)
             {
                 yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>();
             }
@@ -1069,11 +1008,8 @@ namespace SysError99
                     typeof(T15).Name,
                 }  
             );
-            if (!Queries15.ContainsKey(queryName))
-            {
-                Query(queryName, componentNames);
-            }
-            foreach (var q in Queries15[queryName].Values)
+            Query(queryName, componentNames);
+            foreach (QueryObject15 q in Queries[queryName].Values)
             {
                 yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>();
             }
@@ -1120,11 +1056,8 @@ namespace SysError99
                     typeof(T16).Name,
                 }  
             );
-            if (!Queries16.ContainsKey(queryName))
-            {
-                Query(queryName, componentNames);
-            }
-            foreach (var q in Queries16[queryName].Values)
+            Query(queryName, componentNames);
+            foreach (QueryObject16 q in Queries[queryName].Values)
             {
                 yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>();
             }
@@ -1132,14 +1065,16 @@ namespace SysError99
 
         private static void Query(string queryName, Array componentNames)
         {
-            if (IsInstanceValid(QGodot))
+            if (!Queries.ContainsKey(queryName))
             {
-                QGodot.Call("query", componentNames);
-                return;
+                if (IsInstanceValid(QGodot))
+                {
+                    QGodot.Call("query", componentNames);
+                    return;
+                }
+                QueryAdd(queryName, componentNames.Count);
+                PreQueryList.Add(componentNames);
             }
-            QueryAdd(queryName, componentNames.Count);
-            PreQueryList.Add(componentNames);
-            return;
         }
         #endregion
         
@@ -1183,93 +1118,20 @@ namespace SysError99
 
         private static void QueryAdd(string queryName, int bindsSize)
         {
-            switch (bindsSize)
-            {
-                case 0:
-                    throw new RankException("Bind size cannot be zero");
-                case 1:
-                    if (Queries0.ContainsKey(queryName)) return;
-                    Queries0.Add(queryName, new Dictionary<ulong, QueryObject0>());
-                    break;
-                case 2:
-                    if (Queries1.ContainsKey(queryName)) return;
-                    Queries1.Add(queryName, new Dictionary<ulong, QueryObject1>());
-                    break;
-                case 3:
-                    if (Queries2.ContainsKey(queryName)) return;
-                    Queries2.Add(queryName, new Dictionary<ulong, QueryObject2>());
-                    break;
-                case 4:
-                    if (Queries3.ContainsKey(queryName)) return;
-                    Queries3.Add(queryName, new Dictionary<ulong, QueryObject3>());
-                    break;
-                case 5:
-                    if (Queries4.ContainsKey(queryName)) return;
-                    Queries4.Add(queryName, new Dictionary<ulong, QueryObject4>());
-                    break;
-                case 6:
-                    if (Queries5.ContainsKey(queryName)) return;
-                    Queries5.Add(queryName, new Dictionary<ulong, QueryObject5>());
-                    break;
-                case 7:
-                    if (Queries6.ContainsKey(queryName)) return;
-                    Queries6.Add(queryName, new Dictionary<ulong, QueryObject6>());
-                    break;
-                case 8:
-                    if (Queries7.ContainsKey(queryName)) return;
-                    Queries7.Add(queryName, new Dictionary<ulong, QueryObject7>());
-                    break;
-                case 9:
-                    if (Queries8.ContainsKey(queryName)) return;
-                    Queries8.Add(queryName, new Dictionary<ulong, QueryObject8>());
-                    break;
-                case 10:
-                    if (Queries9.ContainsKey(queryName)) return;
-                    Queries9.Add(queryName, new Dictionary<ulong, QueryObject9>());
-                    break;
-                case 11:
-                    if (Queries10.ContainsKey(queryName)) return;
-                    Queries10.Add(queryName, new Dictionary<ulong, QueryObject10>());
-                    break;
-                case 12:
-                    if (Queries11.ContainsKey(queryName)) return;
-                    Queries11.Add(queryName, new Dictionary<ulong, QueryObject11>());
-                    break;
-                case 13:
-                    if (Queries12.ContainsKey(queryName)) return;
-                    Queries12.Add(queryName, new Dictionary<ulong, QueryObject12>());
-                    break;
-                case 14:
-                    if (Queries13.ContainsKey(queryName)) return;
-                    Queries13.Add(queryName, new Dictionary<ulong, QueryObject13>());
-                    break;
-                case 15:
-                    if (Queries14.ContainsKey(queryName)) return;
-                    Queries14.Add(queryName, new Dictionary<ulong, QueryObject14>());
-                    break;
-                case 16:
-                    if (Queries15.ContainsKey(queryName)) return;
-                    Queries15.Add(queryName, new Dictionary<ulong, QueryObject15>());
-                    break;
-                case 17:
-                    if (Queries16.ContainsKey(queryName)) return;
-                    Queries16.Add(queryName, new Dictionary<ulong, QueryObject16>());
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException("Tuple count can be maximum at 17!");
-            }
+            if (Queries.ContainsKey(queryName)) return;
+            Queries.Add(queryName, new Dictionary<ulong, dynamic>());
         }
 
         private static void AddToQuery(string queryName, Array binds)
         {
             var entityId = (binds[0] as Object).GetInstanceId();
+            var queries = Queries[queryName];
             switch (binds.Count)
             {
                 case 0:
                     throw new RankException("Bind size cannot be zero.");
                 case 1:
                     {
-                        var queries = Queries0[queryName];
                         if (queries.ContainsKey(entityId)) return;
                         var query = new QueryObject0();
                         query.Object0 = binds[0] as Object;
@@ -1278,7 +1140,6 @@ namespace SysError99
                     break;
                 case 2:
                     {
-                        var queries = Queries1[queryName];
                         if (queries.ContainsKey(entityId)) return;
                         var query = new QueryObject1();
                         query.Object0 = binds[0] as Object;
@@ -1288,7 +1149,6 @@ namespace SysError99
                     break;
                 case 3:
                     {
-                        var queries = Queries2[queryName];
                         if (queries.ContainsKey(entityId)) return;
                         var query = new QueryObject2();
                         query.Object0 = binds[0] as Object;
@@ -1299,7 +1159,6 @@ namespace SysError99
                     break;
                 case 4:
                     {
-                        var queries = Queries3[queryName];
                         if (queries.ContainsKey(entityId)) return;
                         var query = new QueryObject3();
                         query.Object0 = binds[0] as Object;
@@ -1311,7 +1170,6 @@ namespace SysError99
                     break;
                 case 5:
                     {
-                        var queries = Queries4[queryName];
                         if (queries.ContainsKey(entityId)) return;
                         var query = new QueryObject4();
                         query.Object0 = binds[0] as Object;
@@ -1324,7 +1182,6 @@ namespace SysError99
                     break;
                 case 6:
                     {
-                        var queries = Queries5[queryName];
                         if (queries.ContainsKey(entityId)) return;
                         var query = new QueryObject5();
                         query.Object0 = binds[0] as Object;
@@ -1338,7 +1195,6 @@ namespace SysError99
                     break;
                 case 7:
                     {
-                        var queries = Queries6[queryName];
                         if (queries.ContainsKey(entityId)) return;
                         var query = new QueryObject6();
                         query.Object0 = binds[0] as Object;
@@ -1353,7 +1209,6 @@ namespace SysError99
                     break;
                 case 8:
                     {
-                        var queries = Queries7[queryName];
                         if (queries.ContainsKey(entityId)) return;
                         var query = new QueryObject7();
                         query.Object0 = binds[0] as Object;
@@ -1369,7 +1224,6 @@ namespace SysError99
                     break;
                 case 9:
                     {
-                        var queries = Queries8[queryName];
                         if (queries.ContainsKey(entityId)) return;
                         var query = new QueryObject8();
                         query.Object0 = binds[0] as Object;
@@ -1386,7 +1240,6 @@ namespace SysError99
                     break;
                 case 10:
                     {
-                        var queries = Queries9[queryName];
                         if (queries.ContainsKey(entityId)) return;
                         var query = new QueryObject9();
                         query.Object0 = binds[0] as Object;
@@ -1404,7 +1257,6 @@ namespace SysError99
                     break;
                 case 11:
                     {
-                        var queries = Queries10[queryName];
                         if (queries.ContainsKey(entityId)) return;
                         var query = new QueryObject10();
                         query.Object0 = binds[0] as Object;
@@ -1423,7 +1275,6 @@ namespace SysError99
                     break;
                 case 12:
                     {
-                        var queries = Queries11[queryName];
                         if (queries.ContainsKey(entityId)) return;
                         var query = new QueryObject11();
                         query.Object0 = binds[0] as Object;
@@ -1443,7 +1294,6 @@ namespace SysError99
                     break;
                 case 13:
                     {
-                        var queries = Queries12[queryName];
                         if (queries.ContainsKey(entityId)) return;
                         var query = new QueryObject12();
                         query.Object0 = binds[0] as Object;
@@ -1464,7 +1314,6 @@ namespace SysError99
                     break;
                 case 14:
                     {
-                        var queries = Queries13[queryName];
                         if (queries.ContainsKey(entityId)) return;
                         var query = new QueryObject13();
                         query.Object0 = binds[0] as Object;
@@ -1486,7 +1335,6 @@ namespace SysError99
                     break;
                 case 15:
                     {
-                        var queries = Queries14[queryName];
                         if (queries.ContainsKey(entityId)) return;
                         var query = new QueryObject14();
                         query.Object0 = binds[0] as Object;
@@ -1509,7 +1357,6 @@ namespace SysError99
                     break;
                 case 16:
                     {
-                        var queries = Queries15[queryName];
                         if (queries.ContainsKey(entityId)) return;
                         var query = new QueryObject15();
                         query.Object0 = binds[0] as Object;
@@ -1533,7 +1380,6 @@ namespace SysError99
                     break;
                 case 17:
                     {
-                        var queries = Queries16[queryName];
                         if (queries.ContainsKey(entityId)) return;
                         var query = new QueryObject16();
                         query.Object0 = binds[0] as Object;
@@ -1593,26 +1439,8 @@ namespace SysError99
 
         private void _RemoveFromQuery(string queryName, Array binds)
         {
-            var entityId = (binds[0] as Object).GetInstanceId();
-            switch (queryName.Split('_').Length)
-            {
-                case 1: Queries0[queryName].Remove(entityId); break;
-                case 2: Queries1[queryName].Remove(entityId); break;
-                case 3: Queries2[queryName].Remove(entityId); break;
-                case 4: Queries3[queryName].Remove(entityId); break;
-                case 5: Queries4[queryName].Remove(entityId); break;
-                case 6: Queries5[queryName].Remove(entityId); break;
-                case 7: Queries6[queryName].Remove(entityId); break;
-                case 8: Queries7[queryName].Remove(entityId); break;
-                case 9: Queries8[queryName].Remove(entityId); break;
-                case 10: Queries9[queryName].Remove(entityId); break;
-                case 11: Queries10[queryName].Remove(entityId); break;
-                case 12: Queries11[queryName].Remove(entityId); break;
-                case 13: Queries12[queryName].Remove(entityId); break;
-                case 14: Queries13[queryName].Remove(entityId); break;
-                case 15: Queries14[queryName].Remove(entityId); break;
-                case 16: Queries15[queryName].Remove(entityId); break;
-            }
+            var entity = binds[0] as Object;
+            Queries[queryName].Remove(entity.GetInstanceId());
         }
     }
 
