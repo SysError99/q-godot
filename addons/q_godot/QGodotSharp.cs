@@ -17,6 +17,7 @@ namespace SysError99
         private static Viewport Root;
         private static SceneTree MainTree;
         private static QGodotSharp Self;
+        private static Dictionary<string, HalfQuery> HalfQueries = new();
         private static Dictionary<string, Dictionary<ulong, object>> Queries = new();
         private static Dictionary<string, List<SystemOneshotBinder>> SubscribedSystems = new();
         private static Dictionary<string, List<SystemOneshotBinder>> CurrentSceneSubscribedSystems = new();
@@ -1063,16 +1064,559 @@ namespace SysError99
             }
         }
 
+
+        public static IEnumerable<T0> QueryHalf<T0>()
+            where T0 : Object
+        {
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
+                {
+                    typeof(T0).Name,
+                }  
+            );
+            Query(queryName, componentNames);
+            foreach (QueryObject0 q in HalfQueries[queryName].GetNext())
+            {
+                yield return q.Get<T0>();
+            }
+        }
+
+        public static IEnumerable<(T0, T1)> QueryHalf<T0, T1>()
+            where T0 : Object
+            where T1 : Object
+        {
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
+                {
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                }  
+            );
+            Query(queryName, componentNames);
+            foreach (QueryObject1 q in HalfQueries[queryName].GetNext())
+            {
+                yield return q.Get<T0, T1>();
+            }
+        }
+
+        public static IEnumerable<(T0, T1, T2)> QueryHalf<T0, T1, T2>()
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+        {
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
+                {
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                }  
+            );
+            Query(queryName, componentNames);
+            foreach (QueryObject2 q in HalfQueries[queryName].GetNext())
+            {
+                yield return q.Get<T0, T1, T2>();
+            }
+        }
+
+        public static IEnumerable<(T0, T1, T2, T3)> QueryHalf<T0, T1, T2, T3>()
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+        {
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
+                {
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                    typeof(T3).Name,
+                }  
+            );
+            Query(queryName, componentNames);
+            foreach (QueryObject3 q in HalfQueries[queryName].GetNext())
+            {
+                yield return q.Get<T0, T1, T2, T3>();
+            }
+        }
+
+        public static IEnumerable<(T0, T1, T2, T3, T4)> QueryHalf<T0, T1, T2, T3, T4>()
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+            where T4 : Object
+        {
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
+                {
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                    typeof(T3).Name,
+                    typeof(T4).Name,
+                }  
+            );
+            Query(queryName, componentNames);
+            foreach (QueryObject4 q in HalfQueries[queryName].GetNext())
+            {
+                yield return q.Get<T0, T1, T2, T3, T4>();
+            }
+        }
+
+        public static IEnumerable<(T0, T1, T2, T3, T4, T5)> QueryHalf<T0, T1, T2, T3, T4, T5>()
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+            where T4 : Object
+            where T5 : Object
+        {
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
+                {
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                    typeof(T3).Name,
+                    typeof(T4).Name,
+                    typeof(T5).Name,
+                }  
+            );
+            Query(queryName, componentNames);
+            foreach (QueryObject5 q in HalfQueries[queryName].GetNext())
+            {
+                yield return q.Get<T0, T1, T2, T3, T4, T5>();
+            }
+        }
+
+        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6)> QueryHalf<T0, T1, T2, T3, T4, T5, T6>()
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+            where T4 : Object
+            where T5 : Object
+            where T6 : Object
+        {
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
+                {
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                    typeof(T3).Name,
+                    typeof(T4).Name,
+                    typeof(T5).Name,
+                    typeof(T6).Name,
+                }  
+            );
+            Query(queryName, componentNames);
+            foreach (QueryObject6 q in HalfQueries[queryName].GetNext())
+            {
+                yield return q.Get<T0, T1, T2, T3, T4, T5, T6>();
+            }
+        }
+
+        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7)> QueryHalf<T0, T1, T2, T3, T4, T5, T6, T7>()
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+            where T4 : Object
+            where T5 : Object
+            where T6 : Object
+            where T7 : Object
+        {
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
+                {
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                    typeof(T3).Name,
+                    typeof(T4).Name,
+                    typeof(T5).Name,
+                    typeof(T6).Name,
+                    typeof(T7).Name,
+                }  
+            );
+            Query(queryName, componentNames);
+            foreach (QueryObject7 q in HalfQueries[queryName].GetNext())
+            {
+                yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7>();
+            }
+        }
+
+        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8)> QueryHalf<T0, T1, T2, T3, T4, T5, T6, T7, T8>()
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+            where T4 : Object
+            where T5 : Object
+            where T6 : Object
+            where T7 : Object
+            where T8 : Object
+        {
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
+                {
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                    typeof(T3).Name,
+                    typeof(T4).Name,
+                    typeof(T5).Name,
+                    typeof(T6).Name,
+                    typeof(T7).Name,
+                    typeof(T8).Name,
+                }  
+            );
+            Query(queryName, componentNames);
+            foreach (QueryObject8 q in HalfQueries[queryName].GetNext())
+            {
+                yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8>();
+            }
+        }
+
+        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9)> QueryHalf<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>()
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+            where T4 : Object
+            where T5 : Object
+            where T6 : Object
+            where T7 : Object
+            where T8 : Object
+            where T9 : Object
+        {
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
+                {
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                    typeof(T3).Name,
+                    typeof(T4).Name,
+                    typeof(T5).Name,
+                    typeof(T6).Name,
+                    typeof(T7).Name,
+                    typeof(T8).Name,
+                    typeof(T9).Name,
+                }  
+            );
+            Query(queryName, componentNames);
+            foreach (QueryObject9 q in HalfQueries[queryName].GetNext())
+            {
+                yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>();
+            }
+        }
+
+        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)> QueryHalf<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>()
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+            where T4 : Object
+            where T5 : Object
+            where T6 : Object
+            where T7 : Object
+            where T8 : Object
+            where T9 : Object
+            where T10 : Object
+        {
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
+                {
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                    typeof(T3).Name,
+                    typeof(T4).Name,
+                    typeof(T5).Name,
+                    typeof(T6).Name,
+                    typeof(T7).Name,
+                    typeof(T8).Name,
+                    typeof(T9).Name,
+                    typeof(T10).Name,
+                }  
+            );
+            Query(queryName, componentNames);
+            foreach (QueryObject10 q in HalfQueries[queryName].GetNext())
+            {
+                yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>();
+            }
+        }
+
+        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11)> QueryHalf<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>()
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+            where T4 : Object
+            where T5 : Object
+            where T6 : Object
+            where T7 : Object
+            where T8 : Object
+            where T9 : Object
+            where T10 : Object
+            where T11 : Object
+        {
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
+                {
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                    typeof(T3).Name,
+                    typeof(T4).Name,
+                    typeof(T5).Name,
+                    typeof(T6).Name,
+                    typeof(T7).Name,
+                    typeof(T8).Name,
+                    typeof(T9).Name,
+                    typeof(T10).Name,
+                    typeof(T11).Name,
+                }  
+            );
+            Query(queryName, componentNames);
+            foreach (QueryObject11 q in HalfQueries[queryName].GetNext())
+            {
+                yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>();
+            }
+        }
+
+        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12)> QueryHalf<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>()
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+            where T4 : Object
+            where T5 : Object
+            where T6 : Object
+            where T7 : Object
+            where T8 : Object
+            where T9 : Object
+            where T10 : Object
+            where T11 : Object
+            where T12 : Object
+        {
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
+                {
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                    typeof(T3).Name,
+                    typeof(T4).Name,
+                    typeof(T5).Name,
+                    typeof(T6).Name,
+                    typeof(T7).Name,
+                    typeof(T8).Name,
+                    typeof(T9).Name,
+                    typeof(T10).Name,
+                    typeof(T11).Name,
+                    typeof(T12).Name,
+                }  
+            );
+            Query(queryName, componentNames);
+            foreach (QueryObject12 q in HalfQueries[queryName].GetNext())
+            {
+                yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>();
+            }
+        }
+
+        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13)> QueryHalf<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>()
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+            where T4 : Object
+            where T5 : Object
+            where T6 : Object
+            where T7 : Object
+            where T8 : Object
+            where T9 : Object
+            where T10 : Object
+            where T11 : Object
+            where T12 : Object
+            where T13 : Object
+        {
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
+                {
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                    typeof(T3).Name,
+                    typeof(T4).Name,
+                    typeof(T5).Name,
+                    typeof(T6).Name,
+                    typeof(T7).Name,
+                    typeof(T8).Name,
+                    typeof(T9).Name,
+                    typeof(T10).Name,
+                    typeof(T11).Name,
+                    typeof(T12).Name,
+                    typeof(T13).Name,
+                }  
+            );
+            Query(queryName, componentNames);
+            foreach (QueryObject13 q in HalfQueries[queryName].GetNext())
+            {
+                yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>();
+            }
+        }
+
+        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14)> QueryHalf<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>()
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+            where T4 : Object
+            where T5 : Object
+            where T6 : Object
+            where T7 : Object
+            where T8 : Object
+            where T9 : Object
+            where T10 : Object
+            where T11 : Object
+            where T12 : Object
+            where T13 : Object
+            where T14 : Object
+        {
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
+                {
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                    typeof(T3).Name,
+                    typeof(T4).Name,
+                    typeof(T5).Name,
+                    typeof(T6).Name,
+                    typeof(T7).Name,
+                    typeof(T8).Name,
+                    typeof(T9).Name,
+                    typeof(T10).Name,
+                    typeof(T11).Name,
+                    typeof(T12).Name,
+                    typeof(T13).Name,
+                    typeof(T14).Name,
+                }  
+            );
+            Query(queryName, componentNames);
+            foreach (QueryObject14 q in HalfQueries[queryName].GetNext())
+            {
+                yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>();
+            }
+        }
+
+        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15)> QueryHalf<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>()
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+            where T4 : Object
+            where T5 : Object
+            where T6 : Object
+            where T7 : Object
+            where T8 : Object
+            where T9 : Object
+            where T10 : Object
+            where T11 : Object
+            where T12 : Object
+            where T13 : Object
+            where T14 : Object
+            where T15 : Object
+        {
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
+                {
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                    typeof(T3).Name,
+                    typeof(T4).Name,
+                    typeof(T5).Name,
+                    typeof(T6).Name,
+                    typeof(T7).Name,
+                    typeof(T8).Name,
+                    typeof(T9).Name,
+                    typeof(T10).Name,
+                    typeof(T11).Name,
+                    typeof(T12).Name,
+                    typeof(T13).Name,
+                    typeof(T14).Name,
+                    typeof(T15).Name,
+                }  
+            );
+            Query(queryName, componentNames);
+            foreach (QueryObject15 q in HalfQueries[queryName].GetNext())
+            {
+                yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>();
+            }
+        }
+
+        public static IEnumerable<(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16)> QueryHalf<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>()
+            where T0 : Object
+            where T1 : Object
+            where T2 : Object
+            where T3 : Object
+            where T4 : Object
+            where T5 : Object
+            where T6 : Object
+            where T7 : Object
+            where T8 : Object
+            where T9 : Object
+            where T10 : Object
+            where T11 : Object
+            where T12 : Object
+            where T13 : Object
+            where T14 : Object
+            where T15 : Object
+            where T16 : Object
+        {
+            var (queryName, componentNames) = PrepareQuery(
+                new Array
+                {
+                    typeof(T0).Name,
+                    typeof(T1).Name,
+                    typeof(T2).Name,
+                    typeof(T3).Name,
+                    typeof(T4).Name,
+                    typeof(T5).Name,
+                    typeof(T6).Name,
+                    typeof(T7).Name,
+                    typeof(T8).Name,
+                    typeof(T9).Name,
+                    typeof(T10).Name,
+                    typeof(T11).Name,
+                    typeof(T12).Name,
+                    typeof(T13).Name,
+                    typeof(T14).Name,
+                    typeof(T15).Name,
+                    typeof(T16).Name,
+                }  
+            );
+            Query(queryName, componentNames);
+            foreach (QueryObject16 q in HalfQueries[queryName].GetNext())
+            {
+                yield return q.Get<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>();
+            }
+        }
         private static void Query(string queryName, Array componentNames)
         {
-            if (!Queries.ContainsKey(queryName))
+            QueryAdd(queryName);
+            if (IsInstanceValid(QGodot))
             {
-                if (IsInstanceValid(QGodot))
-                {
-                    QGodot.Call("query", componentNames);
-                    return;
-                }
-                QueryAdd(queryName, componentNames.Count);
+                QGodot.Call("query", componentNames);
+            }
+            else
+            {
                 PreQueryList.Add(componentNames);
             }
         }
@@ -1116,10 +1660,16 @@ namespace SysError99
             return (String.Join("_", Enumerable.Cast<string>(componentNames)), componentNames);
         }
 
-        private static void QueryAdd(string queryName, int bindsSize)
+        private static void QueryAdd(string queryName)
         {
-            if (Queries.ContainsKey(queryName)) return;
-            Queries.Add(queryName, new Dictionary<ulong, dynamic>());
+            if (!Queries.ContainsKey(queryName))
+            {
+                Queries.Add(queryName, new Dictionary<ulong, dynamic>());
+            }
+            if (!HalfQueries.ContainsKey(queryName))
+            {
+                HalfQueries.Add(queryName, new HalfQuery());
+            }
         }
 
         private static void AddToQuery(string queryName, Array binds)
@@ -1136,6 +1686,7 @@ namespace SysError99
                         var query = new QueryObject0();
                         query.Object0 = binds[0] as Object;
                         queries.Add(entityId, query);
+                        AddToHalfQuery(queryName, query);
                     }
                     break;
                 case 2:
@@ -1145,6 +1696,7 @@ namespace SysError99
                         query.Object0 = binds[0] as Object;
                         query.Object1 = binds[1] as Object;
                         queries.Add(entityId, query);
+                        AddToHalfQuery(queryName, query);
                     }
                     break;
                 case 3:
@@ -1155,6 +1707,7 @@ namespace SysError99
                         query.Object1 = binds[1] as Object;
                         query.Object2 = binds[2] as Object;
                         queries.Add(entityId, query);
+                        AddToHalfQuery(queryName, query);
                     }
                     break;
                 case 4:
@@ -1166,6 +1719,7 @@ namespace SysError99
                         query.Object2 = binds[2] as Object;
                         query.Object3 = binds[3] as Object;
                         queries.Add(entityId, query);
+                        AddToHalfQuery(queryName, query);
                     }
                     break;
                 case 5:
@@ -1178,6 +1732,7 @@ namespace SysError99
                         query.Object3 = binds[3] as Object;
                         query.Object4 = binds[4] as Object;
                         queries.Add(entityId, query);
+                        AddToHalfQuery(queryName, query);
                     }
                     break;
                 case 6:
@@ -1191,6 +1746,7 @@ namespace SysError99
                         query.Object4 = binds[4] as Object;
                         query.Object5 = binds[5] as Object;
                         queries.Add(entityId, query);
+                        AddToHalfQuery(queryName, query);
                     }
                     break;
                 case 7:
@@ -1205,6 +1761,7 @@ namespace SysError99
                         query.Object5 = binds[5] as Object;
                         query.Object6 = binds[6] as Object;
                         queries.Add(entityId, query);
+                        AddToHalfQuery(queryName, query);
                     }
                     break;
                 case 8:
@@ -1220,6 +1777,7 @@ namespace SysError99
                         query.Object6 = binds[6] as Object;
                         query.Object7 = binds[7] as Object;
                         queries.Add(entityId, query);
+                        AddToHalfQuery(queryName, query);
                     }
                     break;
                 case 9:
@@ -1236,6 +1794,7 @@ namespace SysError99
                         query.Object7 = binds[7] as Object;
                         query.Object8 = binds[8] as Object;
                         queries.Add(entityId, query);
+                        AddToHalfQuery(queryName, query);
                     }
                     break;
                 case 10:
@@ -1253,6 +1812,7 @@ namespace SysError99
                         query.Object8 = binds[8] as Object;
                         query.Object9 = binds[9] as Object;
                         queries.Add(entityId, query);
+                        AddToHalfQuery(queryName, query);
                     }
                     break;
                 case 11:
@@ -1271,6 +1831,7 @@ namespace SysError99
                         query.Object9 = binds[9] as Object;
                         query.Object10 = binds[10] as Object;
                         queries.Add(entityId, query);
+                        AddToHalfQuery(queryName, query);
                     }
                     break;
                 case 12:
@@ -1290,6 +1851,7 @@ namespace SysError99
                         query.Object10 = binds[10] as Object;
                         query.Object11 = binds[11] as Object;
                         queries.Add(entityId, query);
+                        AddToHalfQuery(queryName, query);
                     }
                     break;
                 case 13:
@@ -1310,6 +1872,7 @@ namespace SysError99
                         query.Object11 = binds[11] as Object;
                         query.Object12 = binds[12] as Object;
                         queries.Add(entityId, query);
+                        AddToHalfQuery(queryName, query);
                     }
                     break;
                 case 14:
@@ -1331,6 +1894,7 @@ namespace SysError99
                         query.Object12 = binds[12] as Object;
                         query.Object13 = binds[13] as Object;
                         queries.Add(entityId, query);
+                        AddToHalfQuery(queryName, query);
                     }
                     break;
                 case 15:
@@ -1353,6 +1917,7 @@ namespace SysError99
                         query.Object13 = binds[13] as Object;
                         query.Object14 = binds[14] as Object;
                         queries.Add(entityId, query);
+                        AddToHalfQuery(queryName, query);
                     }
                     break;
                 case 16:
@@ -1376,6 +1941,7 @@ namespace SysError99
                         query.Object14 = binds[14] as Object;
                         query.Object15 = binds[15] as Object;
                         queries.Add(entityId, query);
+                        AddToHalfQuery(queryName, query);
                     }
                     break;
                 case 17:
@@ -1400,8 +1966,23 @@ namespace SysError99
                         query.Object15 = binds[15] as Object;
                         query.Object16 = binds[16] as Object;
                         queries.Add(entityId, query);
+                        AddToHalfQuery(queryName, query);
                     }
                     break;
+            }
+        }
+
+        public static void AddToHalfQuery(string queryName, Object obj)
+        {
+            if (!HalfQueries.ContainsKey(queryName)) return;
+            var hq = HalfQueries[queryName];
+            if (hq._firstHalf.Count > hq._secondHalf.Count)
+            {
+                hq._secondHalf.Add(obj);
+            }
+            else
+            {
+                hq._firstHalf.Add(obj);
             }
         }
 
@@ -1427,9 +2008,9 @@ namespace SysError99
             }
         }
 
-        private void _QueryAdd(string queryName, int bindsSize)
+        private void _QueryAdd(string queryName)
         {
-            QueryAdd(queryName, bindsSize);
+            QueryAdd(queryName);
         }
 
         private void _AddToQuery(string queryName, Array binds)
@@ -2042,6 +2623,21 @@ namespace SysError99
                 Object16 as T16
             );
     }
+    #endregion
 
+    #region Half Query Class
+    public class HalfQuery : Object
+    {
+        internal bool _switch = false;
+
+        internal List<object> _firstHalf = new();
+        internal List<object> _secondHalf = new();
+
+        public List<object> GetNext()
+        {
+            _switch = !_switch;
+            return _switch ? _secondHalf : _firstHalf;
+        }
+    }
     #endregion
 }

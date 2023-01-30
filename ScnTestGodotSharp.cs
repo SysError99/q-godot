@@ -9,7 +9,7 @@ public class ScnTestGodotSharp : Node2D
 
     private Label _label;
 
-    private IEnumerable<(KinematicBody2D, Sprite)> _query = QGodotSharp.Query<KinematicBody2D, Sprite>();
+    private IEnumerable<(KinematicBody2D, Sprite)> _query = QGodotSharp.QueryHalf<KinematicBody2D, Sprite>();
 
     public override void _Ready()
     {
@@ -35,7 +35,7 @@ public class ScnTestGodotSharp : Node2D
 
     public void _EntityEnteredScene(KinematicBody2D parent, Sprite sprite)
     {
-        GD.Print(parent.Name + " entered scene!");
+        //GD.Print(parent.Name + " entered scene!");
         sprite.Scale = Vector2.One * 4f;
     }
 
@@ -43,7 +43,7 @@ public class ScnTestGodotSharp : Node2D
     {
         foreach (var (parent, sprite) in _query)
         {
-            var vel = parent.Position.DirectionTo(Target) * 10;
+            var vel = parent.Position.DirectionTo(Target) * 20;
             parent.MoveAndSlide(vel);
             parent.LookAt(Target);
         }
