@@ -93,9 +93,8 @@ func query(component_names: Array) -> Array:
 	var query_name := __get_query_name(component_names)
 	if query_name in _query_cache:
 		return _query_cache[query_name]
-	if not query_name in _queries:
-		bind_query(component_names)
-		_query_cache[query_name] = _tree.get_nodes_in_group(query_name) if _cache_enabled else []
+	bind_query(component_names)
+	_query_cache[query_name] = _tree.get_nodes_in_group(query_name) if _cache_enabled else []
 	return _query_cache[query_name]
 
 
