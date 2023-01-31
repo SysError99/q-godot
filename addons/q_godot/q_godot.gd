@@ -279,8 +279,8 @@ func _entity_component_removed(entity: Node, component_name: String, bound_queri
 
 
 func _added_to_query(query_name: String, binds: Array) -> void:
-	var entity := binds[0] as Object
 	if query_name in _query_cache:
+		var entity := binds[0] as Object
 		var cache := _query_cache[query_name] as Array
 		cache.push_back(entity)
 		if query_name in _query_half_cache:
@@ -292,9 +292,9 @@ func _added_to_query(query_name: String, binds: Array) -> void:
 
 
 func _removed_from_query(query_name: String, binds: Array) -> void:
-	var entity := binds[0] as Object
 	if query_name in _query_cache:
-		_query_cache[query_name]
+		var entity := binds[0] as Object
+		(_query_cache[query_name] as Array).erase(entity)
 		if query_name in _query_half_cache:
 			var query_half := _query_half_cache[query_name] as HalfQueryReference
 			query_half.first_half.erase(entity)
