@@ -215,9 +215,9 @@ func __remove_entity_from_query(query_name: String, binds: Array) -> void:
 
 
 func __post_change_scene(current_scene: Node) -> void:
-	var registered_scenes := _tree.get_nodes_in_group(_UNREGISTERED_SCENE)
-	if registered_scenes.size() > 0:
-		for scn_ref in registered_scenes:
+	var unregistered_scenes := _tree.get_nodes_in_group(_UNREGISTERED_SCENE)
+	if unregistered_scenes.size() > 0:
+		for scn_ref in unregistered_scenes:
 			var scn := scn_ref as Node
 			scn.remove_from_group(_UNREGISTERED_SCENE)
 			register_as_scene(scn)
