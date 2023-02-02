@@ -184,6 +184,8 @@ First is to add the node into `registered_scene` group.
 
 ![image](https://user-images.githubusercontent.com/17522480/212744832-99470db1-b5cb-4895-849c-509ac744e41a.png)
 
+*NOTE: For performance reasons, if you add nodes that include `registered_scene` by script, it will not be added into scene list. You must use `register_scene()` to manually register them, as explained below.*
+
 Second, is by code:
 
 ```gdscript
