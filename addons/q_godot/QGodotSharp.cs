@@ -23,6 +23,15 @@ namespace SysError99
 
         private static List<Array> PreQueryList = new();
 
+        public static SignalAwaiter Ready()
+        {
+            if (IsInstanceValid(QGodot))
+            {
+                return QGodot.ToSignal(QGodot, "query_ready");
+            }
+            throw new NullReferenceException("Core isn't ready yet!");
+        }
+
         # region Query Bind
         public static void BindQuery<T>(Object system, string functionName, bool toCurrentScene = false)
             where T : Object

@@ -35,6 +35,7 @@ class HalfQueryReference extends Object:
 			return second_half
 
 
+signal query_ready()
 signal query_added(query_name)
 signal added_to_query(query_name, binds)
 signal removed_from_query(query_name, binds)
@@ -137,6 +138,8 @@ func change_scene(path: String) -> void:
 func register_as_scene(node: Node) -> void:
 	node.add_to_group(_REGISTERED_SCENE)
 	node.connect("child_entered_tree", self, "_entity_entered_scene")
+	if node.is_in_group(_UNREGISTERED_SCENE):
+		node.remove_from_group(_UNREGISTERED_SCENE)
 	for child_ref in node.get_children():
 		__register_entity(child_ref)
 
@@ -218,11 +221,11 @@ func __post_change_scene(current_scene: Node) -> void:
 	var unregistered_scenes := _tree.get_nodes_in_group(_UNREGISTERED_SCENE)
 	if unregistered_scenes.size() > 0:
 		for scn_ref in unregistered_scenes:
-			var scn := scn_ref as Node
-			scn.remove_from_group(_UNREGISTERED_SCENE)
-			register_as_scene(scn)
+			register_as_scene(scn_ref)
 	else:
 		register_as_scene(current_scene)
+	yield(_tree, "idle_frame")
+	emit_signal("query_ready")
 
 
 func __register_entity(entity: Node) -> void:

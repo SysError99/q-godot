@@ -23,6 +23,7 @@ onready var query := QGodot.query(["KinematicBody2D", "Sprite"])
 
 
 func _ready() -> void:
+	yield(QGodot, "query_ready")
 	add_child(tween)
 	rand_seed(814995)
 
@@ -42,6 +43,9 @@ func _ready() -> void:
 		clone.position = Vector2(randi() % 1024, randi() % 600)
 		clone.add_child(sprite)
 		add_child(clone)
+
+
+	print(query.size())
 
 
 func _process(_delta: float) -> void:

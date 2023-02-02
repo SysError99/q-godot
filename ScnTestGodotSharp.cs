@@ -11,8 +11,10 @@ public class ScnTestGodotSharp : Node2D
 
     private IEnumerable<(KinematicBody2D, Sprite)> _query = QGodotSharp.QueryHalf<KinematicBody2D, Sprite>();
 
-    public override void _Ready()
+    public override async void _Ready()
     {
+        await QGodotSharp.Ready();
+
         ulong seed = 0;
         GD.RandSeed(814995, out seed);
         _label = GetNode<Label>("CanvasLayer/Label");

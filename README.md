@@ -93,15 +93,6 @@ public class MySystem : Node
 {
     private static readonly Vector2 Target = new Vector2(512f, 300f);
 
-    public override void _Ready()
-    {
-        await ToSignal(GetTree(), "idle_frame"); // On '_Ready()', it must wait at least one frame before query can occur
-        foreach (var (parent, sprite) in QGodotSharp.Query<KinematicBody2D, Sprite>())
-        {
-            sprite.Scale = Vector2.One * 4f;
-        }
-    }
-
     public override void _Process(float delta)
     {
         foreach (var (parent, sprite) in QGodotSharp.Query<KinematicBody2D, Sprite>())
@@ -139,6 +130,36 @@ public class MySystem : Node
     }
 }
 
+```
+
+---
+
+## Querying On Game Start
+In case you wanted to query for nodes in very early stages (such as, when the game is just started), you should always make sure that query is ready to be used. In this case, QGodot provides `query_ready` signal that you can `yield()`:
+
+```gdscript
+onready var query := QGodot.query(["KinematicBody2D", "Icon"])
+
+
+func _ready() -> void:
+    yield(QGodot, "query_ready")
+    # QGodot is now ready to be used.
+    for node in query:
+        var icon := node.get_meta("$Icon") as Sprite
+        icon.scale = Vector2.ONE * 4
+```
+
+On C# version is very similar, however, `QGodotSharp` provides `Ready()` function to be `await`ed on:
+
+```cs
+public override async void _Ready()
+{
+    await QGodotSharp.Ready();
+    foreach (var (parent, sprite) in QGodotSharp.Query<KinematicBody2D, Sprite>())
+    {
+        sprite.Scale = Vector2.One * 4f;
+    }
+}
 ```
 
 ---
