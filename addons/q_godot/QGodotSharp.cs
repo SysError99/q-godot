@@ -2445,9 +2445,6 @@ namespace SysError99
                 core.Connect("added_to_query", this, nameof(_AddToQuery));
                 core.Connect("query_added", this, nameof(_QueryAdd));
                 core.Connect("removed_from_query", this, nameof(_RemoveFromQuery));
-                core.Disconnect("added_to_query", core, "_added_to_query");
-                core.Disconnect("removed_from_query", core, "_removed_from_query");
-                core.Set("_cache_enabled", false);
                 foreach (var componentNames in PreQueryList)
                 {
                     QGodot.Call("query", componentNames);
