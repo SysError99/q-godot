@@ -6,8 +6,21 @@ extends Node2D
 # var b: String = "text"
 
 
+class RotateSystem extends Node:
+	var parent: KinematicBody2D
+	var sprite: Sprite
+
+	func _process(_delta: float) -> void:
+		parent.rotate(_delta * PI)
+
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	QGodot.bind_query_to_current_scene(
+		["KinematicBody2D", "Sprite"],
+		RotateSystem,
+		self
+	)
 	for x in 100:
 		var clone := KinematicBody2D.new()
 		var sprite := Sprite.new()
@@ -17,10 +30,7 @@ func _ready() -> void:
 		clone.position = Vector2(randi() % 1024, randi() % 600)
 		clone.add_child(sprite)
 		add_child(clone)
-		clone.connect("tree_exiting", self, "_freed", [clone])
 
-func _freed(node: Node) -> void:
-	print("%s freed!" % node.name)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta: float) -> void:
