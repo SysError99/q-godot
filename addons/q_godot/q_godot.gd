@@ -178,26 +178,27 @@ func __bind_to_query_node(entity: Node, query_name: String, query: Query, subscr
 			entity.set_meta("$" + query_name, bound_systems)
 			bound_queries.push_back(query_name)
 			emit_signal("added_to_query", query_name, binds)
-	for system_ref in subscribers:
-		var system := system_ref[_SYSTEM_CLASS] as Object
-		if system.has_meta(entity_id):
-			continue
-		bound_systems.push_back(system)
-		if system.has_method("new"):
-			var component_binds := binds.duplicate()
-			var system_inst := system.new() as Object
-			component_binds.remove(0)
-			system_inst.set("parent", entity)
-			system_inst.set("shared", system_ref[_SHARED_VAR])
-			for component in component_binds:
-				var bind_name := _regex.sub(component.name, "_$1", true).to_lower()
-				system_inst.set(bind_name.substr(1, bind_name.length()), component)
-			system.set_meta(entity_id, system_inst)
-			system.set_meta(_SYSTEM_INSTANCE, true)
-			entity.add_child(system_inst)
-		else:
-			system.callv(system_ref[_SHARED_VAR], binds)
-			system.set_meta(entity_id, system)
+	else:
+		for system_ref in subscribers:
+			var system := system_ref[_SYSTEM_CLASS] as Object
+			if system.has_meta(entity_id):
+				continue
+			bound_systems.push_back(system)
+			if system.has_method("new"):
+				var component_binds := binds.duplicate()
+				var system_inst := system.new() as Object
+				component_binds.remove(0)
+				system_inst.set("parent", entity)
+				system_inst.set("shared", system_ref[_SHARED_VAR])
+				for component in component_binds:
+					var bind_name := _regex.sub(component.name, "_$1", true).to_lower()
+					system_inst.set(bind_name.substr(1, bind_name.length()), component)
+				system.set_meta(entity_id, system_inst)
+				system.set_meta(_SYSTEM_INSTANCE, true)
+				entity.add_child(system_inst)
+			else:
+				system.callv(system_ref[_SHARED_VAR], binds)
+				system.set_meta(entity_id, system)
 	
 
 func __remove_entities_from_current_scene(scene: Node) -> void:
