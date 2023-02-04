@@ -71,6 +71,8 @@ func bind_query(component_names: Array, system: Object = null, shared = null, to
 		component_names.remove(0)
 		if not _root_ready:
 			yield(_root, "ready")
+		if _scene_changing:
+			yield(self, "query_ready")
 		_queries[query_name] = query_obj
 		emit_signal("query_added", query_name)
 		for scene_ref in _tree.get_nodes_in_group(_REGISTERED_SCENE):
