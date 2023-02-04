@@ -156,7 +156,8 @@ func __bind_to_query_node(entity: Node, query_name: String, query: Query, subscr
 	var binds := entity.get_meta("#" + query_name, []) as Array
 	var bound_queries := entity.get_meta(_BOUND_QUERIES, []) as Array
 	var bound_systems := entity.get_meta("$" + query_name, []) as Array
-	if not query_name in bound_queries:
+	var query_bounded := query_name in bound_queries
+	if not query_bounded:
 		var component_names = query.component_names.duplicate()
 		component_names.remove(0)
 		var number_of_groups := 0
@@ -178,7 +179,7 @@ func __bind_to_query_node(entity: Node, query_name: String, query: Query, subscr
 			entity.set_meta("$" + query_name, bound_systems)
 			bound_queries.push_back(query_name)
 			emit_signal("added_to_query", query_name, binds)
-	else:
+	if query_bounded:
 		for system_ref in subscribers:
 			var system := system_ref[_SYSTEM_CLASS] as Object
 			if system.has_meta(entity_id):
