@@ -169,7 +169,7 @@ func __bind_to_query_object(entity: Node, query_name: String, query_obj: Query) 
 	if binds.size() == component_names.size() - number_of_groups:
 		binds.push_front(entity)
 		bound_queries.push_back(query_name)
-		entity.set_meta("$" + query_name, [])
+		entity.set_meta("?" + query_name, [])
 		entity.set_meta("#" + query_name, binds)
 		var cache := _query_cache[query_name] as Array
 		cache.push_back(entity)
@@ -187,7 +187,7 @@ func __bind_to_query_object(entity: Node, query_name: String, query_obj: Query) 
 func __bind_to_systems(entity: Object, query_name: String, subscribers: Array) -> void:
 	var entity_id := String(entity.get_instance_id())
 	var binds := entity.get_meta("#" + query_name, []) as Array
-	var bound_systems := entity.get_meta("$" + query_name) as Array
+	var bound_systems := entity.get_meta("?" + query_name) as Array
 	for system_ref in subscribers:
 		var system := system_ref[_SYSTEM_CLASS] as Object
 		if system.has_meta(entity_id):
@@ -258,10 +258,6 @@ func __register_entity(entity: Node) -> void:
 	entity.add_to_group(_ENTITY)
 
 
-func __array_erase(array: Array, element) -> void:
-	array.erase(element)
-
-
 func _entity_entered_scene(entity: Node) -> void:
 	yield(entity, "ready")
 	__register_entity(entity)
@@ -291,23 +287,24 @@ func _entity_component_added(component: Node, entity: Node) -> void:
 func _entity_component_removed(component: Node, entity: Node, bound_queries: Array) -> void:
 	if _scene_changing:
 		return;
+	var index := 0
 	var component_name := component.name
 	entity.remove_meta("$" + component_name)
-	for query_name in bound_queries:
+	while index < bound_queries.size():
+		var query_name := bound_queries[index] as String
 		if not component_name in query_name:
+			index += 1
 			continue
-		var bound_systems := entity.get_meta("$" + query_name) as Array
-		var binds := entity.get_meta("#" + query_name) as Array
-		call_deferred("__array_erase", bound_queries, query_name)
-		__remove_entity_from_query(query_name, binds)
-		entity.remove_meta("#" + query_name)
-		entity.remove_meta("$" + query_name)
 		var entity_id := String(entity.get_instance_id())
-		for system in bound_systems:
+		for system in entity.get_meta("?" + query_name):
 			var system_inst := system.get_meta(entity_id) as Object
 			system.remove_meta(entity_id)
 			if system_inst.get_meta(_SYSTEM_INSTANCE, false):
 				system_inst.call_deferred("free")
+		__remove_entity_from_query(query_name, entity.get_meta("#" + query_name))
+		entity.remove_meta("#" + query_name)
+		entity.remove_meta("?" + query_name)
+		bound_queries.remove(index)
 
 
 func _init() -> void:
