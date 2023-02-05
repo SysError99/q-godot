@@ -47,9 +47,8 @@ var _queries := {}
 var _query_cache := {}
 var _query_half_cache := {}
 var _regex := RegEx.new()
-var _root_ready := false
 var _root: Viewport
-var _scene_changing := false
+var _scene_changing := true
 var _tree: SceneTree
 
 
@@ -66,8 +65,6 @@ func bind_query(component_names: Array, system: Object = null, shared = null, to
 		query_obj.component_names = component_names
 		query_obj.parent_class_name = component_names[0]
 		component_names.remove(0)
-		if not _root_ready:
-			yield(_root, "ready")
 		if _scene_changing:
 			yield(self, "query_ready")
 		_queries[query_name] = query_obj
@@ -153,10 +150,10 @@ func __get_query_name(component_names: Array) -> String:
 func __bind_to_query_object(entity: Node, query_name: String, query_obj: Query) -> bool:
 	if entity.get_class() != query_obj.parent_class_name:
 		return false
+	var binds := []
 	var number_of_groups := 0
 	var component_names = query_obj.component_names
-	var binds := entity.get_meta("#" + query_name, []) as Array
-	var bound_queries := entity.get_meta(_BOUND_QUERIES, []) as Array
+	var bound_queries := entity.get_meta(_BOUND_QUERIES) as Array
 	for component_name in component_names:
 		if entity.is_in_group(component_name):
 			number_of_groups += 1
@@ -186,7 +183,7 @@ func __bind_to_query_object(entity: Node, query_name: String, query_obj: Query) 
 
 func __bind_to_systems(entity: Object, query_name: String, subscribers: Array) -> void:
 	var entity_id := String(entity.get_instance_id())
-	var binds := entity.get_meta("#" + query_name, []) as Array
+	var binds := entity.get_meta("#" + query_name) as Array
 	var bound_systems := entity.get_meta("?" + query_name) as Array
 	for system_ref in subscribers:
 		var system := system_ref[_SYSTEM_CLASS] as Object
@@ -248,14 +245,14 @@ func __register_entity(entity: Node) -> void:
 	if entity.is_in_group(_ENTITY):
 		return
 	var bound_queries := []
+	entity.add_to_group(_ENTITY)
+	entity.set_meta(_BOUND_QUERIES, bound_queries)
+	entity.connect("child_entered_tree", self, "_entity_component_added", [ entity ])
+	entity.connect("child_exiting_tree", self, "_entity_component_removed", [ entity, bound_queries])
 	for query_name in _queries:
 		var query_obj := _queries[query_name] as Query
 		if __bind_to_query_object(entity, query_name, query_obj):
 			__bind_to_systems(entity, query_name, query_obj.subscribers)
-	entity.connect("child_entered_tree", self, "_entity_component_added", [ entity ])
-	entity.connect("child_exiting_tree", self, "_entity_component_removed", [ entity, bound_queries])
-	entity.set_meta(_BOUND_QUERIES, bound_queries)
-	entity.add_to_group(_ENTITY)
 
 
 func _entity_entered_scene(entity: Node) -> void:
@@ -319,5 +316,5 @@ func _enter_tree() -> void:
 
 func _ready() -> void:
 	yield(_root, "ready")
-	_root_ready = true
 	__post_change_scene(_tree.current_scene)
+	_scene_changing = true
