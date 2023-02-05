@@ -1,9 +1,6 @@
 extends Node
 
 
-const _COMP_ZERO_ERR = "'component_names' must have at least one member!"
-
-
 const _BOUND_QUERIES = "#BQN"
 const _ENTITY = "#E"
 const _REGISTERED_SCENE = "#RS"
@@ -58,7 +55,7 @@ var _tree: SceneTree
 
 # Bind a query to an object or an instantiable object. If you bind a query to instantiated object, 'shared' parameter will be function name string.
 func bind_query(component_names: Array, system: Object = null, shared = null, to_current_scene: bool = false) -> void:
-	assert(component_names.size() > 0, _COMP_ZERO_ERR)
+	assert(component_names.size() > 0, "'component_names' must have at least one member!")
 	var query_name := __get_query_name(component_names)
 	var query_obj: Query
 	if query_name in _queries:
@@ -169,8 +166,6 @@ func __bind_to_query_object(entity: Node, query_name: String, query_obj: Query) 
 			return false
 		binds.push_back(component)
 		entity.set_meta("$" + component_name, component)
-		if not component.is_connected("tree_exited", self, "_entity_component_removed"):
-			component.connect("tree_exited", self, "_entity_component_removed", [ entity, component.name, bound_queries], CONNECT_ONESHOT)
 	if binds.size() == component_names.size() - number_of_groups:
 		binds.push_front(entity)
 		bound_queries.push_back(query_name)
@@ -253,13 +248,15 @@ func __post_change_scene(current_scene: Node) -> void:
 func __register_entity(entity: Node) -> void:
 	if entity.is_in_group(_ENTITY):
 		return
-	entity.connect("child_entered_tree", self, "_entity_component_added", [ entity ])
-	entity.set_meta(_BOUND_QUERIES, [])
-	entity.add_to_group(_ENTITY)
+	var bound_queries := []
 	for query_name in _queries:
 		var query_obj := _queries[query_name] as Query
 		if __bind_to_query_object(entity, query_name, query_obj):
 			__bind_to_systems(entity, query_name, query_obj.subscribers)
+	entity.connect("child_entered_tree", self, "_entity_component_added", [ entity ])
+	entity.connect("child_exiting_tree", self, "_entity_component_removed", [ entity, bound_queries])
+	entity.set_meta(_BOUND_QUERIES, bound_queries)
+	entity.add_to_group(_ENTITY)
 
 
 func __array_erase_deferred(array: Array, element) -> void:
@@ -285,17 +282,18 @@ func _entity_exiting_scene(entity: Node) -> void:
 						__remove_entity_from_query(query_name, [ entity ])
 
 
-func _entity_component_added(_new_component: Node, entity) -> void:
-	var component_name := _new_component.name
+func _entity_component_added(component: Node, entity: Node) -> void:
+	var component_name := component.name
 	for query_name in _queries:
 		if component_name in query_name:
 			var query_obj := _queries[query_name] as Query
 			__bind_to_query_object(entity, query_name, query_obj)
 
 
-func _entity_component_removed(entity: Node, component_name: String, bound_queries: Array) -> void:
+func _entity_component_removed(component: Node, entity: Node, bound_queries: Array) -> void:
 	if _scene_changing:
 		return;
+	var component_name := component.name
 	entity.remove_meta("$" + component_name)
 	for query_name in bound_queries:
 		if not component_name in query_name:
