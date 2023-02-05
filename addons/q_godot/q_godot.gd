@@ -273,6 +273,8 @@ func _entity_entered_scene(entity: Node) -> void:
 
 
 func _entity_exiting_scene(entity: Node) -> void:
+	if _scene_changing:
+		return
 	for group in entity.get_groups():
 		match group[0]:
 			"#","$":
