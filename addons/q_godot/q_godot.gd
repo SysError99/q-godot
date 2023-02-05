@@ -169,7 +169,6 @@ func __bind_to_query_object(entity: Node, query_name: String, query_obj: Query) 
 	if binds.size() == component_names.size() - number_of_groups:
 		binds.push_front(entity)
 		bound_queries.push_back(query_name)
-		entity.add_to_group(query_name)
 		entity.set_meta("#" + query_name, binds)
 		var cache := _query_cache[query_name] as Array
 		cache.push_back(entity)
@@ -259,8 +258,7 @@ func __register_entity(entity: Node) -> void:
 	entity.add_to_group(_ENTITY)
 
 
-func __array_erase_deferred(array: Array, element) -> void:
-	yield(_tree, "idle_frame")
+func __array_erase(array: Array, element) -> void:
 	array.erase(element)
 
 
@@ -300,8 +298,8 @@ func _entity_component_removed(component: Node, entity: Node, bound_queries: Arr
 			continue
 		var bound_systems := entity.get_meta("$" + query_name) as Array
 		var binds := entity.get_meta("#" + query_name) as Array
+		call_deferred("__array_erase", bound_queries, query_name)
 		__remove_entity_from_query(query_name, binds)
-		entity.remove_from_group(query_name)
 		entity.remove_meta("#" + query_name)
 		entity.remove_meta("$" + query_name)
 		var entity_id := String(entity.get_instance_id())
@@ -310,9 +308,6 @@ func _entity_component_removed(component: Node, entity: Node, bound_queries: Arr
 			system.remove_meta(entity_id)
 			if system_inst.get_meta(_SYSTEM_INSTANCE, false):
 				system_inst.call_deferred("free")
-		__array_erase_deferred(bound_queries, query_name);
-		bound_queries.erase(query_name)
-		bound_systems.clear()
 
 
 func _init() -> void:
