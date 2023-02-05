@@ -169,6 +169,7 @@ func __bind_to_query_object(entity: Node, query_name: String, query_obj: Query) 
 	if binds.size() == component_names.size() - number_of_groups:
 		binds.push_front(entity)
 		bound_queries.push_back(query_name)
+		entity.set_meta("$" + query_name, [])
 		entity.set_meta("#" + query_name, binds)
 		var cache := _query_cache[query_name] as Array
 		cache.push_back(entity)
@@ -186,8 +187,7 @@ func __bind_to_query_object(entity: Node, query_name: String, query_obj: Query) 
 func __bind_to_systems(entity: Object, query_name: String, subscribers: Array) -> void:
 	var entity_id := String(entity.get_instance_id())
 	var binds := entity.get_meta("#" + query_name, []) as Array
-	var bound_systems := entity.get_meta("$" + query_name, []) as Array
-	entity.set_meta("$" + query_name, bound_systems)
+	var bound_systems := entity.get_meta("$" + query_name) as Array
 	for system_ref in subscribers:
 		var system := system_ref[_SYSTEM_CLASS] as Object
 		if system.has_meta(entity_id):
