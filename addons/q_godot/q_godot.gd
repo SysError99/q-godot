@@ -146,6 +146,7 @@ func __bind_to_query_object(entity: Node, query_name: String, parent_class_name:
 	if entity.get_class() != parent_class_name:
 		return false
 	var binds := []
+	var named_binds := {}
 	var number_of_groups := 0
 	var bound_queries := entity.get_meta(_BOUND_QUERIES) as Array
 	for component_name in component_names:
@@ -157,11 +158,13 @@ func __bind_to_query_object(entity: Node, query_name: String, parent_class_name:
 			return false
 		binds.push_back(component)
 		entity.set_meta("$" + component_name, component)
+		var bind_name := _regex.sub(component.name, "_$1", true).to_lower()
+		named_binds[bind_name.substr(1, bind_name.length())] = component
 	if binds.size() == component_names.size() - number_of_groups:
-		binds.push_front(entity)
 		bound_queries.push_back(query_name)
 		entity.set_meta("?" + query_name, [])
 		entity.set_meta("#" + query_name, binds)
+		entity.set_meta("##" + query_name, named_binds)
 		var cache := _query_cache[query_name] as Array
 		cache.push_back(entity)
 		if query_name in _query_half_cache:
@@ -176,28 +179,27 @@ func __bind_to_query_object(entity: Node, query_name: String, parent_class_name:
 
 
 func __bind_to_systems(entity: Object, query_name: String, subscribers: Array) -> void:
-	var entity_id := String(entity.get_instance_id())
-	var binds := entity.get_meta("#" + query_name) as Array
+	var named_binds := entity.get_meta("##" + query_name) as Dictionary
 	var bound_systems := entity.get_meta("?" + query_name) as Array
+	var binds := entity.get_meta("#" + query_name) as Array
+	var entity_id := String(entity.get_instance_id())
+	var ebinds := [ entity ] + binds
 	for system_ref in subscribers:
 		var system := system_ref[_SYSTEM_CLASS] as Object
 		if system.has_meta(entity_id):
 			continue
 		bound_systems.push_back(system)
 		if system.has_method("new"):
-			var component_binds := binds.duplicate()
 			var system_inst := system.new() as Object
-			component_binds.remove(0)
 			system_inst.set("parent", entity)
 			system_inst.set("shared", system_ref[_SHARED_VAR])
-			for component in component_binds:
-				var bind_name := _regex.sub(component.name, "_$1", true).to_lower()
-				system_inst.set(bind_name.substr(1, bind_name.length()), component)
+			for bind_name in named_binds:
+				system_inst.set(bind_name, named_binds[bind_name])
 			system.set_meta(entity_id, system_inst)
 			system.set_meta(_SYSTEM_INSTANCE, true)
 			entity.add_child(system_inst)
 		else:
-			system.callv(system_ref[_SHARED_VAR], binds)
+			system.callv(system_ref[_SHARED_VAR], ebinds)
 			system.set_meta(entity_id, system)
 
 
@@ -294,6 +296,7 @@ func _entity_component_removed(component: Node, entity: Node, bound_queries: Arr
 		__remove_entity_from_query(query_name, entity.get_meta("#" + query_name))
 		entity.remove_meta("#" + query_name)
 		entity.remove_meta("?" + query_name)
+		entity.remove_meta("##" + query_name)
 		bound_queries.remove(index)
 
 
