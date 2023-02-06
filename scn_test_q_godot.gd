@@ -19,7 +19,7 @@ var tween = Tween.new()
 
 
 onready var label := $CanvasLayer/Label as Label
-onready var query := QGodot.query(["KinematicBody2D", "Sprite"])
+onready var query := QGodot.query("KinematicBody2D", ["Sprite"])
 
 
 func _ready() -> void:
@@ -29,7 +29,8 @@ func _ready() -> void:
 
 
 	# QGodot.bind_query(
-	# 	["KinematicBody2D", "Sprite"],
+	#	"KinematicBody2D",
+	# 	["Sprite"],
 	# 	Movement
 	# )
 

@@ -17,7 +17,8 @@ class RotateSystem extends Node:
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	QGodot.bind_query_to_current_scene(
-		["KinematicBody2D", "Sprite"],
+		"KinematicBody2D",
+		["Sprite"],
 		RotateSystem,
 		self
 	)

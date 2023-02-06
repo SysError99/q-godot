@@ -53,9 +53,8 @@ var _tree: SceneTree
 
 
 # Bind a query to an object or an instantiable object. If you bind a query to instantiated object, 'shared' parameter will be function name string.
-func bind_query(component_names: Array, system: Object = null, shared = null, to_current_scene: bool = false) -> void:
-	assert(component_names.size() > 0, "'component_names' must have at least one member!")
-	var query_name := __get_query_name(component_names)
+func bind_query(parent_class_name: String, component_names: Array = [], system: Object = null, shared = null, to_current_scene: bool = false) -> void:
+	var query_name := __get_query_name(parent_class_name, component_names)
 	var query_obj: Query
 	if query_name in _queries:
 		query_obj = _queries[query_name]
@@ -63,18 +62,14 @@ func bind_query(component_names: Array, system: Object = null, shared = null, to
 		query_obj = Query.new()
 		_query_cache[query_name] = []	
 		query_obj.component_names = component_names
-		query_obj.parent_class_name = component_names[0]
-		component_names.remove(0)
+		query_obj.parent_class_name = parent_class_name
 		if _scene_changing:
 			yield(self, "query_ready")
 		_queries[query_name] = query_obj
 		emit_signal("query_added", query_name)
-		for scene_ref in _tree.get_nodes_in_group(_REGISTERED_SCENE):
-			var scene := scene_ref as Node
+		for scene in _tree.get_nodes_in_group(_REGISTERED_SCENE):
 			for entity in scene.get_children():
-				if entity.is_in_group(_REGISTERED_SCENE):
-					continue
-				__bind_to_query_object(entity, query_name, query_obj)
+				__bind_to_query_object(entity, query_name, parent_class_name, component_names)
 	if is_instance_valid(system):
 		var new_subscriber := [system, shared]
 		var subscribers := [ new_subscriber ]
@@ -84,28 +79,28 @@ func bind_query(component_names: Array, system: Object = null, shared = null, to
 
 
 # Bind a query to an object or an instantiable object for current scene. If you bind a query to instantiated object, 'shared' parameter will be function name string.
-func bind_query_to_current_scene(component_names: Array, system: Object = null, shared = null) -> void:
-	bind_query(component_names, system, shared, true)
+func bind_query_to_current_scene(parent_class_name: String, component_names: Array = [], system: Object = null, shared = null) -> void:
+	bind_query(parent_class_name, component_names, system, shared, true)
 
 
 # Obtain a query array.
-func query(component_names: Array) -> Array:
-	var query_name := __get_query_name(component_names)
+func query(parent_class_name: String, component_names: Array) -> Array:
+	var query_name := __get_query_name(parent_class_name, component_names)
 	if query_name in _query_cache:
 		return _query_cache[query_name]
-	bind_query(component_names)
+	bind_query(parent_class_name, component_names)
 	return _query_cache[query_name]
 
 
 # Obtain a half-iteratable query.
-func query_half(component_names: Array) -> HalfQueryReference:
-	var query_name := __get_query_name(component_names)
+func query_half(parent_class_name: String, component_names: Array) -> HalfQueryReference:
+	var query_name := __get_query_name(parent_class_name, component_names)
 	if  query_name in _query_half_cache:
 		return _query_half_cache[query_name]
-	var q := HalfQueryReference.new()
-	var query_array := query(component_names)
+	var query_array := query(parent_class_name, component_names)
 	var query_size := query_array.size()
 	var query_half_size := query_size / 2
+	var q := HalfQueryReference.new()
 	q.first_half = query_array.slice(0, query_half_size - 1)
 	if query_size > 1:
 		q.second_half = query_array.slice(query_half_size, query_array.size())
@@ -143,16 +138,15 @@ func register_as_scene(node: Node) -> void:
 	node.connect("child_exiting_tree", self, "_entity_exiting_scene")
 
 
-func __get_query_name(component_names: Array) -> String:
-	return PoolStringArray(component_names).join("_")
+func __get_query_name(parent_class_name: String, component_names: Array) -> String:
+	return parent_class_name + "_" + PoolStringArray(component_names).join("_")
 
 
-func __bind_to_query_object(entity: Node, query_name: String, query_obj: Query) -> bool:
-	if entity.get_class() != query_obj.parent_class_name:
+func __bind_to_query_object(entity: Node, query_name: String, parent_class_name: String, component_names: Array) -> bool:
+	if entity.get_class() != parent_class_name:
 		return false
 	var binds := []
 	var number_of_groups := 0
-	var component_names = query_obj.component_names
 	var bound_queries := entity.get_meta(_BOUND_QUERIES) as Array
 	for component_name in component_names:
 		if entity.is_in_group(component_name):
@@ -211,9 +205,6 @@ func __remove_entities_from_current_scene(scene: Node) -> void:
 	if scene.is_in_group("persistent_scene"):
 		return
 	for entity in scene.get_children():
-		if entity.is_in_group(_REGISTERED_SCENE):
-			__remove_entities_from_current_scene(entity)
-			continue
 		if not entity.has_meta(_BOUND_QUERIES):
 			continue
 		for query_name in entity.get_meta(_BOUND_QUERIES):
@@ -251,8 +242,10 @@ func __register_entity(entity: Node) -> void:
 	entity.connect("child_exiting_tree", self, "_entity_component_removed", [ entity, bound_queries])
 	for query_name in _queries:
 		var query_obj := _queries[query_name] as Query
-		if __bind_to_query_object(entity, query_name, query_obj):
-			__bind_to_systems(entity, query_name, query_obj.subscribers)
+		if __bind_to_query_object(entity, query_name, query_obj.parent_class_name, query_obj.component_names):
+			var subscribers := query_obj.subscribers
+			if subscribers.size() > 0:
+				__bind_to_systems(entity, query_name, query_obj.subscribers)
 
 
 func _entity_entered_scene(entity: Node) -> void:
@@ -278,7 +271,7 @@ func _entity_component_added(component: Node, entity: Node) -> void:
 	for query_name in _queries:
 		if component_name in query_name:
 			var query_obj := _queries[query_name] as Query
-			__bind_to_query_object(entity, query_name, query_obj)
+			__bind_to_query_object(entity, query_name, query_obj.parent_class_name, query_obj.component_names)
 
 
 func _entity_component_removed(component: Node, entity: Node, bound_queries: Array) -> void:

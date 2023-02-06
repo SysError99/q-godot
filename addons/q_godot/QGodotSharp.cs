@@ -522,7 +522,8 @@ namespace SysError99
             }
             else
             {
-                QGodot.Call("bind_query", componentNames, system, functionName, toCurrentScene);
+                var (parentClassName, c) = GetGDScriptQueryParams(componentNames);
+                QGodot.Call("bind_query", parentClassName, c, system, functionName, toCurrentScene);
             }
         }
         # endregion
@@ -2099,7 +2100,8 @@ namespace SysError99
             QueryAdd(queryName);
             if (IsInstanceValid(QGodot))
             {
-                QGodot.Call("query", componentNames);
+                var (parentClassName, c) = GetGDScriptQueryParams(componentNames);
+                QGodot.Call("query", parentClassName, c);
             }
             else
             {
@@ -2434,6 +2436,14 @@ namespace SysError99
             }
         }
 
+        public static (string, Array) GetGDScriptQueryParams(Array componentNames)
+        {
+            componentNames = componentNames.Duplicate();
+            var parentClassName = componentNames[0] as string;
+            componentNames.RemoveAt(0);
+            return (parentClassName, componentNames);
+        }
+
         public override void _EnterTree()
         {
             MainTree = GetTree();
@@ -2447,7 +2457,8 @@ namespace SysError99
                 core.Connect("removed_from_query", this, nameof(_RemoveFromQuery));
                 foreach (var componentNames in PreQueryList)
                 {
-                    QGodot.Call("query", componentNames);
+                    var (parentClassName, c) = GetGDScriptQueryParams(componentNames);
+                    QGodot.Call("query", parentClassName, c);
                 }
                 PreQueryList.Clear();
             }
