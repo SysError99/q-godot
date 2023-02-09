@@ -65,13 +65,12 @@ func bind_query(parent_class_name: String, component_names: Array = [], system: 
 		query_obj.parent_class_name = parent_class_name
 		if _scene_changing:
 			yield(self, "query_ready")
-			if query_name in _queries:
-				return
-		_queries[query_name] = query_obj
-		emit_signal("query_added", query_name)
-		for scene in _tree.get_nodes_in_group(_REGISTERED_SCENE):
-			for entity in scene.get_children():
-				__bind_to_query_object(entity, query_name, parent_class_name, component_names)
+			if not query_name in _queries:
+				_queries[query_name] = query_obj
+				emit_signal("query_added", query_name)
+				for scene in _tree.get_nodes_in_group(_REGISTERED_SCENE):
+					for entity in scene.get_children():
+						__bind_to_query_object(entity, query_name, parent_class_name, component_names)
 	if is_instance_valid(system):
 		var new_subscriber := [system, shared]
 		var subscribers := [ new_subscriber ]
