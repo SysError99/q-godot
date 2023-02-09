@@ -313,4 +313,4 @@ func _enter_tree() -> void:
 func _ready() -> void:
 	yield(_root, "ready")
 	__post_change_scene(_tree.current_scene)
-	_scene_changing = true
+	_scene_changing = false
