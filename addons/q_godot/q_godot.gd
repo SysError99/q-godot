@@ -60,17 +60,18 @@ func bind_query(parent_class_name: String, component_names: Array = [], system: 
 		query_obj = _queries[query_name]
 	else:
 		query_obj = Query.new()
-		_query_cache[query_name] = []	
 		query_obj.component_names = component_names
 		query_obj.parent_class_name = parent_class_name
+		if not query_name in _query_cache:
+			_query_cache[query_name] = []
 		if _scene_changing:
 			yield(self, "query_ready")
-			if not query_name in _queries:
-				_queries[query_name] = query_obj
-				emit_signal("query_added", query_name)
-				for scene in _tree.get_nodes_in_group(_REGISTERED_SCENE):
-					for entity in scene.get_children():
-						__bind_to_query_object(entity, query_name, parent_class_name, component_names)
+		if not query_name in _queries:
+			_queries[query_name] = query_obj
+			emit_signal("query_added", query_name)
+			for scene in _tree.get_nodes_in_group(_REGISTERED_SCENE):
+				for entity in scene.get_children():
+					__bind_to_query_object(entity, query_name, parent_class_name, component_names)
 	if is_instance_valid(system):
 		var new_subscriber := [system, shared]
 		var subscribers := [ new_subscriber ]
@@ -124,8 +125,8 @@ func change_scene(path: String) -> void:
 	_root.call_deferred("add_child", inst)
 	_tree.set_deferred("current_scene", inst)
 	yield(inst, "ready")
-	__post_change_scene(inst)
 	_scene_changing = false
+	__post_change_scene(inst)
 
 
 # Register specified node as a scene node.
@@ -313,5 +314,5 @@ func _enter_tree() -> void:
 
 func _ready() -> void:
 	yield(_root, "ready")
-	__post_change_scene(_tree.current_scene)
 	_scene_changing = false
+	__post_change_scene(_tree.current_scene)
