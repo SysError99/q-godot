@@ -242,7 +242,7 @@ func __register_entity(entity: Node) -> void:
 	var bound_queries := []
 	entity.add_to_group(_ENTITY)
 	entity.set_meta(_BOUND_QUERIES, bound_queries)
-	entity.connect("child_entered_tree", self, "_entity_component_added", [ entity ])
+	entity.connect("child_entered_tree", self, "_entity_component_added", [ entity, bound_queries ])
 	entity.connect("child_exiting_tree", self, "_entity_component_removed", [ entity, bound_queries])
 	for query_name in _queries:
 		var query_obj := _queries[query_name] as Query
@@ -270,9 +270,11 @@ func _entity_exiting_scene(entity: Node) -> void:
 						__remove_entity_from_query(query_name, [ entity ])
 
 
-func _entity_component_added(component: Node, entity: Node) -> void:
+func _entity_component_added(component: Node, entity: Node, bound_queries: Array) -> void:
 	var component_name := component.name
 	for query_name in _queries:
+		if query_name in bound_queries:
+			continue
 		if component_name in query_name:
 			var query_obj := _queries[query_name] as Query
 			__bind_to_query_object(entity, query_name, query_obj.parent_class_name, query_obj.component_names)
