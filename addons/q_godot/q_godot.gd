@@ -277,7 +277,8 @@ func _entity_component_added(component: Node, entity: Node, bound_queries: Array
 			continue
 		if component_name in query_name:
 			var query_obj := _queries[query_name] as Query
-			__bind_to_query_object(entity, query_name, query_obj.parent_class_name, query_obj.component_names)
+			if __bind_to_query_object(entity, query_name, query_obj.parent_class_name, query_obj.component_names):
+				__bind_to_systems(entity, query_name, query_obj.subscribers)
 
 
 func _entity_component_removed(component: Node, entity: Node, bound_queries: Array) -> void:
