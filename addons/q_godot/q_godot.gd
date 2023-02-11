@@ -181,10 +181,10 @@ func __bind_to_query_object(entity: Node, query_name: String, parent_class_name:
 
 
 func __bind_to_systems(entity: Object, query_name: String, subscribers: Array) -> void:
+	var entity_id := "%s_%d" % [query_name, entity.get_instance_id()]
 	var named_binds := entity.get_meta("##" + query_name) as Dictionary
 	var bound_systems := entity.get_meta("?" + query_name) as Array
 	var binds := entity.get_meta("#" + query_name) as Array
-	var entity_id := String(entity.get_instance_id())
 	var ebinds := [ entity ] + binds
 	for system_ref in subscribers:
 		var system := system_ref[_SYSTEM_CLASS] as Object
@@ -292,7 +292,7 @@ func _entity_component_removed(component: Node, entity: Node, bound_queries: Arr
 		if not component_name in query_name:
 			index += 1
 			continue
-		var entity_id := String(entity.get_instance_id())
+		var entity_id := "%s_%d" % [query_name, entity.get_instance_id()]
 		for system in entity.get_meta("?" + query_name):
 			var system_inst := system.get_meta(entity_id) as Object
 			system.remove_meta(entity_id)
