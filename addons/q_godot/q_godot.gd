@@ -169,7 +169,7 @@ func remove_node_from_group(node: Node, group_name: String) -> void:
 
 
 func __get_query_name(parent_class_name: String, component_names: Array) -> String:
-	return parent_class_name + "_" + PoolStringArray(component_names).join("_")
+	return parent_class_name + "," + PoolStringArray(component_names).join(",")
 
 
 func __bind_to_query_object(entity: Node, query_name: String, parent_class_name: String, component_names: Array) -> bool:

@@ -2096,7 +2096,7 @@ namespace SysError99
         
         private static (string, Array) PrepareQuery(Array componentNames)
         {
-            var queryName = String.Join("_", Enumerable.Cast<string>(componentNames));
+            var queryName = String.Join(",", Enumerable.Cast<string>(componentNames));
             QueryAdd(queryName);
             if (IsInstanceValid(QGodot))
             {
