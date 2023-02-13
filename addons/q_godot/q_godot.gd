@@ -241,7 +241,7 @@ func __remove_entities_from_current_scene(scene: Node) -> void:
 		if not entity.has_meta(_BOUND_QUERIES):
 			continue
 		for query_name in entity.get_meta(_BOUND_QUERIES):
-			__remove_entity_from_query(query_name, entity.get_meta("#" + query_name))
+			__remove_entity_from_query(query_name, entity, entity.get_meta("#" + query_name))
 
 
 func __remove_query_from_entity(entity: Node, query_name: String) -> void:
@@ -251,14 +251,13 @@ func __remove_query_from_entity(entity: Node, query_name: String) -> void:
 		system.remove_meta(entity_id)
 		if system_inst.get_meta(_SYSTEM_INSTANCE, false):
 			system_inst.call_deferred("free")
-	__remove_entity_from_query(query_name, entity.get_meta("#" + query_name))
+	__remove_entity_from_query(query_name, entity, entity.get_meta("#" + query_name))
 	entity.remove_meta("#" + query_name)
 	entity.remove_meta("?" + query_name)
 	entity.remove_meta("##" + query_name)
 
 
-func __remove_entity_from_query(query_name: String, binds: Array) -> void:
-	var entity := binds[0] as Object
+func __remove_entity_from_query(query_name: String, entity: Node, binds: Array) -> void:
 	(_query_cache[query_name] as Array).erase(entity)
 	if query_name in _query_half_cache:
 		var query_half := _query_half_cache[query_name] as HalfQueryReference
@@ -309,7 +308,7 @@ func _entity_exiting_scene(entity: Node) -> void:
 			_:
 				for query_name in _query_cache:
 					if group in query_name:
-						__remove_entity_from_query(query_name, [ entity ])
+						__remove_entity_from_query(query_name, entity, [ entity ])
 
 
 func _entity_component_added(component: Node, entity: Node, bound_queries: Array) -> void:
