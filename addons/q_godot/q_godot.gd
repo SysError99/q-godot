@@ -142,6 +142,7 @@ func register_as_scene(node: Node) -> void:
 
 # Add specified node to a group, and perform query bindings.
 func add_node_to_group(node: Node, group_name: String) -> void:
+	__register_entity(node)
 	node.add_to_group(group_name)
 	var bound_queries := node.get_meta(_BOUND_QUERIES, []) as Array
 	for query_name in _queries:
