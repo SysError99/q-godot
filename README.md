@@ -350,6 +350,18 @@ onready var query := QGodot.query("KinematicBody2D", ["Icon", "enemy"])
 
 ---
 
+## Adding Nodes To Groups (GDScript Only)
+For performacne reasons, QGOdot will NOT do automatic query binding when new groups have been added to nodes (there is no signal options addressing such issue also) while the node has already joined the scene tree. To address this issue, QGodot provides `add_node_to_group()` and `remove_node_from_group()` to perform automatic query binding after adding groups to the node.
+
+```gdscript
+QGodot.add_node_to_group(node_name, "group_name")
+```
+```gdscript
+QGodot.remove_node_from_group(node_name, "group_name")
+```
+
+---
+
 ## Binding Query With Instantiable References (GDScript Only)
 Sometimes you wanted to iterate through nodes but using instantiable classes. This will slightly helps on speed since it doesn't require constant use of `get_meta()` to get sub nodes. Which means, `QGodot.bind_query()` will help us in this case. However, this will increase memory usage, and is slightly more tricky to use.
 
