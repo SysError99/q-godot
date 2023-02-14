@@ -92,7 +92,7 @@ func bind_query_to_current_scene(parent_class_name: String, component_names: Arr
 
 
 # Obtain a query array.
-func query(parent_class_name: String, component_names: Array) -> Array:
+func query(parent_class_name: String, component_names: Array = []) -> Array:
 	var query_name := __get_query_name(parent_class_name, component_names)
 	if query_name in _query_cache:
 		return _query_cache[query_name]
@@ -101,7 +101,7 @@ func query(parent_class_name: String, component_names: Array) -> Array:
 
 
 # Obtain a half-iteratable query.
-func query_half(parent_class_name: String, component_names: Array) -> HalfQueryReference:
+func query_half(parent_class_name: String, component_names: Array = []) -> HalfQueryReference:
 	var query_name := __get_query_name(parent_class_name, component_names)
 	if  query_name in _query_half_cache:
 		return _query_half_cache[query_name]
