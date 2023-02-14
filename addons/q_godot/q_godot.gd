@@ -210,7 +210,7 @@ func __bind_to_query_object(entity: Node, query_name: String, parent_class_name:
 				half_cache.second_half.push_back(entity)
 			else:
 				half_cache.first_half.push_back(entity)
-		emit_signal("added_to_query", query_name, binds)
+		emit_signal("added_to_query", query_name, [ entity ] + binds)
 		return true
 	return false
 
@@ -269,7 +269,7 @@ func __remove_entity_from_query(query_name: String, entity: Node, binds: Array) 
 		var query_half := _query_half_cache[query_name] as HalfQueryReference
 		query_half.first_half.erase(entity)
 		query_half.second_half.erase(entity)
-	emit_signal("removed_from_query", query_name, binds)
+	emit_signal("removed_from_query", query_name, [ entity ] + binds)
 
 
 func __post_change_scene(current_scene: Node) -> void:
