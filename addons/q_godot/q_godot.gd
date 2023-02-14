@@ -63,14 +63,14 @@ func bind_query(parent_class_name: String, component_names: Array = [], system: 
 	if query_name in _queries:
 		query_obj = _queries[query_name]
 	else:
-		query_obj = Query.new()
-		query_obj.component_names = component_names
-		query_obj.parent_class_name = parent_class_name
 		if not query_name in _query_cache:
 			_query_cache[query_name] = []
 		if _scene_changing:
 			yield(self, "query_ready")
 		if not query_name in _queries:
+			query_obj = Query.new()
+			query_obj.component_names = component_names
+			query_obj.parent_class_name = parent_class_name
 			_queries[query_name] = query_obj
 			emit_signal("query_added", query_name)
 			for scene in _tree.get_nodes_in_group(_REGISTERED_SCENE):
