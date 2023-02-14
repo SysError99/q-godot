@@ -76,6 +76,8 @@ func bind_query(parent_class_name: String, component_names: Array = [], system: 
 			for scene in _tree.get_nodes_in_group(_REGISTERED_SCENE):
 				for entity in scene.get_children():
 					__bind_to_query_object(entity, query_name, parent_class_name, component_names)
+		else:
+			query_obj = _queries[query_name]
 	if is_instance_valid(system):
 		var new_subscriber := [system, shared]
 		var subscribers := [ new_subscriber ]
