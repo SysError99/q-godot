@@ -26,12 +26,13 @@ class Query extends Object:
 
 
 class HalfQueryReference extends Object:
-	var switch := false
+	var q_godot: Object
 	var first_half := []
 	var second_half := []
+	func _init(obj: Object) -> void:
+		q_godot = obj
 	func iterate() -> Array:
-		switch = not switch
-		if switch:
+		if q_godot.get("switch"):
 			return first_half
 		else:
 			return second_half
@@ -41,6 +42,9 @@ signal query_ready()
 signal query_added(query_name)
 signal added_to_query(query_name, binds)
 signal removed_from_query(query_name, binds)
+
+
+var switch := false
 
 
 var _queries := {}
@@ -102,7 +106,7 @@ func query_half(parent_class_name: String, component_names: Array) -> HalfQueryR
 	var query_array := query(parent_class_name, component_names)
 	var query_size := query_array.size()
 	var query_half_size := query_size / 2
-	var q := HalfQueryReference.new()
+	var q := HalfQueryReference.new(self)
 	q.first_half = query_array.slice(0, query_half_size - 1)
 	if query_size > 1:
 		q.second_half = query_array.slice(query_half_size, query_array.size())
@@ -351,3 +355,7 @@ func _ready() -> void:
 	yield(_root, "ready")
 	_scene_changing = false
 	__post_change_scene(_tree.current_scene)
+
+
+func _process(_delta: float) -> void:
+	switch = not switch
