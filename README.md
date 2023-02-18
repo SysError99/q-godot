@@ -109,6 +109,14 @@ When we start the project again, the icon now scales indefinitely!
 
 ![image](https://user-images.githubusercontent.com/17522480/212738843-e2db606d-1c83-4f79-b335-f7a972cc3d5a.png)
 
+If you also wanted to query nodes that are in other nodes, you can also use node path to query them:
+
+```gdscript
+onready var hp_bar := QGodot.query("KinematicBody", [ "Viewport/HpBar" ])
+```
+
+*NOTE: This feature is currently exclusive to GDScript, since I still cannot think of any of good methods for C# variant.*
+
 ---
 
 ## Quickstart (C#)
