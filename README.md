@@ -39,9 +39,9 @@ const TARGET = Vector2(512,300)
 
 func _process(_delta: float) -> void:
     for entity in query:
-		var vel := (entity.position.direction_to(TARGET) * 10.0) as Vector2
-		entity.move_and_slide(vel)
-		entity.look_at(TARGET)
+	var vel := (entity.position.direction_to(TARGET) * 10.0) as Vector2
+	entity.move_and_slide(vel)
+	entity.look_at(TARGET)
 ```
 
 The rest of code should be something like this:
@@ -58,9 +58,9 @@ onready var query := QGodot.query("KinematicBody2D")
 
 func _process(_delta: float) -> void:
     for entity in query:
-		var vel := (entity.position.direction_to(TARGET) * 10.0) as Vector2
-		entity.move_and_slide(vel)
-		entity.look_at(TARGET)
+	var vel := (entity.position.direction_to(TARGET) * 10.0) as Vector2
+	entity.move_and_slide(vel)
+	entity.look_at(TARGET)
 ```
 
 When you start running the game, voila!
@@ -98,7 +98,7 @@ onready var query := QGodot.query("KinematicBody2D", ["Icon"])
 
 func _process(_delta: float) -> void:
     for entity in query:
-		var vel := (entity.position.direction_to(TARGET) * 10.0) as Vector2
+	var vel := (entity.position.direction_to(TARGET) * 10.0) as Vector2
         var icon := entity.get_meta("$Icon") as Sprite
 		entity.move_and_slide(vel)
 		entity.look_at(TARGET)
