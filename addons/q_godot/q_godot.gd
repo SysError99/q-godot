@@ -196,7 +196,7 @@ func __bind_to_query_object(entity: Node, query_name: String, parent_class_name:
 		binds.push_back(component)
 		entity.set_meta("$" + component_name, component)
 		var bind_name := _regex.sub(component.name, "_$1", true).to_lower()
-		named_binds[bind_name.substr(1, bind_name.length())] = component
+		named_binds[bind_name.substr(1, bind_name.length()).replace("/","")] = component
 	if binds.size() == component_names.size() - number_of_groups:
 		bound_queries.push_back(query_name)
 		entity.set_meta("?" + query_name, [])
