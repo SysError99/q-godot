@@ -67,14 +67,14 @@ When you start running the game, voila!
 
 ![image](https://user-images.githubusercontent.com/17522480/212736180-a8f69a45-ba88-4159-87ef-dba16b5f130b.png)
 
-Now, we wanted constantly scale icon size by making changes on the `Icon` node. Let's make change on the query and add an extra argument that is used for querying node names:
+Now, we wanted constantly scale icon size by making changes on the `Icon` 'sub' node. Let's make change on the query and add an extra argument that is used for querying sub nodes:
 
 ```gdscript
 # Second argument will be array of node names that you wanted to match. In this case, we only have 'Icon'.
 onready var query := QGodot.query("KinematicBody2D", ["Icon"])
 ```
 
-Then, on the `_process()` loop, we can retrieve component by using `get_meta()` on the entity node:
+Then, on the `_process()` loop, we can retrieve the sub node we added to the query (in this case, `Icon`) by using `get_meta()` from the main node:
 
 ```gdscript
 func _process(_delta: float) -> void:
