@@ -30,7 +30,7 @@ extends Node2D
 onready var query := QGodot.query("KinematicBody2D")
 ```
 
-*NOTE: You should always make a query with `onready`, or before `query_ready` signal. Making a query after `query_ready` signal will may give empty query results.*
+*NOTE: You should always make a query with `onready`, or before `query_ready` signal. Making a query after `query_ready` signal may give empty query results.*
 
 Now we can iterate through our subscribed query in `_process()` :
 
