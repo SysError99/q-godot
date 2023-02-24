@@ -363,7 +363,6 @@ QGodot.remove_node_from_group(node_name, "group_name")
 ---
 
 ## Querying Nodes That Are In Sub Nodes (GDScript Only)
-
 If you also wanted to query nodes that are in other nodes, you can also use node path to query them:
 
 ```gdscript
