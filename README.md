@@ -109,14 +109,6 @@ When we start the project again, the icon now scales indefinitely!
 
 ![image](https://user-images.githubusercontent.com/17522480/212738843-e2db606d-1c83-4f79-b335-f7a972cc3d5a.png)
 
-If you also wanted to query nodes that are in other nodes, you can also use node path to query them:
-
-```gdscript
-onready var hp_bar := QGodot.query("KinematicBody", [ "Viewport/HpBar" ])
-```
-
-*NOTE: This feature is currently exclusive to GDScript, since I still cannot think of any of good methods for C# variant.*
-
 ---
 
 ## Quickstart (C#)
@@ -370,6 +362,25 @@ QGodot.remove_node_from_group(node_name, "group_name")
 
 ---
 
+## Querying Nodes That Are In Sub Nodes (GDScript Only)
+
+If you also wanted to query nodes that are in other nodes, you can also use node path to query them:
+
+```gdscript
+onready var bodies := QGodot.query("KinematicBody", [ "Status", "Viewport/HpBar" ])
+```
+
+When querying nodes with `get_meta()` it goes exactly the same way as `get_node()` but with extra `$` symbol:
+```gdscript
+func _process(delta: float) -> void:
+    for body in bodies:
+        var status := body.get_meta("$Status") as Status
+        var hp_bar := body.get_meta("$Viewport/HpBar") as Control
+        hp_bar.rect_size.x = status.hp_percent
+```
+
+---
+
 ## Binding Query With Instantiable References (GDScript Only)
 Sometimes you wanted to iterate through nodes but using instantiable classes. This will slightly helps on speed since it doesn't require constant use of `get_meta()` to get sub nodes. Which means, `QGodot.bind_query()` will help us in this case. However, this will increase memory usage, and is slightly more tricky to use.
 
@@ -411,5 +422,27 @@ class Movement extends Node:
  		parent.look_at(TARGET)
  		sprite.scale *= 1.001
 ```
+
+Note that convention for nodes that are child node of other 'sub nodes', for example, `Viewport/HpBar`, you'll need to convert slash symbols to underscore (`_`). In this case, it will become `viewport_hp_har`:
+```gdscript
+
+func _ready() -> void:
+    QGodot.bind_queqy(
+		"KinematicBody",
+        [
+            "Status",
+            "Viewport/HpBar",
+        ],
+		HpBarController, # Class name reference, or loaded 'GDScript'.
+		self # Use this instance as shared object for this query.
+	)
+
+
+class HpBarController extends Object:
+    var status: Status
+    var viewport_hp_har: Control
+
+    func _process(_delta: float) -> void:
+        viewport_hp_har.rect_scale.x = status.hp_percent
 
 ---
