@@ -383,8 +383,6 @@ func _process(delta: float) -> void:
 ## Binding Query With Instantiable References (GDScript Only)
 Sometimes you wanted to iterate through nodes but using instantiable classes. This will slightly helps on speed since it doesn't require constant use of `get_meta()` to get sub nodes. Which means, `QGodot.bind_query()` will help us in this case. However, this will increase memory usage, and is slightly more tricky to use.
 
-*Note: when querying, variable bindings will use `snake_case`. Two variables `parent`, and `shared` will be reserved for parent node binding and shared variable binding repectively.*
-
 ```gdscript
 extends Node
 var count := 0
@@ -402,16 +400,17 @@ func _ready() -> void:
 class Movement extends Node:
 	const TARGET = Vector2(512, 300)
 	
-	# Reserved keywords
-	var parent: KinematicBody2D
+	# Reserved fields
 	var shared: Node
-	
-	# Node names, will be converted to 'snake_case'!
-	# Example 1: node name is 'SomeGoodStatus', it will be converted to 'some_good_status'.
-	# Example 2: node name is 'Node2D', 'it will be converted to 'node_2d'.
-	# In this case, node name is 'Icon', which means, it will be converted to just 'icon'.
+
+    # User-defined fields
+    var parent: KinematicBody2D
 	var icon: Sprite
-	
+
+    func _init(parent, icon) -> void:
+        self.parent = parent
+        self.icon = icon
+
 	func _ready() -> void:
 		shared.count += 1
 	

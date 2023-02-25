@@ -2,11 +2,9 @@ extends Node
 
 
 const _BOUND_QUERIES = "#BQN"
-const _ENTITY = "#E"
 const _REGISTERED_SCENE = "#RS"
 const _SHARED_VAR = 1
 const _SYSTEM_CLASS = 0
-const _SYSTEM_INSTANCE = "#SI"
 const _UNREGISTERED_SCENE = "registered_scene"
 
 
@@ -50,7 +48,6 @@ var switch := false
 var _queries := {}
 var _query_cache := {}
 var _query_half_cache := {}
-var _regex := RegEx.new()
 var _root: Viewport
 var _scene_changing := true
 
@@ -139,25 +136,20 @@ func register_as_scene(node: Node) -> void:
 	node.add_to_group(_REGISTERED_SCENE)
 	if node.is_in_group(_UNREGISTERED_SCENE):
 		node.remove_from_group(_UNREGISTERED_SCENE)
-	for child_ref in node.get_children():
-		__register_entity(child_ref)
+	if node.is_inside_tree():
+		for child_ref in node.get_children():
+			__setup_entity(child_ref)
+			__bind_to_query_objects(child_ref)
 	node.connect("child_entered_tree", self, "_entity_entered_scene")
 	node.connect("child_exiting_tree", self, "_entity_exiting_scene")
 
 
 # Add specified node to a group, and perform query bindings.
 func add_node_to_group(node: Node, group_name: String) -> void:
-	__register_entity(node)
+	if not node.has_meta(_BOUND_QUERIES):
+		__setup_entity(node)
 	node.add_to_group(group_name)
-	var bound_queries := node.get_meta(_BOUND_QUERIES, []) as Array
-	for query_name in _queries:
-		if query_name in bound_queries:
-			continue
-		var query_obj := _queries[query_name] as Query
-		if __bind_to_query_object(node, query_name, query_obj.parent_class_name, query_obj.component_names):
-			var subscribers := query_obj.subscribers
-			if subscribers.size() > 0:
-				__bind_to_systems(node, query_name, subscribers)
+	__bind_to_query_objects(node)
 
 
 # Remove specified node to a group, and perform query bindings.
@@ -178,58 +170,62 @@ func __get_query_name(parent_class_name: String, component_names: Array) -> Stri
 	return parent_class_name + "," + PoolStringArray(component_names).join(",")
 
 
+func __bind_to_query_objects(entity: Node) -> void:
+	var bound_queries := entity.get_meta(_BOUND_QUERIES, []) as Array
+	for query_name in _queries:
+		if query_name in bound_queries:
+			continue
+		var query_obj := _queries[query_name] as Query
+		if __bind_to_query_object(entity, query_name, query_obj.parent_class_name, query_obj.component_names):
+			var subscribers := query_obj.subscribers
+			if subscribers.size() > 0:
+				__bind_to_systems(entity, query_name, subscribers)
+
+
 func __bind_to_query_object(entity: Node, query_name: String, parent_class_name: String, component_names: Array) -> bool:
 	if entity.get_class() != parent_class_name:
 		return false
 	var binds := []
-	var named_binds := {}
-	var bound_queries := entity.get_meta(_BOUND_QUERIES) as Array
+	var component: Node
+	var component_path: String
 	for component_name in component_names:
-		if entity.has_node(component_name):
-			var component := entity.get_node(component_name)
-			var bind_name := _regex.sub(component.name, "_$1", true).to_lower()
+		component_path = "$" + component_name
+		if entity.has_meta(component_path):
+			binds.push_back(entity.get_meta(component_path))
+			continue
+		component = entity.get_node_or_null(component_name)
+		if is_instance_valid(component):
+			entity.set_meta(component_path, component)
 			binds.push_back(component)
-			entity.set_meta("$" + component_name, component)
-			named_binds[bind_name.substr(1, bind_name.length()).replace("/","")] = component
 			continue
 		if entity.is_in_group(component_name):
 			continue
 		return false
-	bound_queries.push_back(query_name)
-	entity.set_meta("?" + query_name, [])
 	entity.set_meta("#" + query_name, binds)
-	entity.set_meta("##" + query_name, named_binds)
+	entity.get_meta(_BOUND_QUERIES).push_back(query_name)
 	var cache := _query_cache[query_name] as Array
-	cache.push_back(entity)
 	if query_name in _query_half_cache:
-		var half_cache := _query_half_cache[query_name] as HalfQueryReference
 		if cache.size() % 2 == 0:
-			half_cache.second_half.push_back(entity)
+			_query_half_cache[query_name].second_half.push_back(entity)
 		else:
-			half_cache.first_half.push_back(entity)
+			_query_half_cache[query_name].first_half.push_back(entity)
+	cache.push_back(entity)
 	emit_signal("added_to_query", query_name, [ entity ] + binds)
 	return true
 
 
 func __bind_to_systems(entity: Object, query_name: String, subscribers: Array) -> void:
 	var entity_id := "%s_%d" % [query_name, entity.get_instance_id()]
-	var named_binds := entity.get_meta("##" + query_name) as Dictionary
-	var bound_systems := entity.get_meta("?" + query_name) as Array
 	var binds := entity.get_meta("#" + query_name) as Array
 	var ebinds := [ entity ] + binds
 	for system_ref in subscribers:
 		var system := system_ref[_SYSTEM_CLASS] as Object
 		if system.has_meta(entity_id):
 			continue
-		bound_systems.push_back(system)
 		if system.has_method("new"):
-			var system_inst := system.new() as Object
-			system_inst.set("parent", entity)
+			var system_inst := system.new(ebinds) as Object
 			system_inst.set("shared", system_ref[_SHARED_VAR])
-			for bind_name in named_binds:
-				system_inst.set(bind_name, named_binds[bind_name])
 			system.set_meta(entity_id, system_inst)
-			system.set_meta(_SYSTEM_INSTANCE, true)
 			entity.add_child(system_inst)
 		else:
 			system.callv(system_ref[_SHARED_VAR], ebinds)
@@ -240,23 +236,13 @@ func __remove_entities_from_current_scene(scene: Node) -> void:
 	if scene.is_in_group("persistent_scene"):
 		return
 	for entity in scene.get_children():
-		if not entity.has_meta(_BOUND_QUERIES):
-			continue
 		for query_name in entity.get_meta(_BOUND_QUERIES):
 			__remove_entity_from_query(query_name, entity, entity.get_meta("#" + query_name))
 
 
 func __remove_query_from_entity(entity: Node, query_name: String) -> void:
-	var entity_id := "%s_%d" % [query_name, entity.get_instance_id()]
-	for system in entity.get_meta("?" + query_name):
-		var system_inst := system.get_meta(entity_id) as Object
-		system.remove_meta(entity_id)
-		if system_inst.get_meta(_SYSTEM_INSTANCE, false):
-			system_inst.call_deferred("free")
 	__remove_entity_from_query(query_name, entity, entity.get_meta("#" + query_name))
 	entity.remove_meta("#" + query_name)
-	entity.remove_meta("?" + query_name)
-	entity.remove_meta("##" + query_name)
 
 
 func __remove_entity_from_query(query_name: String, entity: Node, binds: Array) -> void:
@@ -279,25 +265,18 @@ func __post_change_scene(current_scene: Node) -> void:
 	emit_signal("query_ready")
 
 
-func __register_entity(entity: Node) -> void:
-	if entity.is_in_group(_ENTITY):
-		return
+func __setup_entity(entity: Node) -> void:
 	var bound_queries := []
-	entity.add_to_group(_ENTITY)
 	entity.set_meta(_BOUND_QUERIES, bound_queries)
-	entity.connect("child_entered_tree", self, "_entity_component_added", [ entity, bound_queries ])
-	entity.connect("child_exiting_tree", self, "_entity_component_removed", [ entity, bound_queries])
-	for query_name in _queries:
-		var query_obj := _queries[query_name] as Query
-		if __bind_to_query_object(entity, query_name, query_obj.parent_class_name, query_obj.component_names):
-			var subscribers := query_obj.subscribers
-			if subscribers.size() > 0:
-				__bind_to_systems(entity, query_name, subscribers)
+	entity.call_deferred("connect", "child_entered_tree", self, "_entity_component_added", [ entity, bound_queries, ])
+	entity.call_deferred("connect", "child_exiting_tree", self, "_entity_component_removed", [ entity, bound_queries, ])
 
 
 func _entity_entered_scene(entity: Node) -> void:
 	yield(entity, "ready")
-	__register_entity(entity)
+	if not entity.has_meta(_BOUND_QUERIES):
+		__setup_entity(entity)
+	__bind_to_query_objects(entity)
 
 
 func _entity_exiting_scene(entity: Node) -> void:
@@ -341,14 +320,10 @@ func _entity_component_removed(component: Node, entity: Node, bound_queries: Arr
 
 func _init() -> void:
 	add_to_group("#q-godot")
-	_regex.compile("((?<=[a-z])[A-Z]|[A-Z](?=[a-z])|[0-9])")
-
-
-func _enter_tree() -> void:
-	_root = get_tree().root
 
 
 func _ready() -> void:
+	_root = get_tree().root
 	yield(_root, "ready")
 	_scene_changing = false
 	__post_change_scene(get_tree().current_scene)
