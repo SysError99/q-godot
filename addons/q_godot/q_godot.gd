@@ -238,7 +238,7 @@ func __bind_to_systems(entity: Object, query_name: String, subscribers: Array) -
 		if system.has_meta(entity_id):
 			continue
 		if system.has_method("new"):
-			system_inst = system.new(ebinds)
+			system_inst = system.callv("new", ebinds)
 			system_inst.set("shared", system_ref[_SHARED_VAR])
 			system.set_meta(entity_id, system_inst)
 			entity.add_child(system_inst)
