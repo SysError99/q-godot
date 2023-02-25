@@ -183,35 +183,32 @@ func __bind_to_query_object(entity: Node, query_name: String, parent_class_name:
 		return false
 	var binds := []
 	var named_binds := {}
-	var number_of_groups := 0
 	var bound_queries := entity.get_meta(_BOUND_QUERIES) as Array
 	for component_name in component_names:
-		if entity.is_in_group(component_name):
-			number_of_groups += 1
+		if entity.has_node(component_name):
+			var component := entity.get_node(component_name)
+			var bind_name := _regex.sub(component.name, "_$1", true).to_lower()
+			binds.push_back(component)
+			entity.set_meta("$" + component_name, component)
+			named_binds[bind_name.substr(1, bind_name.length()).replace("/","")] = component
 			continue
-		var component := entity.get_node_or_null(component_name)
-		if not is_instance_valid(component):
-			return false
-		binds.push_back(component)
-		entity.set_meta("$" + component_name, component)
-		var bind_name := _regex.sub(component.name, "_$1", true).to_lower()
-		named_binds[bind_name.substr(1, bind_name.length()).replace("/","")] = component
-	if binds.size() == component_names.size() - number_of_groups:
-		bound_queries.push_back(query_name)
-		entity.set_meta("?" + query_name, [])
-		entity.set_meta("#" + query_name, binds)
-		entity.set_meta("##" + query_name, named_binds)
-		var cache := _query_cache[query_name] as Array
-		cache.push_back(entity)
-		if query_name in _query_half_cache:
-			var half_cache := _query_half_cache[query_name] as HalfQueryReference
-			if cache.size() % 2 == 0:
-				half_cache.second_half.push_back(entity)
-			else:
-				half_cache.first_half.push_back(entity)
-		emit_signal("added_to_query", query_name, [ entity ] + binds)
-		return true
-	return false
+		if entity.is_in_group(component_name):
+			continue
+		return false
+	bound_queries.push_back(query_name)
+	entity.set_meta("?" + query_name, [])
+	entity.set_meta("#" + query_name, binds)
+	entity.set_meta("##" + query_name, named_binds)
+	var cache := _query_cache[query_name] as Array
+	cache.push_back(entity)
+	if query_name in _query_half_cache:
+		var half_cache := _query_half_cache[query_name] as HalfQueryReference
+		if cache.size() % 2 == 0:
+			half_cache.second_half.push_back(entity)
+		else:
+			half_cache.first_half.push_back(entity)
+	emit_signal("added_to_query", query_name, [ entity ] + binds)
+	return true
 
 
 func __bind_to_systems(entity: Object, query_name: String, subscribers: Array) -> void:
