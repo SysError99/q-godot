@@ -139,26 +139,29 @@ func register_as_scene(node: Node) -> void:
 	if node.is_inside_tree():
 		for child_ref in node.get_children():
 			__setup_entity(child_ref)
-			__bind_to_query_objects(child_ref)
+			__bind_to_query_objects(child_ref, true)
 	node.connect("child_entered_tree", self, "_entity_entered_scene")
 	node.connect("child_exiting_tree", self, "_entity_exiting_scene")
 
 
 # Add specified node to a group, and perform query bindings.
 func add_node_to_group(node: Node, group_name: String) -> void:
-	if not node.has_meta(_BOUND_QUERIES):
-		__setup_entity(node)
 	node.add_to_group(group_name)
-	__bind_to_query_objects(node)
+	if node.has_meta(_BOUND_QUERIES):
+		__bind_to_query_objects(node, false)
+	else:
+		__setup_entity(node)
+		__bind_to_query_objects(node, true)
 
 
 # Remove specified node to a group, and perform query bindings.
 func remove_node_from_group(node: Node, group_name: String) -> void:
 	node.remove_from_group(group_name)
 	var index := 0
+	var query_name: String
 	var bound_queries := node.get_meta(_BOUND_QUERIES, []) as Array
 	while index < bound_queries.size():
-		var query_name := bound_queries[index] as String
+		query_name = bound_queries[index]
 		if not group_name in query_name:
 			index += 1
 			continue
@@ -170,14 +173,24 @@ func __get_query_name(parent_class_name: String, component_names: Array) -> Stri
 	return parent_class_name + "," + PoolStringArray(component_names).join(",")
 
 
-func __bind_to_query_objects(entity: Node) -> void:
+func __bind_to_query_objects(entity: Node, new_instance: bool) -> void:
+	var query_obj: Query
+	var subscribers: Array
+	if new_instance:
+		for query_name in _queries:
+			query_obj = _queries[query_name]
+			if __bind_to_query_object(entity, query_name, query_obj.parent_class_name, query_obj.component_names):
+				subscribers = query_obj.subscribers
+				if subscribers.size() > 0:
+					__bind_to_systems(entity, query_name, subscribers)
+		return
 	var bound_queries := entity.get_meta(_BOUND_QUERIES, []) as Array
 	for query_name in _queries:
 		if query_name in bound_queries:
 			continue
-		var query_obj := _queries[query_name] as Query
+		query_obj = _queries[query_name]
 		if __bind_to_query_object(entity, query_name, query_obj.parent_class_name, query_obj.component_names):
-			var subscribers := query_obj.subscribers
+			subscribers = query_obj.subscribers
 			if subscribers.size() > 0:
 				__bind_to_systems(entity, query_name, subscribers)
 
@@ -218,12 +231,14 @@ func __bind_to_systems(entity: Object, query_name: String, subscribers: Array) -
 	var entity_id := "%s_%d" % [query_name, entity.get_instance_id()]
 	var binds := entity.get_meta("#" + query_name) as Array
 	var ebinds := [ entity ] + binds
+	var system_inst: Object
+	var system: Object
 	for system_ref in subscribers:
-		var system := system_ref[_SYSTEM_CLASS] as Object
+		system = system_ref[_SYSTEM_CLASS]
 		if system.has_meta(entity_id):
 			continue
 		if system.has_method("new"):
-			var system_inst := system.new(ebinds) as Object
+			system_inst = system.new(ebinds)
 			system_inst.set("shared", system_ref[_SHARED_VAR])
 			system.set_meta(entity_id, system_inst)
 			entity.add_child(system_inst)
@@ -274,9 +289,11 @@ func __setup_entity(entity: Node) -> void:
 
 func _entity_entered_scene(entity: Node) -> void:
 	yield(entity, "ready")
-	if not entity.has_meta(_BOUND_QUERIES):
+	if entity.has_meta(_BOUND_QUERIES):
+		__bind_to_query_objects(entity, false)
+	else:
 		__setup_entity(entity)
-	__bind_to_query_objects(entity)
+		__bind_to_query_objects(entity, true)
 
 
 func _entity_exiting_scene(entity: Node) -> void:
@@ -294,11 +311,12 @@ func _entity_exiting_scene(entity: Node) -> void:
 
 func _entity_component_added(component: Node, entity: Node, bound_queries: Array) -> void:
 	var component_name := component.name
+	var query_obj: Query
 	for query_name in _queries:
 		if query_name in bound_queries:
 			continue
 		if component_name in query_name:
-			var query_obj := _queries[query_name] as Query
+			query_obj = _queries[query_name]
 			if __bind_to_query_object(entity, query_name, query_obj.parent_class_name, query_obj.component_names):
 				__bind_to_systems(entity, query_name, query_obj.subscribers)
 
@@ -307,10 +325,11 @@ func _entity_component_removed(component: Node, entity: Node, bound_queries: Arr
 	if _scene_changing:
 		return;
 	var index := 0
+	var query_name: String
 	var component_name := component.name
 	entity.remove_meta("$" + component_name)
 	while index < bound_queries.size():
-		var query_name := bound_queries[index] as String
+		query_name = bound_queries[index]
 		if not component_name in query_name:
 			index += 1
 			continue
