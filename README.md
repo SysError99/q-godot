@@ -391,7 +391,7 @@ var count := 0
 func _ready() -> void:
 	QGodot.bind_queqy(
 		"KinematicBody2D",
-        ["Icon"],
+		["Icon"],
 		Movement, # Class name reference, or loaded 'GDScript'.
 		self # Use this instance as shared object for this query.
 	)
