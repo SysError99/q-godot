@@ -38,7 +38,7 @@ Now we can iterate through our subscribed query in `_process()` :
 const TARGET = Vector2(512,300)
 
 func _process(_delta: float) -> void:
-    for entity in query:
+	for entity in query:
 	var vel := (entity.position.direction_to(TARGET) * 10.0) as Vector2
 	entity.move_and_slide(vel)
 	entity.look_at(TARGET)
@@ -57,7 +57,7 @@ onready var query := QGodot.query("KinematicBody2D")
 
 
 func _process(_delta: float) -> void:
-    for entity in query:
+	for entity in query:
 	var vel := (entity.position.direction_to(TARGET) * 10.0) as Vector2
 	entity.move_and_slide(vel)
 	entity.look_at(TARGET)
@@ -78,10 +78,10 @@ Then, on the `_process()` loop, we can retrieve the sub node we added to the que
 
 ```gdscript
 func _process(_delta: float) -> void:
-    for entity in query:
-        # When querying by 'get_meta()', you must add dollar sign ('$') in front of node name.
-        var icon := entity.get_meta("$Icon") as Sprite
-        icon.scale = icon.scale * 1.01
+	for entity in query:
+		# When querying by 'get_meta()', you must add dollar sign ('$') in front of node name.
+		var icon := entity.get_meta("$Icon") as Sprite
+		icon.scale = icon.scale * 1.01
 ```
 
 The rest of code now should be something like this:
@@ -97,12 +97,12 @@ onready var query := QGodot.query("KinematicBody2D", ["Icon"])
 
 
 func _process(_delta: float) -> void:
-    for entity in query:
+	for entity in query:
 	var vel := (entity.position.direction_to(TARGET) * 10.0) as Vector2
-        var icon := entity.get_meta("$Icon") as Sprite
+		var icon := entity.get_meta("$Icon") as Sprite
 		entity.move_and_slide(vel)
 		entity.look_at(TARGET)
-        icon.scale = icon.scale * 1.01
+		icon.scale = icon.scale * 1.01
 ```
 
 When we start the project again, the icon now scales indefinitely!
@@ -123,18 +123,18 @@ using System.Collections.Generic;
 
 public class MySystem : Node
 {
-    private static readonly Vector2 Target = new Vector2(512f, 300f);
+	private static readonly Vector2 Target = new Vector2(512f, 300f);
 
-    public override void _Process(float delta)
-    {
-        foreach (var (parent, sprite) in QGodotSharp.Query<KinematicBody2D, Sprite>())
-        {
-            var vel = parent.Position.DirectionTo(Target) * 10;
-            parent.MoveAndSlide(vel);
-            parent.LookAt(Target);
-        }
-        _label.Text = "FPS: " + Engine.GetFramesPerSecond();
-    }
+	public override void _Process(float delta)
+	{
+		foreach (var (parent, sprite) in QGodotSharp.Query<KinematicBody2D, Sprite>())
+		{
+			var vel = parent.Position.DirectionTo(Target) * 10;
+			parent.MoveAndSlide(vel);
+			parent.LookAt(Target);
+		}
+		_label.Text = "FPS: " + Engine.GetFramesPerSecond();
+	}
 }
 
 ```
@@ -148,18 +148,18 @@ using System.Collections.Generic;
 
 public class MySystem : Node
 {
-    private static readonly Vector2 Target = new Vector2(512f, 300f);
-    private IEnumerable<(KinematicBody2D, Sprite)> _query = QGodotSharp.Query<KinematicBody2D, Sprite>();
+	private static readonly Vector2 Target = new Vector2(512f, 300f);
+	private IEnumerable<(KinematicBody2D, Sprite)> _query = QGodotSharp.Query<KinematicBody2D, Sprite>();
 
-    public override void _Process(float delta)
-    {
-        foreach (var (parent, sprite) in _query)
-        {
-            var vel = parent.Position.DirectionTo(Target) * 10;
-            parent.MoveAndSlide(vel);
-            parent.LookAt(Target);
-        }
-    }
+	public override void _Process(float delta)
+	{
+		foreach (var (parent, sprite) in _query)
+		{
+			var vel = parent.Position.DirectionTo(Target) * 10;
+			parent.MoveAndSlide(vel);
+			parent.LookAt(Target);
+		}
+	}
 }
 
 ```
@@ -174,11 +174,11 @@ onready var query := QGodot.query("KinematicBody2D", ["Icon"])
 
 
 func _ready() -> void:
-    yield(QGodot, "query_ready")
-    # QGodot is now ready to be used.
-    for node in query:
-        var icon := node.get_meta("$Icon") as Sprite
-        icon.scale = Vector2.ONE * 4
+	yield(QGodot, "query_ready")
+	# QGodot is now ready to be used.
+	for node in query:
+		var icon := node.get_meta("$Icon") as Sprite
+		icon.scale = Vector2.ONE * 4
 ```
 
 On C# version is very similar, however, `QGodotSharp` provides `Ready()` function to be `await`ed on:
@@ -186,11 +186,11 @@ On C# version is very similar, however, `QGodotSharp` provides `Ready()` functio
 ```cs
 public override async void _Ready()
 {
-    await QGodotSharp.Ready();
-    foreach (var (parent, sprite) in QGodotSharp.Query<KinematicBody2D, Sprite>())
-    {
-        sprite.Scale = Vector2.One * 4f;
-    }
+	await QGodotSharp.Ready();
+	foreach (var (parent, sprite) in QGodotSharp.Query<KinematicBody2D, Sprite>())
+	{
+		sprite.Scale = Vector2.One * 4f;
+	}
 }
 ```
 
@@ -242,23 +242,23 @@ Sometimes you don't really want to iterate all nodes in every given frame, such 
 
 ```gdscript
 QGodot.bind_query(
-    "KinematicBody2D",
-    ["Icon"]
-    self, # Target object to bind (in this case, this script)
-    "entity_entered" # Function name to bind
+	"KinematicBody2D",
+	["Icon"]
+	self, # Target object to bind (in this case, this script)
+	"entity_entered" # Function name to bind
 )
 
 
 # In this case, naming is no longer a concern. However, it still needs to be in proper order, and first argument is still a parent node.
 func entity_entered(parent: KinematicBody2D, icon: Sprite) -> void:
-    var tween := $Tween as Tween
-    icon.scale = Vector2.ONE * 4
-    tween.interpolate_property(
-        parent, "position",
-        parent.position, Vector2(512, 300),
-        60
-    )
-    tween.start()
+	var tween := $Tween as Tween
+	icon.scale = Vector2.ONE * 4
+	tween.interpolate_property(
+		parent, "position",
+		parent.position, Vector2(512, 300),
+		60
+	)
+	tween.start()
 ```
 
 On C# version is quite similar, however, array of node names will instead be replaced with C# `Tuple`s:
@@ -283,10 +283,10 @@ Sometimes, you don't really want all systems in the game to run all the time in 
 
 ```gdscript
 QGodot.bind_query_to_current_scene(
-    "KinematicBody2D",
-    ["Icon"],
-    self,
-    "entity_entered"
+	"KinematicBody2D",
+	["Icon"],
+	self,
+	"entity_entered"
 )
 ```
 
@@ -306,10 +306,10 @@ onready var query := QGodot.query_half("KinematicBody2D", ["Icon"])
 
 
 func _process(delta: float) -> void:
-    for entity in query.iterate():
-        var vel := (entity.position.direction_to(TARGET) * 10.0) as Vector2
-        var icon := entity.get_meta("$Icon") as Sprite
-        icon.scale = icon.scale * 1.01
+	for entity in query.iterate():
+		var vel := (entity.position.direction_to(TARGET) * 10.0) as Vector2
+		var icon := entity.get_meta("$Icon") as Sprite
+		icon.scale = icon.scale * 1.01
 		entity.move_and_slide(vel)
 		entity.look_at(TARGET)
 ```
@@ -322,12 +322,12 @@ private IEnumerable<KinematicBody2D, Sprite> _query = QGodotSharp.QueryHalf<Kine
 
 public override void _Process(float delta)
 {
-    foreach (var (parent, sprite) in _query)
-    {
-        var vel = parent.Position.DirectionTo(Target) * 10;
-        parent.MoveAndSlide(vel);
-        parent.LookAt(Target);
-    }
+	foreach (var (parent, sprite) in _query)
+	{
+		var vel = parent.Position.DirectionTo(Target) * 10;
+		parent.MoveAndSlide(vel);
+		parent.LookAt(Target);
+	}
 }
 ```
 
@@ -372,10 +372,10 @@ onready var bodies := QGodot.query("KinematicBody", [ "Status", "Viewport/HpBar"
 When querying nodes with `get_meta()` it goes exactly the same way as `get_node()` but with extra `$` symbol:
 ```gdscript
 func _process(delta: float) -> void:
-    for body in bodies:
-        var status := body.get_meta("$Status") as Status
-        var hp_bar := body.get_meta("$Viewport/HpBar") as Control
-        hp_bar.rect_size.x = status.hp_percent
+	for body in bodies:
+		var status := body.get_meta("$Status") as Status
+		var hp_bar := body.get_meta("$Viewport/HpBar") as Control
+		hp_bar.rect_size.x = status.hp_percent
 ```
 
 ---
@@ -403,13 +403,13 @@ class Movement extends Node:
 	# Reserved fields
 	var shared: Node
 
-    # User-defined fields
-    var parent: KinematicBody2D
+	# User-defined fields
+	var parent: KinematicBody2D
 	var icon: Sprite
 
-    func _init(parent, icon) -> void:
-        self.parent = parent
-        self.icon = icon
+	func _init(parent, icon) -> void:
+		self.parent = parent
+		self.icon = icon
 
 	func _ready() -> void:
 		shared.count += 1
@@ -420,27 +420,5 @@ class Movement extends Node:
  		parent.look_at(TARGET)
  		sprite.scale *= 1.001
 ```
-
-Note that convention for nodes that are child node of other 'sub nodes', for example, `Viewport/HpBar`, you'll need to convert slash symbols to underscore (`_`). In this case, it will become `viewport_hp_har`:
-```gdscript
-
-func _ready() -> void:
-    QGodot.bind_queqy(
-		"KinematicBody",
-        [
-            "Status",
-            "Viewport/HpBar",
-        ],
-		HpBarController, # Class name reference, or loaded 'GDScript'.
-		self # Use this instance as shared object for this query.
-	)
-
-
-class HpBarController extends Object:
-    var status: Status
-    var viewport_hp_har: Control
-
-    func _process(_delta: float) -> void:
-        viewport_hp_har.rect_scale.x = status.hp_percent
 
 ---
