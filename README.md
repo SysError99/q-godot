@@ -339,6 +339,37 @@ public override void _Process(float delta)
 
 ---
 
+## Adding New Sub Nodes To Main Node (Right Way)
+You should always try to add new sub nodes when the main node is not inside scene tree. Or QGodot will not be able recognise new sub nodes and perform proper query bindings.
+
+Assuming the node that will get scanned is `registered_scene` node, main node that is inside `registered_scene` is `enemy`, and sub node (component) is `superpower`.
+
+This is RIGHT way to add new sub nodes:
+```gdscript
+var enemy := preload("res://enemies/enemy.tscn").instance()
+var superpower := preload("res://weapons/superweapon.tscn").instance()
+enemy.add_child(superpower)
+registered_scene.add_child(enemy)
+```
+
+This is another way to add new sub nodes, albeit will be slower:
+```gdscript
+var enemy := preload("res://enemies/enemy.tscn").instance()
+var superpower := preload("res://weapons/superweapon.tscn").instance()
+registered_scene.add_child(enemy)
+enemy.call_deferred("add_child", superpower)
+```
+
+This is WRONG way to add new sub nodes, QGodot will NOT be able to detect new nodes at all:
+```gdscript
+var enemy := preload("res://enemies/enemy.tscn").instance()
+var superpower := preload("res://weapons/superweapon.tscn").instance()
+registered_scene.add_child(enemy)
+enemy.add_child(superpower) # Adding sub nodes after adding main node to scene tree will result in QGodot not being able to detect new sub nodes!
+```
+
+---
+
 ## Using Godot Groups In Query (GDScript Only)
 You can also add 'groups' into the query if you wanted to have better node filtering. Just add them into array of second argument after node names.
 
@@ -350,8 +381,10 @@ onready var query := QGodot.query("KinematicBody2D", ["Icon", "enemy"])
 
 ---
 
-## Adding Nodes To Groups (GDScript Only)
-For performacne reasons, QGOdot will NOT do automatic query binding when new groups have been added to nodes (there is no signal options addressing such issue also) while the node has already joined the scene tree. To address this issue, QGodot provides `add_node_to_group()` and `remove_node_from_group()` to perform automatic query binding after adding groups to the node.
+## Adding Nodes To Groups When The Node Is On The Scene Tree (GDScript Only)
+*You should add nodes to groups when the node isn't inside scene tree whenever possible.*
+
+For performacne reasons, QGodot will NOT trigger query binding when new groups have been added to nodes after such node has joined scene tree. There is no signal options addressing such issue also. To address this issue, QGodot provides `add_node_to_group()` and `remove_node_from_group()` to perform automatic query binding after adding groups to the node.
 
 ```gdscript
 QGodot.add_node_to_group(node_name, "group_name")
