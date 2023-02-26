@@ -228,23 +228,19 @@ func __bind_to_query_object(entity: Node, query_name: String, parent_class_name:
 
 
 func __bind_to_systems(entity: Object, query_name: String, subscribers: Array) -> void:
-	var entity_id := "%s_%d" % [query_name, entity.get_instance_id()]
 	var binds := entity.get_meta("#" + query_name) as Array
 	var ebinds := [ entity ] + binds
 	var system_inst: Object
 	var system: Object
 	for system_ref in subscribers:
 		system = system_ref[_SYSTEM_CLASS]
-		if system.has_meta(entity_id):
-			continue
 		if system.has_method("new"):
 			system_inst = system.callv("new", ebinds)
+			entity.connect("tree_exited", system_inst, "queue_free")
 			system_inst.set("shared", system_ref[_SHARED_VAR])
-			system.set_meta(entity_id, system_inst)
 			entity.add_child(system_inst)
 		else:
 			system.callv(system_ref[_SHARED_VAR], ebinds)
-			system.set_meta(entity_id, system)
 
 
 func __remove_entities_from_current_scene(scene: Node) -> void:
