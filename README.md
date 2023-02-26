@@ -342,7 +342,7 @@ public override void _Process(float delta)
 ## Adding New Sub Nodes To Main Node (Right Way)
 You should always try to add new sub nodes when the main node is not inside scene tree. Or QGodot will not be able recognise new sub nodes and perform proper query bindings.
 
-Assuming the node that will get scanned is `registered_scene` node, main node that is inside `registered_scene` is `enemy`, and sub node (component) is `superpower`.
+Assuming the node that will get scanned (world in ECS) is `registered_scene` node, main node (entity in ECS) is `enemy`, and sub node (component in ECS) is `superpower`.
 
 This is RIGHT way to add new sub nodes:
 ```gdscript
