@@ -196,8 +196,10 @@ public override async void _Ready()
 
 ---
 
-## Changing Scene
-This addon heavily relies on proper singal bindings and node setups, thus require its own function to change scenes.
+## Changing Scene (To QGodot Scenes)
+This addon heavily relies on proper singal bindings and node setups, thus require its own function to change scenes (into ones that need QGodot to function).
+
+*Note: on runtime, `Main Scene` (in project settings) will be automatically registered until the use of other functions outside `QGodot.change_scene()` to change between scenes.*
 
 ```gdscript
 QGodot.change_scene("res://target_scene.tscn")
@@ -205,6 +207,19 @@ QGodot.change_scene("res://target_scene.tscn")
 
 ```cs
 QGodotSharp.ChangeScene("res://target_scene.tscn");
+```
+
+---
+
+## Cleaning Up And Changing Scene
+This is proper way to clean up everything before changing scene to ones that don't require querying:
+
+```gdscript
+QGodot.flush_and_change_scene("res://non_qgodot_related_scene.tscn")
+```
+
+```cs
+QGodotSharp.FlushAndChangeScene("res://non_qgodot_related_scene.tscn");
 ```
 
 ---
@@ -274,26 +289,6 @@ public void _EntityEnteredScene(KinematicBody2D parent, Sprite sprite)
 	sprite.Scale = Vector2.One * 4f;
 }
 
-```
-
----
-
-## Current Scene Query Binding
-Sometimes, you don't really want all systems in the game to run all the time in all scenes. You can instead bind query using `bind_query_to_current_scene()`:
-
-```gdscript
-QGodot.bind_query_to_current_scene(
-	"KinematicBody2D",
-	["Icon"],
-	self,
-	"entity_entered"
-)
-```
-
-On C#, after second parameter of the function, add `true` after it:
-
-```cs
-QGodotSharp.BindQuery<KinematicBody2D, Sprite>(this, nameof(_EntityEnteredScene), true);
 ```
 
 ---

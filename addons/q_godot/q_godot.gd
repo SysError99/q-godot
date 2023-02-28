@@ -12,15 +12,8 @@ class Query extends Object:
 	var component_names := []
 	var parent_class_name := ""
 	var subscribers := []
-	var current_scene_subscribers := []
-	func add_subscriber(new_subscriber: Array, to_current_scene: bool) -> void:
+	func add_subscriber(new_subscriber: Array) -> void:
 		subscribers.push_back(new_subscriber)
-		if to_current_scene:
-			current_scene_subscribers.push_back(new_subscriber)
-	func remove_current_scene_subscribers() -> void:
-		for element in current_scene_subscribers:
-			subscribers.erase(element)
-		current_scene_subscribers.clear()
 
 
 class HalfQueryReference extends Object:
@@ -53,7 +46,7 @@ var _scene_changing := true
 
 
 # Bind a query to an object or an instantiable object. If you bind a query to instantiated object, 'shared' parameter will be function name string.
-func bind_query(parent_class_name: String, component_names: Array = [], system: Object = null, shared = null, to_current_scene: bool = false) -> void:
+func bind_query(parent_class_name: String, component_names: Array = [], system: Object = null, shared = null) -> void:
 	var query_name := __get_query_name(parent_class_name, component_names)
 	var query_obj: Query
 	if query_name in _queries:
@@ -77,14 +70,9 @@ func bind_query(parent_class_name: String, component_names: Array = [], system: 
 	if is_instance_valid(system):
 		var new_subscriber := [system, shared]
 		var subscribers := [ new_subscriber ]
-		query_obj.add_subscriber(new_subscriber, to_current_scene)
+		query_obj.add_subscriber(new_subscriber)
 		for entity_ref in _query_cache[query_name]:
 			__bind_to_systems(entity_ref, query_name, subscribers)
-
-
-# Bind a query to an object or an instantiable object for current scene. If you bind a query to instantiated object, 'shared' parameter will be function name string.
-func bind_query_to_current_scene(parent_class_name: String, component_names: Array = [], system: Object = null, shared = null) -> void:
-	bind_query(parent_class_name, component_names, system, shared, true)
 
 
 # Obtain a query array.
@@ -112,6 +100,24 @@ func query_half(parent_class_name: String, component_names: Array = []) -> HalfQ
 	return q
 
 
+# Clean up everything before changing scene, very ideal after finishing QGodot session.
+func flush_and_change_scene(path: String) -> void:
+	for scene in get_tree().get_nodes_in_group(_REGISTERED_SCENE):
+		__remove_entities_from_current_scene(scene)
+	for ref in _queries.values:
+		ref.free()
+	for ref in _query_cache.values:
+		ref.clear()
+	for ref in _query_half_cache.values:
+		ref.first_half.clear()
+		ref.second_half.clear()
+		ref.free()
+	_queries.clear()
+	_query_cache.clear()
+	_query_half_cache.clear()
+	get_tree().change_scene_path(path)
+
+
 # Change scene with internal function, mandatory to make querying system working properly!
 func change_scene(path: String) -> void:
 	_scene_changing = true
@@ -119,8 +125,6 @@ func change_scene(path: String) -> void:
 	var inst := (load(path) as PackedScene).instance()
 	for scene in get_tree().get_nodes_in_group(_REGISTERED_SCENE):
 		__remove_entities_from_current_scene(scene)
-	for query_name in _queries:
-		_queries[query_name].call("remove_current_scene_subscribers")
 	current_scene.queue_free()
 	yield(current_scene, "tree_exited")
 	_root.set_meta("current_scene", inst)

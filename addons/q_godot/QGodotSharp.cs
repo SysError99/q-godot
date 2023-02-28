@@ -19,7 +19,6 @@ namespace SysError99
         private static Dictionary<string, HalfQuery> HalfQueries = new();
         private static Dictionary<string, Dictionary<ulong, object>> Queries = new();
         private static Dictionary<string, List<SystemOneshotBinder>> SubscribedSystems = new();
-        private static Dictionary<string, List<SystemOneshotBinder>> CurrentSceneSubscribedSystems = new();
 
         private static List<Array> PreQueryList = new();
 
@@ -33,7 +32,7 @@ namespace SysError99
         }
 
         # region Query Bind
-        public static void BindQuery<T>(Object system, string functionName, bool toCurrentScene = false)
+        public static void BindQuery<T>(Object system, string functionName)
             where T : Object
         {
             var (queryName, componentNames) = PrepareQuery(
@@ -42,11 +41,11 @@ namespace SysError99
                     typeof(T).Name,
                 }
             );
-            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            BindQuery(queryName, componentNames, system, functionName);
             Query<T>();
         }
 
-        public static void BindQuery<T0, T1>(Object system, string functionName, bool toCurrentScene = false)
+        public static void BindQuery<T0, T1>(Object system, string functionName)
             where T0 : Object
             where T1 : Object
         {
@@ -55,11 +54,11 @@ namespace SysError99
                 typeof(T0).Name,
                 typeof(T1).Name,
             });
-            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            BindQuery(queryName, componentNames, system, functionName);
             Query<T0, T1>();
         }
 
-        public static void BindQuery<T0, T1, T2>(Object system, string functionName, bool toCurrentScene = false)
+        public static void BindQuery<T0, T1, T2>(Object system, string functionName)
             where T0 : Object
             where T1 : Object
             where T2 : Object
@@ -70,11 +69,11 @@ namespace SysError99
                 typeof(T1).Name,
                 typeof(T2).Name,
             });
-            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            BindQuery(queryName, componentNames, system, functionName);
             Query<T0, T1, T2>();
         }
 
-        public static void BindQuery<T0, T1, T2, T3>(Object system, string functionName, bool toCurrentScene = false)
+        public static void BindQuery<T0, T1, T2, T3>(Object system, string functionName)
             where T0 : Object
             where T1 : Object
             where T2 : Object
@@ -87,11 +86,11 @@ namespace SysError99
                 typeof(T2).Name,
                 typeof(T3).Name,
             });
-            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            BindQuery(queryName, componentNames, system, functionName);
             Query<T0, T1, T2, T3>();
         }
 
-        public static void BindQuery<T0, T1, T2, T3, T4>(Object system, string functionName, bool toCurrentScene = false)
+        public static void BindQuery<T0, T1, T2, T3, T4>(Object system, string functionName)
             where T0 : Object
             where T1 : Object
             where T2 : Object
@@ -106,11 +105,11 @@ namespace SysError99
                 typeof(T3).Name,
                 typeof(T4).Name,
             });
-            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            BindQuery(queryName, componentNames, system, functionName);
             Query<T0, T1, T2, T3, T4>();
         }
 
-        public static void BindQuery<T0, T1, T2, T3, T4, T5>(Object system, string functionName, bool toCurrentScene = false)
+        public static void BindQuery<T0, T1, T2, T3, T4, T5>(Object system, string functionName)
             where T0 : Object
             where T1 : Object
             where T2 : Object
@@ -127,11 +126,11 @@ namespace SysError99
                 typeof(T4).Name,
                 typeof(T5).Name,
             });
-            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            BindQuery(queryName, componentNames, system, functionName);
             Query<T0, T1, T2, T3, T4, T5>();
         }
 
-        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6>(Object system, string functionName, bool toCurrentScene = false)
+        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6>(Object system, string functionName)
             where T0 : Object
             where T1 : Object
             where T2 : Object
@@ -150,11 +149,11 @@ namespace SysError99
                 typeof(T5).Name,
                 typeof(T6).Name,
             });
-            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            BindQuery(queryName, componentNames, system, functionName);
             Query<T0, T1, T2, T3, T4, T5, T6>();
         }
 
-        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7>(Object system, string functionName, bool toCurrentScene = false)
+        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7>(Object system, string functionName)
             where T0 : Object
             where T1 : Object
             where T2 : Object
@@ -175,11 +174,11 @@ namespace SysError99
                 typeof(T6).Name,
                 typeof(T7).Name,
             });
-            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            BindQuery(queryName, componentNames, system, functionName);
             Query<T0, T1, T2, T3, T4, T5, T6, T7>();
         }
 
-        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8>(Object system, string functionName, bool toCurrentScene = false)
+        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8>(Object system, string functionName)
             where T0 : Object
             where T1 : Object
             where T2 : Object
@@ -202,11 +201,11 @@ namespace SysError99
                 typeof(T7).Name,
                 typeof(T8).Name,
             });
-            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            BindQuery(queryName, componentNames, system, functionName);
             Query<T0, T1, T2, T3, T4, T5, T6, T7, T8>();
         }
 
-        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>(Object system, string functionName, bool toCurrentScene = false)
+        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>(Object system, string functionName)
             where T0 : Object
             where T1 : Object
             where T2 : Object
@@ -231,11 +230,11 @@ namespace SysError99
                 typeof(T8).Name,
                 typeof(T9).Name,
             });
-            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            BindQuery(queryName, componentNames, system, functionName);
             Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>();
         }
 
-        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(Object system, string functionName, bool toCurrentScene = false)
+        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(Object system, string functionName)
             where T0 : Object
             where T1 : Object
             where T2 : Object
@@ -262,11 +261,11 @@ namespace SysError99
                 typeof(T9).Name,
                 typeof(T10).Name,
             });
-            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            BindQuery(queryName, componentNames, system, functionName);
             Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>();
         }
 
-        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(Object system, string functionName, bool toCurrentScene = false)
+        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(Object system, string functionName)
             where T0 : Object
             where T1 : Object
             where T2 : Object
@@ -295,11 +294,11 @@ namespace SysError99
                 typeof(T10).Name,
                 typeof(T11).Name,
             });
-            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            BindQuery(queryName, componentNames, system, functionName);
             Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>();
         }
 
-        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(Object system, string functionName, bool toCurrentScene = false)
+        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(Object system, string functionName)
             where T0 : Object
             where T1 : Object
             where T2 : Object
@@ -330,11 +329,11 @@ namespace SysError99
                 typeof(T11).Name,
                 typeof(T12).Name,
             });
-            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            BindQuery(queryName, componentNames, system, functionName);
             Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>();
         }
 
-        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(Object system, string functionName, bool toCurrentScene = false)
+        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(Object system, string functionName)
             where T0 : Object
             where T1 : Object
             where T2 : Object
@@ -367,11 +366,11 @@ namespace SysError99
                 typeof(T12).Name,
                 typeof(T13).Name,
             });
-            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            BindQuery(queryName, componentNames, system, functionName);
             Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>();
         }
 
-        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(Object system, string functionName, bool toCurrentScene = false)
+        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(Object system, string functionName)
             where T0 : Object
             where T1 : Object
             where T2 : Object
@@ -406,11 +405,11 @@ namespace SysError99
                 typeof(T13).Name,
                 typeof(T14).Name,
             });
-            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            BindQuery(queryName, componentNames, system, functionName);
             Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>();
         }
 
-        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(Object system, string functionName, bool toCurrentScene = false)
+        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(Object system, string functionName)
             where T0 : Object
             where T1 : Object
             where T2 : Object
@@ -447,11 +446,11 @@ namespace SysError99
                 typeof(T14).Name,
                 typeof(T15).Name,
             });
-            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            BindQuery(queryName, componentNames, system, functionName);
             Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>();
         }
 
-        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(Object system, string functionName, bool toCurrentScene = false)
+        public static void BindQuery<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(Object system, string functionName)
             where T0 : Object
             where T1 : Object
             where T2 : Object
@@ -490,11 +489,11 @@ namespace SysError99
                 typeof(T15).Name,
                 typeof(T16).Name,
             });
-            BindQuery(queryName, componentNames, system, functionName, toCurrentScene);
+            BindQuery(queryName, componentNames, system, functionName);
             Query<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>();
         }
 
-        private static void BindQuery(string queryName, Array componentNames, Object system, string functionName, bool toCurrentScene)
+        private static void BindQuery(string queryName, Array componentNames, Object system, string functionName)
         {
             var systemBinder = new SystemOneshotBinder(system, functionName);
             if (!SubscribedSystems.ContainsKey(queryName))
@@ -505,17 +504,6 @@ namespace SysError99
             {
                 SubscribedSystems[queryName].Add(systemBinder);
             }
-            if (toCurrentScene)
-            {
-                if (!CurrentSceneSubscribedSystems.ContainsKey(queryName))
-                {
-                    CurrentSceneSubscribedSystems.Add(queryName, new List<SystemOneshotBinder>() { systemBinder });
-                }
-                else
-                {
-                    CurrentSceneSubscribedSystems[queryName].Add(systemBinder);
-                }
-            }
             if (!IsInstanceValid(QGodot))
             {
                 throw new NullReferenceException(QGodotNotReadyExceptionMessage);
@@ -523,7 +511,7 @@ namespace SysError99
             else
             {
                 var (parentClassName, c) = GetGDScriptQueryParams(componentNames);
-                QGodot.Call("bind_query", parentClassName, c, system, functionName, toCurrentScene);
+                QGodot.Call("bind_query", parentClassName, c, system, functionName);
             }
         }
         # endregion
@@ -2060,18 +2048,32 @@ namespace SysError99
         }
 
         #endregion
+
+        public static void FlushAndChangeScene(string path)
+        {
+            if (!IsInstanceValid(QGodot))
+            {
+                throw new NullReferenceException(QGodotNotReadyExceptionMessage);
+            }
+            foreach (var query in Queries.Values)
+            {
+                foreach (Object queryObject in query.Values)
+                {
+                    queryObject.Free();
+                }
+            }
+            foreach (var hq in HalfQueries.Values)
+            {
+                hq.Free();
+            }
+            Queries.Clear();
+            HalfQueries.Clear();
+            SubscribedSystems.Clear();
+            QGodot.Call("flush_and_change_scene", path);
+        }
         
         public static void ChangeScene(string path)
         {
-            foreach (var queryName in CurrentSceneSubscribedSystems.Keys)
-            {
-                var systems = SubscribedSystems[queryName];
-                foreach (var system in CurrentSceneSubscribedSystems[queryName])
-                {
-                    systems.Remove(system);
-                }
-            }
-            CurrentSceneSubscribedSystems.Clear();
             if (!IsInstanceValid(QGodot))
             {
                 throw new NullReferenceException(QGodotNotReadyExceptionMessage);
@@ -2118,7 +2120,7 @@ namespace SysError99
             }
             if (!HalfQueries.ContainsKey(queryName))
             {
-                HalfQueries.Add(queryName, new HalfQuery());
+                HalfQueries.Add(queryName, new HalfQuery(QGodot));
             }
         }
 
@@ -2485,7 +2487,6 @@ namespace SysError99
     {
         public Object _system;
         internal string _functionName;
-        internal List<string> _entitityNames = new();
 
         public SystemOneshotBinder(Object system, string functionName)
         {
@@ -3084,15 +3085,19 @@ namespace SysError99
     #region Half Query Class
     public class HalfQuery : Object
     {
-        internal bool _switch = false;
+        internal Object _qGodot;
 
         internal List<object> _firstHalf = new();
         internal List<object> _secondHalf = new();
 
+        public HalfQuery(Object qGodot)
+        {
+            _qGodot = qGodot;
+        }
+
         public List<object> GetNext()
         {
-            _switch = !_switch;
-            return _switch ? _secondHalf : _firstHalf;
+            return (bool) _qGodot.Get("switch") ? _secondHalf : _firstHalf;
         }
     }
     #endregion

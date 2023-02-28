@@ -32,7 +32,7 @@ public class ScnTestGodotSharp : Node2D
             currentScene.AddChild(clone);
         }
 
-        QGodotSharp.BindQuery<KinematicBody2D, Sprite>(this, nameof(_EntityEnteredScene), true);
+        QGodotSharp.BindQuery<KinematicBody2D, Sprite>(this, nameof(_EntityEnteredScene));
     }
 
     public void _EntityEnteredScene(KinematicBody2D parent, Sprite sprite)
