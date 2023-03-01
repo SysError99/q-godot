@@ -3,6 +3,11 @@ Advanced yet simple node querying library for Godot. Resembles a lot with Entity
 
 ---
 
+## This project is still on Godot 3.x!
+I'm not planning to support Godot 4.x soon since there are simply too many changes happened right now (metadata no longer supports special characters is the main problem). Wait until I finally figure it out!
+
+---
+
 ## Disclaimer
 This addon will NOT address any of performance benefits, unlike many of ECS libraries that claim to have. This project is made for purely programming aesthetics only. However, unlike other GDScript-based ECS libraries, this project offers ECS-like programming experience with very comparable performance against traditional OOP programming in GDScript.
 
