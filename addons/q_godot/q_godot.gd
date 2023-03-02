@@ -55,6 +55,7 @@ func bind_query(parent_class_name: String, component_names: Array = [], system: 
 		if not query_name in _query_cache:
 			_query_cache[query_name] = []
 		if _scene_changing:
+##			await query_ready
 			yield(self, "query_ready")
 		if not query_name in _queries:
 			query_obj = Query.new()
@@ -115,12 +116,15 @@ func flush_and_change_scene(path: String, disable_query: bool = false) -> void:
 		get_tree().change_scene(path)
 	else:
 		var current_scene := get_tree().current_scene
-		var inst := (load(path) as PackedScene).instance()
+##		var inst := load(path).instantiate() as Node
+		var inst := load(path).instance() as Node
 		current_scene.queue_free()
+##		await current_scene.tree_exiting
 		yield(current_scene, "tree_exited")
 		_root.set_meta("current_scene", inst)
 		_root.call_deferred("add_child", inst)
 		get_tree().set_deferred("current_scene", inst)
+##		await inst.ready
 		yield(inst, "ready")
 		_scene_changing = false
 		__post_change_scene(inst)
@@ -130,14 +134,17 @@ func flush_and_change_scene(path: String, disable_query: bool = false) -> void:
 func change_scene(path: String) -> void:
 	_scene_changing = true
 	var current_scene := get_tree().current_scene
-	var inst := (load(path) as PackedScene).instance()
+##	var inst := load(path).instantiate() as Node
+	var inst := load(path).instance() as Node
 	for scene in get_tree().get_nodes_in_group(_REGISTERED_SCENE):
 		__remove_entities_from_current_scene(scene)
 	current_scene.queue_free()
+##	await current_scene.tree.exited
 	yield(current_scene, "tree_exited")
 	_root.set_meta("current_scene", inst)
 	_root.call_deferred("add_child", inst)
 	get_tree().set_deferred("current_scene", inst)
+##	await inst.ready
 	yield(inst, "ready")
 	_scene_changing = false
 	__post_change_scene(inst)
@@ -152,6 +159,8 @@ func register_as_scene(node: Node) -> void:
 		for child_ref in node.get_children():
 			__setup_entity(child_ref)
 			__bind_to_query_objects(child_ref, true)
+##	node.child_entered_tree.connect(_entity_entered_scene)
+##	node.child_exiting_tree.connect(_entity_exiting_scene)
 	node.connect("child_entered_tree", self, "_entity_entered_scene")
 	node.connect("child_exiting_tree", self, "_entity_exiting_scene")
 
@@ -178,6 +187,7 @@ func remove_node_from_group(node: Node, group_name: String) -> void:
 
 
 func __get_query_name(parent_class_name: String, component_names: Array) -> String:
+##	return parent_class_name + "," + ",".join(component_names)
 	return parent_class_name + "," + PoolStringArray(component_names).join(",")
 
 
@@ -237,6 +247,7 @@ func __bind_to_systems(binds: Dictionary, subscribers: Array) -> void:
 		system = system_ref[_SYSTEM_CLASS]
 		if system.has_method("new"):
 			system_inst = system.callv("new", bind_array)
+##			entity.tree_exited.connect(entity.queue_free)
 			entity.connect("tree_exited", system_inst, "queue_free")
 			system_inst.set("shared", system_ref[_SHARED_VAR])
 			entity.add_child(system_inst)
@@ -269,6 +280,7 @@ func __post_change_scene(current_scene: Node) -> void:
 			register_as_scene(scn_ref)
 	else:
 		register_as_scene(current_scene)
+##	await get_tree().process_frame
 	yield(get_tree(), "idle_frame")
 	emit_signal("query_ready")
 
@@ -280,12 +292,14 @@ func __setup_entity(entity: Node) -> void:
 
 
 func __connect_entity_signals(entity: Node, bound_queries: Dictionary) -> void:
-	# Prepare for Godot 4.0
+##	entity.child_entered_tree.connect(_entity_component_added.bind(entity, bound_queries))
+##	entity.child_exiting_tree.connect(_entity_component_removed.bind(bound_queries))
 	entity.connect("child_entered_tree", self, "_entity_component_added", [ entity, bound_queries, ])
 	entity.connect("child_exiting_tree", self, "_entity_component_removed", [ bound_queries, ])
 
 
 func _entity_entered_scene(entity: Node) -> void:
+##	await entity.ready
 	yield(entity, "ready")
 	if entity.has_meta(_BOUND_QUERIES):
 		__bind_to_query_objects(entity, false)
@@ -332,6 +346,7 @@ func _init() -> void:
 
 func _ready() -> void:
 	_root = get_tree().root
+##	await _root.ready
 	yield(_root, "ready")
 	_scene_changing = false
 	__post_change_scene(get_tree().current_scene)

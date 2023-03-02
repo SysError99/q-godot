@@ -3,8 +3,12 @@ Advanced yet simple node querying library for Godot. Resembles a lot with Entity
 
 ---
 
-## This project is still on Godot 3.x!
-I'm not planning to support Godot 4.x soon since there are simply too many changes happened right now (metadata no longer supports special characters is the main problem). Wait until I finally figure it out!
+## This Project Is Still (mainly) On Godot 3.x!
+However, I already made parts that are 4.0 compatible, simply uncomment lines with double number sign (`##`) and remove lines below it, and that should do it.
+
+Also, this project still doesn't target 4.0 just yet, since my main workflow is still on 3.x and I couldn't move it towards 4.0 easily since I still need to ship my games mainly on web platform, which Godot 4.0 still isn't mature enough (it has significant bugs on macOS/iOS platforms, which isn't feasible).
+
+However, feel free to contribute 4.0 elements and put proper double number sign comments on it!
 
 ---
 
