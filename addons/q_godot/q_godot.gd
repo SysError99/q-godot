@@ -169,13 +169,10 @@ func add_node_to_group(node: Node, group_name: String) -> void:
 # Remove specified node to a group, and perform query bindings.
 func remove_node_from_group(node: Node, group_name: String) -> void:
 	node.remove_from_group(group_name)
-	var queries_to_remove := []
 	var bound_queries := node.get_meta(_BOUND_QUERIES) as Dictionary
-	for query_name in bound_queries:
+	for query_name in bound_queries.keys():
 		if not group_name in query_name:
 			continue
-		queries_to_remove.push_back(query_name)
-	for query_name in queries_to_remove:
 		__remove_entity_from_query(query_name, bound_queries[query_name])
 		bound_queries.erase(query_name)
 
@@ -301,10 +298,8 @@ func _entity_exiting_scene(entity: Node) -> void:
 	if _scene_changing:
 		return
 	var bound_queries := entity.get_meta(_BOUND_QUERIES) as Dictionary
-	for group in entity.get_groups():
-		for query_name in _query_cache:
-			if group in query_name and bound_queries.has(query_name):
-				__remove_entity_from_query(query_name, bound_queries[query_name])
+	for query_name in bound_queries.keys():
+		__remove_entity_from_query(query_name, bound_queries[query_name])
 	bound_queries.clear()
 
 
@@ -323,13 +318,10 @@ func _entity_component_added(component: Node, entity: Node, bound_queries: Dicti
 func _entity_component_removed(component: Node, bound_queries: Dictionary) -> void:
 	if _scene_changing:
 		return;
-	var queries_to_remove := []
 	var component_name := component.name
-	for query_name in bound_queries:
+	for query_name in bound_queries.keys():
 		if not component_name in query_name:
 			continue
-		queries_to_remove.push_back(query_name)
-	for query_name in queries_to_remove:
 		__remove_entity_from_query(query_name, bound_queries[query_name])
 		bound_queries.erase(query_name)
 
