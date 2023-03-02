@@ -256,13 +256,6 @@ QGodotSharp.RegisterAsScene(myTargetNode);
 
 ---
 
-## Making Scenes Persistent
-If you don't want particular scene queries to get wiped out by the function `change_scene()`, you can add group `persistent_scene` for those scenes.
-
-![image](https://user-images.githubusercontent.com/17522480/214317941-9ff54e07-30f4-47ba-bd80-7fdb1a6bbcde.png)
-
----
-
 ## One-shot Query Binding
 Sometimes you don't really want to iterate all nodes in every given frame, such as, you wanted to do event-driven programming (using `Signal`), you can do one-shot binding instead:
 
