@@ -43,10 +43,11 @@ Now we can iterate through our subscribed query in `_process()` :
 const TARGET = Vector2(512,300)
 
 func _process(_delta: float) -> void:
-	for entity in query:
-	var vel := (entity.position.direction_to(TARGET) * 10.0) as Vector2
-	entity.move_and_slide(vel)
-	entity.look_at(TARGET)
+	for binds in query:
+		var entity := binds["self"] as KinematicBody2D
+		var vel := entity.position.direction_to(TARGET)
+		entity.move_and_slide(vel)
+		entity.look_at(TARGET)
 ```
 
 The rest of code should be something like this:
@@ -62,10 +63,11 @@ onready var query := QGodot.query("KinematicBody2D")
 
 
 func _process(_delta: float) -> void:
-	for entity in query:
-	var vel := (entity.position.direction_to(TARGET) * 10.0) as Vector2
-	entity.move_and_slide(vel)
-	entity.look_at(TARGET)
+	for binds in query:
+		var entity := binds["self"] as KinematicBody2D
+		var vel := entity.position.direction_to(TARGET) * 10.0
+		entity.move_and_slide(vel)
+		entity.look_at(TARGET)
 ```
 
 When you start running the game, voila!
@@ -79,13 +81,12 @@ Now, we wanted constantly scale icon size by making changes on the `Icon` 'sub' 
 onready var query := QGodot.query("KinematicBody2D", ["Icon"])
 ```
 
-Then, on the `_process()` loop, we can retrieve the sub node we added to the query (in this case, `Icon`) by using `get_meta()` from the main node:
+Then, on the `_process()` loop, we can retrieve the sub node we added to the query (in this case, `Icon`):
 
 ```gdscript
 func _process(_delta: float) -> void:
-	for entity in query:
-		# When querying by 'get_meta()', you must add dollar sign ('$') in front of node name.
-		var icon := entity.get_meta("$Icon") as Sprite
+	for binds in query:
+		var icon := binds["Icon"] as Sprite
 		icon.scale = icon.scale * 1.01
 ```
 
@@ -102,9 +103,10 @@ onready var query := QGodot.query("KinematicBody2D", ["Icon"])
 
 
 func _process(_delta: float) -> void:
-	for entity in query:
-	var vel := (entity.position.direction_to(TARGET) * 10.0) as Vector2
-		var icon := entity.get_meta("$Icon") as Sprite
+	for binds in query:
+		var entity := binds["self"] as KinematicBody2D
+		var icon := binds["Icon"] as Sprite
+		var vel := entity.position.direction_to(TARGET) * 10.0
 		entity.move_and_slide(vel)
 		entity.look_at(TARGET)
 		icon.scale = icon.scale * 1.01
@@ -181,8 +183,8 @@ onready var query := QGodot.query("KinematicBody2D", ["Icon"])
 func _ready() -> void:
 	yield(QGodot, "query_ready")
 	# QGodot is now ready to be used.
-	for node in query:
-		var icon := node.get_meta("$Icon") as Sprite
+	for binds in query:
+		var icon := binds["Icon"] as Sprite
 		icon.scale = Vector2.ONE * 4
 ```
 
@@ -306,9 +308,10 @@ onready var query := QGodot.query_half("KinematicBody2D", ["Icon"])
 
 
 func _process(delta: float) -> void:
-	for entity in query.iterate():
-		var vel := (entity.position.direction_to(TARGET) * 10.0) as Vector2
-		var icon := entity.get_meta("$Icon") as Sprite
+	for binds in query.iterate():
+		var entity := binds["self"] as KinematicBody2D
+		var icon := binds["Icon"] as Sprite
+		var vel := entity.position.direction_to(TARGET) * 10.0
 		icon.scale = icon.scale * 1.01
 		entity.move_and_slide(vel)
 		entity.look_at(TARGET)
@@ -400,21 +403,20 @@ If you also wanted to query nodes that are in other nodes, you can also use node
 
 ```gdscript
 onready var bodies := QGodot.query("KinematicBody", [ "Status", "Viewport/HpBar" ])
-```
 
-When querying nodes with `get_meta()` it goes exactly the same way as `get_node()` but with extra `$` symbol:
-```gdscript
+
 func _process(delta: float) -> void:
-	for body in bodies:
-		var status := body.get_meta("$Status") as Status
-		var hp_bar := body.get_meta("$Viewport/HpBar") as Control
+	for binds in bodies:
+		var body := binds["self"] as KinematicBody
+		var status := binds["Status"] as Status
+		var hp_bar := binds["Viewport/HpBar"] as Control
 		hp_bar.rect_size.x = status.hp_percent
 ```
 
 ---
 
 ## Binding Query With Instantiable References (GDScript Only)
-Sometimes you wanted to iterate through nodes but using instantiable classes. This will slightly helps on speed since it doesn't require constant use of `get_meta()` to get sub nodes. Which means, `QGodot.bind_query()` will help us in this case. However, this will increase memory usage, and is slightly more tricky to use.
+Sometimes you wanted to iterate through nodes but using instantiable classes. This will slightly helps on speed since it doesn't require constant use of bindings to get sub nodes. Which means, `QGodot.bind_query()` will help us in this case. However, this will increase memory usage, and is slightly more tricky to use.
 
 ```gdscript
 extends Node
@@ -448,7 +450,7 @@ class Movement extends Node:
 		shared.count += 1
 	
 	func _process(_delta: float) -> void:
-		var vel := (parent.position.direction_to(TARGET) * 10.0) as Vector2
+		var vel := parent.position.direction_to(TARGET) * 10.0
  		parent.move_and_slide(vel)
  		parent.look_at(TARGET)
  		sprite.scale *= 1.001

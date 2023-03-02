@@ -10,13 +10,17 @@ class RotateSystem extends Node:
 	var parent: KinematicBody2D
 	var sprite: Sprite
 
+	func _init(parent, sprite) -> void:
+		self.parent = parent
+		self.sprite = sprite
+
 	func _process(_delta: float) -> void:
 		parent.rotate(_delta * PI)
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	QGodot.bind_query_to_current_scene(
+	QGodot.bind_query(
 		"KinematicBody2D",
 		["Sprite"],
 		RotateSystem,

@@ -56,9 +56,10 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	label.text = "FPS: %f" % Engine.get_frames_per_second()
-	for entity in query:
+	for q in query:
+		var entity := q["self"] as KinematicBody2D
 		var vel := (entity.position.direction_to(TARGET) * 10.0) as Vector2
-		entity.get_meta("$Sprite").scale *= 1.001
+		q["Sprite"].scale *= 1.001
 		entity.move_and_slide(vel)
 		entity.look_at(TARGET)
 

@@ -12,7 +12,9 @@ namespace SysError99
     {
         private const string QGodotNotReadyExceptionMessage = "QGodot core isn't ready yet, consider await next frame before challing this funciton.";
 
-        private static Object QGodot;
+        public static bool QGodotReady = false;
+
+        public static Object QGodot;
         private static Viewport Root;
         private static SceneTree MainTree;
         private static QGodotSharp Self;
@@ -2120,7 +2122,7 @@ namespace SysError99
             }
             if (!HalfQueries.ContainsKey(queryName))
             {
-                HalfQueries.Add(queryName, new HalfQuery(QGodot));
+                HalfQueries.Add(queryName, new HalfQuery());
             }
         }
 
@@ -2454,6 +2456,7 @@ namespace SysError99
             foreach (Object core in MainTree.GetNodesInGroup("#q-godot"))
             {
                 QGodot = core;
+                QGodotReady = true;
                 core.Connect("added_to_query", this, nameof(_AddToQuery));
                 core.Connect("query_added", this, nameof(_QueryAdd));
                 core.Connect("removed_from_query", this, nameof(_RemoveFromQuery));
@@ -3085,19 +3088,12 @@ namespace SysError99
     #region Half Query Class
     public class HalfQuery : Object
     {
-        internal Object _qGodot;
-
         internal List<object> _firstHalf = new();
         internal List<object> _secondHalf = new();
 
-        public HalfQuery(Object qGodot)
-        {
-            _qGodot = qGodot;
-        }
-
         public List<object> GetNext()
         {
-            return (bool) _qGodot.Get("switch") ? _secondHalf : _firstHalf;
+            return QGodotSharp.QGodotReady ? (bool) QGodotSharp.QGodot.Get("switch") ? _secondHalf : _firstHalf : _firstHalf;
         }
     }
     #endregion
