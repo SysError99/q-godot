@@ -303,7 +303,7 @@ func _entity_exiting_scene(entity: Node) -> void:
 	var bound_queries := entity.get_meta(_BOUND_QUERIES) as Dictionary
 	for group in entity.get_groups():
 		for query_name in _query_cache:
-			if group in query_name:
+			if group in query_name and bound_queries.has(query_name):
 				__remove_entity_from_query(query_name, bound_queries[query_name])
 	bound_queries.clear()
 
@@ -330,6 +330,7 @@ func _entity_component_removed(component: Node, bound_queries: Dictionary) -> vo
 			continue
 		queries_to_remove.push_back(query_name)
 	for query_name in queries_to_remove:
+		__remove_entity_from_query(query_name, bound_queries[query_name])
 		bound_queries.erase(query_name)
 
 
