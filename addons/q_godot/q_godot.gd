@@ -169,7 +169,6 @@ func add_node_to_group(node: Node, group_name: String) -> void:
 # Remove specified node to a group, and perform query bindings.
 func remove_node_from_group(node: Node, group_name: String) -> void:
 	node.remove_from_group(group_name)
-	var index := 0
 	var queries_to_remove := []
 	var bound_queries := node.get_meta(_BOUND_QUERIES) as Dictionary
 	for query_name in bound_queries:
@@ -212,7 +211,6 @@ func __bind_to_query_object(entity: Node, query_name: String, parent_class_name:
 		return false
 	var binds := { "self": entity, }
 	var component: Node
-	var component_path: String
 	for component_name in component_names:
 		component = entity.get_node_or_null(component_name)
 		if is_instance_valid(component):
@@ -287,7 +285,7 @@ func __setup_entity(entity: Node) -> void:
 func __connect_entity_signals(entity: Node, bound_queries: Dictionary) -> void:
 	# Prepare for Godot 4.0
 	entity.connect("child_entered_tree", self, "_entity_component_added", [ entity, bound_queries, ])
-	entity.connect("child_exiting_tree", self, "_entity_component_removed", [ entity, bound_queries, ])
+	entity.connect("child_exiting_tree", self, "_entity_component_removed", [ bound_queries, ])
 
 
 func _entity_entered_scene(entity: Node) -> void:
@@ -322,10 +320,9 @@ func _entity_component_added(component: Node, entity: Node, bound_queries: Dicti
 				__bind_to_systems(bound_queries[query_name], query_obj.subscribers)
 
 
-func _entity_component_removed(component: Node, entity: Node, bound_queries: Dictionary) -> void:
+func _entity_component_removed(component: Node, bound_queries: Dictionary) -> void:
 	if _scene_changing:
 		return;
-	var index := 0
 	var queries_to_remove := []
 	var component_name := component.name
 	for query_name in bound_queries:
