@@ -186,9 +186,30 @@ func remove_node_from_group(node: Node, group_name: String) -> void:
 		bound_queries.erase(query_name)
 
 
+# Rename sub node and preform query bindings.
+func rename_sub_node(sub_node: Node, new_name: String) -> void:
+	var old_name := sub_node.name
+	var main_node := __find_main_node(sub_node)
+	var bound_queries = main_node.get_meta(_BOUND_QUERIES)
+	for query_name in bound_queries.keys():
+		if not old_name in query_name:
+			continue
+		__remove_entity_from_query(query_name, bound_queries[query_name])
+		bound_queries.erase(query_name)
+	sub_node.name = new_name
+	__bind_to_query_objects(entity)
+
+
 func __get_query_name(parent_class_name: String, component_names: Array) -> String:
 ##	return parent_class_name + "," + ",".join(component_names)
 	return parent_class_name + "," + PoolStringArray(component_names).join(",")
+
+
+func __find_main_node(sub_node: Node) -> Node:
+	var parent := sub_node.get_parent()
+	if !node.has_meta(_BOUND_QUERIES):
+		return __find_main_node(parent)
+	return parent
 
 
 func __bind_to_query_objects(entity: Node, new_instance: bool) -> void:
