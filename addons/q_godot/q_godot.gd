@@ -9,6 +9,7 @@ const _BOUND_QUERIES = "__BQ"
 signal query_ready()
 
 
+# Tells if current frame is second frame.
 var is_second_frame := false
 
 
