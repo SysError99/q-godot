@@ -44,7 +44,6 @@ class Query extends Object:
 		var sub_node: Node
 		for sub_node_path in _sub_node_paths:
 			if node.is_in_group(sub_node_path):
-				binds[sub_node_path] = node
 				continue
 			sub_node = node.get_node_or_null(sub_node_path)
 			if is_instance_valid(sub_node):
