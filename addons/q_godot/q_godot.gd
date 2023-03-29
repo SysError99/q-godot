@@ -197,7 +197,7 @@ func rename_sub_node(sub_node: Node, new_name: String) -> void:
 		__remove_entity_from_query(query_name, bound_queries[query_name])
 		bound_queries.erase(query_name)
 	sub_node.name = new_name
-	__bind_to_query_objects(entity)
+	__bind_to_query_objects(sub_node.get_parent(), false)
 
 
 func __get_query_name(parent_class_name: String, component_names: Array) -> String:
@@ -207,7 +207,7 @@ func __get_query_name(parent_class_name: String, component_names: Array) -> Stri
 
 func __find_main_node(sub_node: Node) -> Node:
 	var parent := sub_node.get_parent()
-	if !node.has_meta(_BOUND_QUERIES):
+	if !sub_node.has_meta(_BOUND_QUERIES):
 		return __find_main_node(parent)
 	return parent
 
