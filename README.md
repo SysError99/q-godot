@@ -12,6 +12,11 @@ However, feel free to contribute 4.0 elements and put proper double number sign 
 
 ---
 
+## C# Deserves Better!
+As I read through how C# interface for QGodot is developed, it become apparent that C# version would present more hassle than help. The code is quite unintuitive and cubersome to use, plus enormous size of source file and bad documentation. Ultimately I decided to drop entire aspect of C# version entirely for the upcoming version 0.2. However, if you are using 0.1 version with C#, documention can still be accessed [here](https://github.com/SysError99/q-godot/blob/main/legacy_cs.md).
+
+---
+
 ## Disclaimer
 This addon will NOT address any of performance benefits, unlike many of ECS libraries that claim to have. This project is made for purely programming aesthetics only. However, unlike other GDScript-based ECS libraries, this project offers ECS-like programming experience with very comparable performance against traditional OOP programming in GDScript.
 
@@ -26,7 +31,7 @@ However, the most complicated thing in ECS is how to define concepts of 'world',
 
 This is where this add-on comes in, it adds intuitive way of how to code in Godot by applying ECS-like architecture to it. Instead of trying to add logic to the node itself, we separate them into 'system' nodes. Then we use these system nodes as our main ways to interact with nodes. However, since Godot's 'Node' system is very flexible by presenting itself in node tree, it become more challenging to implement ECS paradigm into the engine itself. I decided to go with a route that presented in the way that is as close as ECS as possible. This is what I went with.
 
-- `scene` is a world in ECS. You can register as many scene nodes as you want to make querying happen.
+- `scene` is a world in ECS. QGodot treats root scene as entire world.
 - `main_node` is an entity in ECS. This is node type that you use to store other sub nodes inside.
 - `sub_node` is a component in ECS. This is node type that is used to behave as data or another representation of the main node. Sub nodes can be nested in each other, which this add-on will also take advantage of them.
 
@@ -139,61 +144,6 @@ When we start the project again, the icon now scales indefinitely!
 
 ---
 
-## Quickstart (C#)
-You need to import `QGodotSharp.cs` along with `q_godot.gd` before using it. All C# variant functions are inside `SysError99.QGodotSharp`.
-
-Unlike GDScript, C# version utilises C#'s `Tuple` to query nodes. and first element will always be class reference of parent node:
-
-```cs
-using Godot;
-using SysError99;
-using System.Collections.Generic;
-
-public class MySystem : Node
-{
-	private static readonly Vector2 Target = new Vector2(512f, 300f);
-
-	public override void _Process(float delta)
-	{
-		foreach (var (parent, sprite) in QGodotSharp.Query<KinematicBody2D, Sprite>())
-		{
-			var vel = parent.Position.DirectionTo(Target) * 10;
-			parent.MoveAndSlide(vel);
-			parent.LookAt(Target);
-		}
-		_label.Text = "FPS: " + Engine.GetFramesPerSecond();
-	}
-}
-
-```
-
-You can also use `System.Collections.Generic.IEnumerable<T>` to create a query before using it instead.
-
-```cs
-using Godot;
-using SysError99;
-using System.Collections.Generic;
-
-public class MySystem : Node
-{
-	private static readonly Vector2 Target = new Vector2(512f, 300f);
-	private IEnumerable<(KinematicBody2D, Sprite)> _query = QGodotSharp.Query<KinematicBody2D, Sprite>();
-
-	public override void _Process(float delta)
-	{
-		foreach (var (parent, sprite) in _query)
-		{
-			var vel = parent.Position.DirectionTo(Target) * 10;
-			parent.MoveAndSlide(vel);
-			parent.LookAt(Target);
-		}
-	}
-}
-
-```
-
----
-
 ## Querying On Game Start
 When starting the game, query isn't ready yet. If you try to query at this moment (especially on first game start), you will have an array of zero elements. In case you wanted to query for nodes in very early stages, you should always make sure that query is ready to be used. In this case, QGodot provides `query_ready` signal that you can `yield()`:
 
@@ -209,19 +159,6 @@ func _ready() -> void:
 		icon.scale = Vector2.ONE * 4
 ```
 
-On C# version is very similar, however, `QGodotSharp` provides `Ready()` function to be `await`ed on:
-
-```cs
-public override async void _Ready()
-{
-	await QGodotSharp.Ready();
-	foreach (var (parent, sprite) in QGodotSharp.Query<KinematicBody2D, Sprite>())
-	{
-		sprite.Scale = Vector2.One * 4f;
-	}
-}
-```
-
 ---
 
 ## Changing Scene (To QGodot Scenes)
@@ -233,10 +170,6 @@ This addon heavily relies on proper singal bindings and node setups, thus requir
 QGodot.change_scene("res://target_scene.tscn")
 ```
 
-```cs
-QGodotSharp.ChangeScene("res://target_scene.tscn");
-```
-
 ---
 
 ## Cleaning Up And Changing Scene
@@ -244,31 +177,6 @@ This is proper way to clean up everything before changing scene to ones that don
 
 ```gdscript
 QGodot.flush_and_change_scene("res://non_qgodot_related_scene.tscn")
-```
-
-```cs
-QGodotSharp.FlushAndChangeScene("res://non_qgodot_related_scene.tscn");
-```
-
----
-
-## Registering Node As Scene Root
-By default, current scene will be a node that will be scanned, but sometimes you wanted the addon to only scan through specified nodes. There are two ways to handle it.
-
-First is to add the node into `registered_scene` group.
-
-![image](https://user-images.githubusercontent.com/17522480/212744832-99470db1-b5cb-4895-849c-509ac744e41a.png)
-
-*NOTE: For performance reasons, if you add nodes that include `registered_scene` by script, it will not be added into scene list. You must use `register_scene()` to manually register them, as explained below.*
-
-Second, is by code:
-
-```gdscript
-QGodot.register_as_scene(my_target_node)
-```
-
-```cs
-QGodotSharp.RegisterAsScene(myTargetNode);
 ```
 
 ---
@@ -297,21 +205,6 @@ func entity_entered(parent: KinematicBody2D, icon: Sprite) -> void:
 	tween.start()
 ```
 
-On C# version is quite similar, however, array of node names will instead be replaced with C# `Tuple`s:
-
-```cs
-	//
-	QGodotSharp.BindQuery<KinematicBody2D, Sprite>(this, nameof(_EntityEnteredScene));
-	//
-
-public void _EntityEnteredScene(KinematicBody2D parent, Sprite sprite)
-{
-	GD.Print(parent.Name + " entered scene!");
-	sprite.Scale = Vector2.One * 4f;
-}
-
-```
-
 ---
 
 ## Binding Query That Will Only Be Iterated Half Entities Each Frame
@@ -329,23 +222,6 @@ func _process(delta: float) -> void:
 		icon.scale = icon.scale * 1.01
 		entity.move_and_slide(vel)
 		entity.look_at(TARGET)
-```
-
-On C# version is quite similar. However, you don't need to use `HalfQueryReference.iterate()` since it's handled automatically.
-
-```cs
-private static readonly Vector2 Target = new Vector2(512f, 300f);
-private IEnumerable<KinematicBody2D, Sprite> _query = QGodotSharp.QueryHalf<KinematicBody2D, Sprite>();
-
-public override void _Process(float delta)
-{
-	foreach (var (parent, sprite) in _query)
-	{
-		var vel = parent.Position.DirectionTo(Target) * 10;
-		parent.MoveAndSlide(vel);
-		parent.LookAt(Target);
-	}
-}
 ```
 
 *Note: due to how it works, this should NOT be used with entities that has critical physics calculation elements since it may cause unexpected results.*
@@ -387,7 +263,7 @@ enemy.add_child(superpower) # Adding sub nodes after adding main node to scene t
 
 ---
 
-## Querying Nodes That Are In Sub Nodes (GDScript Only)
+## Querying Nodes That Are In Sub Nodes
 If you also wanted to query nodes that are in other nodes, you can also use node path to query them:
 
 ```gdscript
@@ -404,7 +280,7 @@ func _process(delta: float) -> void:
 
 ---
 
-## Using Godot Groups In Query (GDScript Only)
+## Using Godot Groups In Query
 You can also add 'groups' into the query if you wanted to have better node filtering. Just add them into array of second argument after node names.
 
 Example, querying `KinematicBody2D` with `Sprite` node named 'Icon', in the group 'enemy':
@@ -415,7 +291,7 @@ onready var query := QGodot.query("KinematicBody2D", ["Icon", "enemy"])
 
 ---
 
-## Adding Nodes To Groups When The Node Is On The Scene Tree (GDScript Only)
+## Adding Nodes To Groups When The Node Is On The Scene Tree
 *You should add nodes to groups when the node isn't inside scene tree whenever possible.*
 
 For performacne reasons, QGodot will NOT trigger query binding when new groups have been added to nodes after such node has joined scene tree. There is no signal options addressing such issue also. To address this issue, QGodot provides `add_node_to_group()` and `remove_node_from_group()` to perform automatic query binding after adding groups to the node.
@@ -429,7 +305,7 @@ QGodot.remove_node_from_group(node_name, "group_name")
 
 ---
 
-## Binding Query With Instantiable References (GDScript Only)
+## Binding Query With Instantiable References
 Sometimes you wanted to iterate through nodes but using instantiable classes. This will slightly helps on speed since it doesn't require constant use of bindings to get sub nodes. Which means, `QGodot.bind_query()` will help us in this case. However, this will increase memory usage, and is slightly more tricky to use.
 
 ```gdscript

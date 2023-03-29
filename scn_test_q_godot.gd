@@ -66,4 +66,4 @@ func _process(_delta: float) -> void:
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_home"):
-		QGodot.change_scene("res://scn_next.tscn")
+		QGodot.flush_and_change_scene("res://scn_next.tscn")

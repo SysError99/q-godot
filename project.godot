@@ -17,7 +17,6 @@ config/icon="res://icon.png"
 [autoload]
 
 QGodot="*res://addons/q_godot/q_godot.gd"
-QGodotSharp="*res://addons/q_godot/QGodotSharp.cs"
 
 [debug]
 
