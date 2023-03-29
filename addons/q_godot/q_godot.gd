@@ -96,7 +96,7 @@ func query_half(parent_class_name: String, component_names: Array = []) -> HalfQ
 	var q := HalfQueryReference.new(self)
 	q.first_half = query_array.slice(0, query_half_size - 1)
 	if query_size > 1:
-		q.second_half = query_array.slice(query_half_size, query_array.size())
+		q.second_half = query_array.slice(query_half_size, query_size)
 	_query_half_cache[query_name] = q
 	return q
 
