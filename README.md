@@ -61,8 +61,6 @@ extends Node2D
 onready var query := QGodot.query("KinematicBody2D")
 ```
 
-*NOTE: You should always make a query with `onready`, or before `query_ready` signal. Making a query after `query_ready` signal may give empty query results.*
-
 Now we can iterate through our subscribed query in `_process()` :
 
 ```gdscript
@@ -141,23 +139,6 @@ func _process(_delta: float) -> void:
 When we start the project again, the icon now scales indefinitely!
 
 ![image](https://user-images.githubusercontent.com/17522480/212738843-e2db606d-1c83-4f79-b335-f7a972cc3d5a.png)
-
----
-
-## Querying On Game Start
-When starting the game, query isn't ready yet. If you try to query at this moment (especially on first game start), you will have an array of zero elements. In case you wanted to query for nodes in very early stages, you should always make sure that query is ready to be used. In this case, QGodot provides `query_ready` signal that you can `yield()`:
-
-```gdscript
-onready var query := QGodot.query("KinematicBody2D", ["Icon"])
-
-
-func _ready() -> void:
-	yield(QGodot, "query_ready")
-	# QGodot is now ready to be used.
-	for binds in query:
-		var icon := binds["Icon"] as Sprite
-		icon.scale = Vector2.ONE * 4
-```
 
 ---
 
