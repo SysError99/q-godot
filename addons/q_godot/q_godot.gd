@@ -13,6 +13,10 @@ signal query_ready()
 var is_second_frame := false
 
 
+# (DEPRECATED, will be removed in 1.0) Tells if current frame is second frame. Consider using 'is_second_frame' instead.
+var switch: bool setget __set_switch, __get_switch
+
+
 var _queries := {}
 
 
@@ -219,6 +223,16 @@ func remove_node_from_group(node: Node, group_name: String) -> void:
 func rename_sub_node(sub_node: Node, new_name: String) -> void:
 	sub_node.name = new_name
 	refresh_query_on_node(__find_main_node(sub_node))
+
+
+# (DEPRECATED, will be removed in 1.0)
+func __set_switch(value: bool) -> void:
+	is_second_frame = value
+
+
+# (DEPRECATED, will be removed in 1.0)
+func __get_switch() -> bool:
+	return is_second_frame
 
 
 # Depends by 'rename_sub_node()', should be removed in 1.0.
