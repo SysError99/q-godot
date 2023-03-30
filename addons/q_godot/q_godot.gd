@@ -151,7 +151,7 @@ func query(parent_class_name: String, sub_node_paths: Array = []) -> Array:
 # Get a query object from following parameters.
 func get_query(parent_class_name: String, sub_node_paths: Array = []) -> Query:
 	var query := __query(parent_class_name, sub_node_paths)
-	query._half_query_enabled = true
+	query.enable_half_query()
 	return query
 
 
