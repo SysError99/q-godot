@@ -190,10 +190,10 @@ func entity_entered(parent: KinematicBody2D, icon: Sprite) -> void:
 ---
 
 ## Binding Query That Will Only Be Iterated Half Entities Each Frame
-If performance is a concern, and you don't really want to iterate all entities in single frame, you can also split query into half and iterate all of them in two frames. You can use `query_half()` to get `Query`, then use `Query.half_iterate()` to retrieve half of array for each frame.
+If performance is a concern, and you don't really want to iterate all entities in single frame, you can also split query into half and iterate all of them in two frames. You can use `get_query()` to get `Query` object, then use `Query.half_iterate()` to retrieve half of array for each frame.
 
 ```gdscript
-onready var query := QGodot.query_half("KinematicBody2D", ["Icon"])
+onready var query := QGodot.get_query("KinematicBody2D", ["Icon"])
 
 
 func _process(delta: float) -> void:
