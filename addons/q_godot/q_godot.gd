@@ -1,8 +1,8 @@
 extends Node
 
 
-const _BOUND_NODE = "__BN"
-const _BOUND_QUERIES = "__BQ"
+const _BOUND_NODE = "_1"
+const _BOUND_QUERIES = "_2"
 
 
 # (DEPRECATED, will be removed in 1.0) Signal that indicates if query is ready.
@@ -254,8 +254,7 @@ func __query(parent_class_name: String, sub_node_paths: Array) -> Query:
 		return queries[query_name]
 	var query := Query.new(self, parent_class_name, sub_node_paths)
 	for node in get_tree().get_nodes_in_group("____%s____" % parent_class_name):
-		if node.has_meta(_BOUND_QUERIES):
-			query.add_node(node, node.get_meta(_BOUND_QUERIES))
+		query.add_node(node, node.get_meta(_BOUND_QUERIES))
 	queries[query_name] = query
 	return query
 
@@ -276,16 +275,17 @@ func _process(_delta: float) -> void:
 
 
 func _scene_tree_node_added(node: Node) -> void:
+	var bound_queries := []
+	node.set_meta(_BOUND_QUERIES, bound_queries)
 	node.add_to_group("____%s____" % node.get_class())
 	if node.get_class() in _queries:
-		var bound_queries := []
 		var params := [ node, bound_queries ]
 		node.add_to_group(_BOUND_NODE)
-		node.set_meta(_BOUND_QUERIES, bound_queries)
 ##		node.ready.connect(_main_node_ready.bindv(params), Object.CONNECT_ONESHOT)
 		node.connect("ready", self, "_main_node_ready", params, CONNECT_ONESHOT)
 ##		node.tree_exiting.connect(_main_node_exiting_tree.bindv(params), Object.CONNECT_ONESHOT)
 		node.connect("tree_exiting", self, "_main_node_exiting_tree", params, CONNECT_ONESHOT)
+		print(node.name)
 
 
 func _main_node_ready(node: Node, bound_queries: Array) -> void:
