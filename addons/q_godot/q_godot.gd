@@ -198,7 +198,7 @@ func _current_scene_tree_exiting(new_scene_node: Node) -> void:
 	get_tree().root.add_child(new_scene_node)
 
 
-# (DEPRECATED, will be removed in 1.0) Does nothing, since query is now reworked.
+# (DEPRECATED, will be removed in 1.0) Does nothing, since querying system is now reworked to work in any of hierarchy.
 func register_as_scene(_node: Node) -> void:
 	pass
 
