@@ -285,7 +285,6 @@ func _scene_tree_node_added(node: Node) -> void:
 		node.connect("ready", self, "_main_node_ready", params, CONNECT_ONESHOT)
 ##		node.tree_exiting.connect(_main_node_exiting_tree.bindv(params), Object.CONNECT_ONESHOT)
 		node.connect("tree_exiting", self, "_main_node_exiting_tree", params, CONNECT_ONESHOT)
-		print(node.name)
 
 
 func _main_node_ready(node: Node, bound_queries: Array) -> void:
