@@ -39,7 +39,6 @@ class Query extends Object:
 
 
 	func add_node(node: Node, bound_queries: Array) -> void:
-		print(node.name)
 		var binds := { "self": node }
 		var sub_node: Node
 		for sub_node_path in _sub_node_paths:
@@ -65,7 +64,6 @@ class Query extends Object:
 
 	func verify_node(node: Node, bound_queries: Array) -> void:
 		if node.has_meta(_instance_id):
-			var binds := node.get_meta(_instance_id) as Dictionary
 			for sub_node_path in _sub_node_paths:
 				if node.is_in_group(sub_node_path):
 					continue
@@ -122,18 +120,18 @@ class Query extends Object:
 
 
 	# Half-iterate nodes in the query.
-	func iterate() -> Array:
+	func half_iterate() -> Array:
 		return _nodes_second_half if _parent.get("is_second_frame") else _nodes_first_half
-	
-	
+
+
+	# (Deprecated, will be removed in 1.0) Half-iterate nodes in the query.
+	func iterate() -> Array:
+		return half_iterate()
+
+
 	# Return current amount of nodes inside this query.
 	func size() -> int:
 		return _nodes.size()
-
-
-# (DEPRECATED, will be removed in 1.0) Class for half query operation. If you use type casting, refer it to `QGodot.Query` instead.
-class HalfQueryReference extends Query:
-	pass
 
 
 # Bind a query to an object or an instantiable object. If you bind a query to instantiated object, 'shared' parameter will be function name string.
@@ -190,7 +188,7 @@ func change_scene(path: String) -> void:
 
 
 # (DEPRECATED, will be removed in 1.0) Does nothing, since query is now reworked.
-func register_as_scene(node: Node) -> void:
+func register_as_scene(_node: Node) -> void:
 	pass
 
 
@@ -248,7 +246,7 @@ func _enter_tree() -> void:
 	get_tree().root.connect("ready", self, "emit_signal", [ "query_ready" ])
 
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	is_second_frame = not is_second_frame
 
 
