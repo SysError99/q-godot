@@ -142,6 +142,22 @@ When we start the project again, the icon now scales indefinitely!
 
 ---
 
+## Querying Main Nodes with Custom Scripts
+QGodot not only limit main node types to only be internal types (retrieve from `Object.get_class()`), but you can also use `Script` types (ones that get defined with `class_name`) to query nodes with custom types/scripts.
+
+```gdscript
+class Enemy extends KinematicBody2D:
+	...
+
+
+# Query enemies with superweapon.
+onready var enemies := QGodot.query(Enemy, [ "Superweapon" ])
+```
+
+*NOTE: QGodot DOES NOT support dynamic script assigning (with `Object.set_script()`) as it will cause unexpected behaviour in querying mechanism.*
+
+---
+
 ## Changing Scene
 This is proper way to clean up everything before changing scene.
 
@@ -224,7 +240,7 @@ get_tree().current_scene.add_child(enemy)
 enemy.add_child(superpower) # Adding sub nodes after adding main node to scene tree will result in QGodot not being able to detect new sub nodes!
 ```
 
-However, if you wanted to add sub nodes while the main node is already in scene tree, you can use `refresh_query_on_node()` to perform querying on the particular node again.
+However, if you wanted to add sub nodes while **the main node is already in scene tree**, you can use `refresh_query_on_node()` to perform querying on the particular node again.
 
 ```gdscript
 enemy.add_to_group("dying")

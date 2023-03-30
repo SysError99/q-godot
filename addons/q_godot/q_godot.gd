@@ -1,8 +1,7 @@
 extends Node
 
 
-const _BOUND_NODE = "_1"
-const _BOUND_QUERIES = "_2"
+const _BOUND_QUERIES = "_Q"
 
 
 # (DEPRECATED, will be removed in 1.0) Signal that indicates if query is ready.
@@ -36,9 +35,9 @@ class Query extends Object:
 	var _half_query_enabled := false
 
 
-	func _init(parent: Node, parent_class_name: String, sub_node_paths: Array) -> void:
+	func _init(parent: Node, main_node_class_name: String, sub_node_paths: Array) -> void:
 		_parent = parent
-		_parent_class_name = parent_class_name
+		_parent_class_name = main_node_class_name
 		_sub_node_paths = sub_node_paths
 
 
@@ -138,27 +137,27 @@ class Query extends Object:
 		return _nodes.size()
 
 
-# Bind a query to an object or an instantiable object. If you bind a query to instantiated object, 'shared' parameter will be function name string.
-func bind_query(parent_class_name: String, sub_node_paths: Array = [], system: Object = null, shared = null) -> void:
-	__query(parent_class_name, sub_node_paths).subscribe(system, shared)
+# Bind a query to an object or an instantiable object. If you bind a query to instantiated object, 'shared' parameter will be function name string. The `main_node_class` can be either `Script` reference (such as defined `class_name` with GDScript) or base class name as `String`.
+func bind_query(main_node_class, sub_node_paths: Array = [], system: Object = null, shared = null) -> void:
+	__query(main_node_class, sub_node_paths).subscribe(system, shared)
 
 
-# Build a query from following parameters.
-func query(parent_class_name: String, sub_node_paths: Array = []) -> Array:
-	return __query(parent_class_name, sub_node_paths)._nodes
+# Build a query from following parameters. The `main_node_class` can be either `Script` reference (such as defined `class_name` with GDScript) or base class name as `String`.
+func query(main_node_class, sub_node_paths: Array = []) -> Array:
+	return __query(main_node_class, sub_node_paths)._nodes
 
 
-# Get a query object from following parameters.
-func get_query(parent_class_name: String, sub_node_paths: Array = []) -> Query:
-	var query := __query(parent_class_name, sub_node_paths)
+# Get a query object from following parameters. The `main_node_class` can be either `Script` reference (such as defined `class_name` with GDScript) or base class name as `String`.
+func get_query(main_node_class, sub_node_paths: Array = []) -> Query:
+	var query := __query(main_node_class, sub_node_paths)
 	query.enable_half_query()
 	return query
 
 
 # Refresh query on specified node.
 func refresh_query_on_node(node: Node) -> void:
-	var bound_queries := node.get_meta(_BOUND_QUERIES, []) as Array
-	var queries := _queries[node.get_class()] as Dictionary
+	var queries := _queries[__recognise_class_name_from_node(node)] as Dictionary
+	var bound_queries := node.get_meta(_BOUND_QUERIES) as Array
 	var query: Query
 	for old_query in bound_queries:
 		old_query.verify_node(node, bound_queries)
@@ -171,10 +170,10 @@ func refresh_query_on_node(node: Node) -> void:
 
 # Perform massive query nuke in QGodot.
 func flush() -> void:
-	for node in get_tree().get_nodes_in_group(_BOUND_NODE):
+	for node in get_tree().get_nodes_in_group(_BOUND_QUERIES):
 		node.disconnect("tree_exiting", self, "_main_node_exiting_tree")
-	for parent_class_name in _queries:
-		var queries := _queries[parent_class_name] as Dictionary
+	for main_node_class_name in _queries:
+		var queries := _queries[main_node_class_name] as Dictionary
 		for query_name in queries:
 			queries[query_name].free()
 	_queries.clear()
@@ -187,8 +186,8 @@ func flush_and_change_scene(path: String) -> void:
 
 
 # (DEPRECATED, will be removed in 1.0) Get a query object that is half-iteratable. Consider using 'get_query()' instead.
-func query_half(parent_class_name: String, sub_node_paths: Array) -> Query:
-	return get_query(parent_class_name, sub_node_paths)
+func query_half(main_node_class, sub_node_paths: Array) -> Query:
+	return get_query(main_node_class, sub_node_paths)
 
 
 # (DEPRECATED, will be removed in 1.0) Change scene.
@@ -248,24 +247,37 @@ func __find_main_node(sub_node: Node) -> Node:
 	return parent
 
 
-func __query(parent_class_name: String, sub_node_paths: Array) -> Query:
-	var query_name := __get_query_name(parent_class_name, sub_node_paths)
+func __query(main_node_class, sub_node_paths: Array) -> Query:
+	var main_node_class_name := ("%d" % main_node_class.get_instance_id() if main_node_class is Object else main_node_class) as String
+	var query_name := main_node_class_name + "," + ",".join(sub_node_paths)
 	var queries = {}
-	if parent_class_name in _queries:
-		queries = _queries[parent_class_name]
+	if main_node_class_name in _queries:
+		queries = _queries[main_node_class_name]
+		if query_name in queries:
+			return queries[query_name]
 	else:
-		_queries[parent_class_name] = queries
-	if query_name in queries:
-		return queries[query_name]
-	var query := Query.new(self, parent_class_name, sub_node_paths)
-	for node in get_tree().get_nodes_in_group("____%s____" % parent_class_name):
+		_queries[main_node_class_name] = queries
+	var query := Query.new(self, main_node_class_name, sub_node_paths)
+	for node in get_tree().get_nodes_in_group("____%s____" % main_node_class_name):
+		if not node.is_in_group(_BOUND_QUERIES):
+			__main_node_setup(node)
 		query.add_node(node, node.get_meta(_BOUND_QUERIES))
 	queries[query_name] = query
 	return query
 
 
-func __get_query_name(parent_class_name: String, sub_node_paths: Array) -> String:
-	return parent_class_name + "," + ",".join(sub_node_paths)
+func __recognise_class_name_from_node(node: Node) -> String:
+	var node_script := node.get_script() as Script
+	return "%d" % node_script.get_instance_id() if node_script else node.get_class()
+
+
+func __main_node_setup(node: Node) -> Array:
+	var bound_queries := []
+	node.add_to_group(_BOUND_QUERIES)
+	node.set_meta(_BOUND_QUERIES, bound_queries)
+##	node.tree_exiting.connect(_main_node_exiting_tree.bindv([ node, bound_queries ]), Object.CONNECT_ONESHOT)
+	node.connect("tree_exiting", self, "_main_node_exiting_tree", [ node, bound_queries ], CONNECT_ONESHOT)
+	return bound_queries
 
 
 func _enter_tree() -> void:
@@ -280,20 +292,15 @@ func _process(_delta: float) -> void:
 
 
 func _scene_tree_node_added(node: Node) -> void:
-	var bound_queries := []
-	node.set_meta(_BOUND_QUERIES, bound_queries)
-	node.add_to_group("____%s____" % node.get_class())
-	if node.get_class() in _queries:
-		var params := [ node, bound_queries ]
-		node.add_to_group(_BOUND_NODE)
-##		node.ready.connect(_main_node_ready.bindv(params), Object.CONNECT_ONESHOT)
-		node.connect("ready", self, "_main_node_ready", params, CONNECT_ONESHOT)
-##		node.tree_exiting.connect(_main_node_exiting_tree.bindv(params), Object.CONNECT_ONESHOT)
-		node.connect("tree_exiting", self, "_main_node_exiting_tree", params, CONNECT_ONESHOT)
+	var main_node_class_name := __recognise_class_name_from_node(node)
+	node.add_to_group("____%s____" % main_node_class_name)
+	if main_node_class_name in _queries:
+		##	node.ready.connect(_main_node_ready.bindv([ node, main_node_class_name, __main_node_setup(node, main_node_class_name) ]), Object.CONNECT_ONESHOT)
+		node.connect("ready", self, "_main_node_ready", [ node, main_node_class_name, __main_node_setup(node) ], CONNECT_ONESHOT)
 
 
-func _main_node_ready(node: Node, bound_queries: Array) -> void:
-	var queries := _queries[node.get_class()] as Dictionary
+func _main_node_ready(node: Node, main_node_class_name: String, bound_queries: Array) -> void:
+	var queries := _queries[main_node_class_name] as Dictionary
 	for query_name in queries:
 		queries[query_name].add_node(node, bound_queries)
 
