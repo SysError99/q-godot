@@ -142,18 +142,7 @@ When we start the project again, the icon now scales indefinitely!
 
 ---
 
-## Changing Scene (To QGodot Scenes)
-This addon heavily relies on proper singal bindings and node setups, thus require its own function to change scenes (into ones that need QGodot to function).
-
-*Note: on runtime, `Main Scene` (in project settings) will be automatically registered until the use of other functions outside `QGodot.change_scene()` to change between scenes.*
-
-```gdscript
-QGodot.change_scene("res://target_scene.tscn")
-```
-
----
-
-## Cleaning Up And Changing Scene
+## Changing Scene
 This is proper way to clean up everything before changing scene.
 
 ```gdscript
