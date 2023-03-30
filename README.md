@@ -216,30 +216,29 @@ func _process(delta: float) -> void:
 ## Adding New Sub Nodes To Main Node (Right Way)
 You should always try to add new sub nodes when the main node is not inside scene tree. Or QGodot will not be able recognise new sub nodes and perform proper query bindings.
 
-Assuming the node that will get scanned (world in ECS) is `registered_scene` node, main node (entity in ECS) is `enemy`, and sub node (component in ECS) is `superpower`.
+Assuming the main node (entity in ECS) is `enemy`, and sub node (component in ECS) is `superpower`.
 
 This is RIGHT way to add new sub nodes:
 ```gdscript
 var enemy := preload("res://enemies/enemy.tscn").instance()
 var superpower := preload("res://weapons/superweapon.tscn").instance()
 enemy.add_child(superpower)
-registered_scene.add_child(enemy)
-```
-
-This is another way to add new sub nodes, albeit will be slower:
-```gdscript
-var enemy := preload("res://enemies/enemy.tscn").instance()
-var superpower := preload("res://weapons/superweapon.tscn").instance()
-registered_scene.add_child(enemy)
-enemy.call_deferred("add_child", superpower)
+get_tree().current_scene.add_child(enemy)
 ```
 
 This is WRONG way to add new sub nodes, QGodot will NOT be able to detect new nodes at all:
 ```gdscript
 var enemy := preload("res://enemies/enemy.tscn").instance()
 var superpower := preload("res://weapons/superweapon.tscn").instance()
-registered_scene.add_child(enemy)
+get_tree().current_scene.add_child(enemy)
 enemy.add_child(superpower) # Adding sub nodes after adding main node to scene tree will result in QGodot not being able to detect new sub nodes!
+```
+
+However, if you wanted to add sub nodes while the main node is already in scene tree, you can use `refresh_query_on_node()` to perform querying on the particular node again.
+
+```gdscript
+enemy.add_to_group("dying")
+refresh_query_on_node(enemy)
 ```
 
 ---
@@ -270,18 +269,12 @@ Example, querying `KinematicBody2D` with `Sprite` node named 'Icon', in the grou
 onready var query := QGodot.query("KinematicBody2D", ["Icon", "enemy"])
 ```
 
----
-
-## Adding Nodes To Groups When The Node Is On The Scene Tree
-*You should add nodes to groups when the node isn't inside scene tree whenever possible.*
-
-For performacne reasons, QGodot will NOT trigger query binding when new groups have been added to nodes after such node has joined scene tree. There is no signal options addressing such issue also. To address this issue, QGodot provides `add_node_to_group()` and `remove_node_from_group()` to perform automatic query binding after adding groups to the node.
+Adding and removing groups while the main node is on scene tree is exactly the same on how you do it with sub nodes. Just run `refresh_query_on_node()` right after changes have been applied:
 
 ```gdscript
-QGodot.add_node_to_group(node_name, "group_name")
-```
-```gdscript
-QGodot.remove_node_from_group(node_name, "group_name")
+enemy.add_child(load("res://weapons/superweapon.tscn").instance())
+enemy.add_to_group("high_atk")
+refresh_query_on_node(enemy)
 ```
 
 ---
