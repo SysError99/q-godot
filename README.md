@@ -197,7 +197,7 @@ onready var query := QGodot.query_half("KinematicBody2D", ["Icon"])
 
 
 func _process(delta: float) -> void:
-	for binds in query.iterate():
+	for binds in query.half_iterate():
 		var entity := binds["self"] as KinematicBody2D
 		var icon := binds["Icon"] as Sprite
 		var vel := entity.position.direction_to(TARGET) * 10.0
