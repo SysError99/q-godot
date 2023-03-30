@@ -154,10 +154,11 @@ QGodot.change_scene("res://target_scene.tscn")
 ---
 
 ## Cleaning Up And Changing Scene
-This is proper way to clean up everything before changing scene to ones that don't require querying:
+This is proper way to clean up everything before changing scene.
 
 ```gdscript
-QGodot.flush_and_change_scene("res://non_qgodot_related_scene.tscn")
+QGodot.flush() # Clean up everything in QGodot.
+get_tree().change_scene("res://next_scene.tscn")
 ```
 
 ---
