@@ -179,12 +179,23 @@ func flush() -> void:
 # Clean up everything before changing scene, very ideal after finishing QGodot session.
 func flush_and_change_scene(path: String) -> void:
 	flush()
-	get_tree().change_scene(path)
+	change_scene(path)
 
 
 # (DEPRECATED, will be removed in 1.0) Change scene.
 func change_scene(path: String) -> void:
-	get_tree().change_scene(path)
+	var current_scene := get_tree().current_scene
+##	var new_node := load(path).instantiate() as Node
+	var new_scene_node := load(path).instance() as Node
+	get_tree().current_scene.queue_free()
+##	new_scene_node.ready.connect(func(): query_ready.emit())
+	new_scene_node.connect("ready", self, "emit_signal", [ "query_ready" ])
+	current_scene.connect("tree_exiting", self, "_current_scene_tree_exiting", [ new_scene_node ])
+
+
+func _current_scene_tree_exiting(new_scene_node: Node) -> void:
+	get_tree().set_deferred("current_scene", new_scene_node)
+	get_tree().root.add_child(new_scene_node)
 
 
 # (DEPRECATED, will be removed in 1.0) Does nothing, since query is now reworked.
