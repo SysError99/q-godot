@@ -186,7 +186,7 @@ func flush_and_change_scene(path: String) -> void:
 	change_scene(path)
 
 
-# (DEPRECATED, will be removed in 1.0) Get a query object that can is half-iteratable. Consider using 'get_query()' instead.
+# (DEPRECATED, will be removed in 1.0) Get a query object that is half-iteratable. Consider using 'get_query()' instead.
 func query_half(parent_class_name: String, sub_node_paths: Array) -> Query:
 	return get_query(parent_class_name, sub_node_paths)
 
