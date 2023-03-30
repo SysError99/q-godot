@@ -180,7 +180,7 @@ func flush() -> void:
 	_queries.clear()
 
 
-# Clean up everything before changing scene, very ideal after finishing QGodot session.
+# (DEPRECATED, will be removed in 1.0) Clean up everything before changing scene. Consider using `flush()` then change scene with `get_tree().change_scene()` instead.
 func flush_and_change_scene(path: String) -> void:
 	flush()
 	change_scene(path)
