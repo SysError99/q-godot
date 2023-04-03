@@ -2,19 +2,10 @@ extends Node
 
 
 const _BOUND_QUERIES = "_Q"
-const _DEPRECATED = "'%s()' is now deprecated and will be removed in upcoming 1.0 version. Consider using %s instead."
-
-
-# (DEPRECATED, will be removed in 1.0) Signal that indicates if query is ready.
-signal query_ready()
 
 
 # Tells if current frame is second frame.
 var is_second_frame := false
-
-
-# (DEPRECATED, will be removed in 1.0) Tells if current frame is second frame. Consider using 'is_second_frame' instead.
-var switch: bool setget __set_switch, __get_switch
 
 
 var _queries := {}
@@ -141,11 +132,6 @@ class Query extends Object:
 		return _nodes_second_half if _parent.get("is_second_frame") else _nodes_first_half
 
 
-	# (Deprecated, will be removed in 1.0) Half-iterate nodes in the query. Consider using 'half_iterate()' instead.
-	func iterate() -> Array:
-		return half_iterate()
-
-
 	# Return current amount of nodes inside this query.
 	func size() -> int:
 		return _nodes.size()
@@ -191,81 +177,6 @@ func flush() -> void:
 		for query_name in queries:
 			queries[query_name].free()
 	_queries.clear()
-
-
-# (DEPRECATED, will be removed in 1.0) Clean up everything before changing scene. Consider using `flush()` then change scene with `get_tree().change_scene()` instead.
-func flush_and_change_scene(path: String) -> void:
-	push_warning(_DEPRECATED % ["flush_and_change_scene", "'flush()' and 'get_tree().change_scene(path)'"])
-	flush()
-	change_scene(path)
-
-
-# (DEPRECATED, will be removed in 1.0) Get a query object that is half-iteratable. Consider using 'get_query()' instead.
-func query_half(main_node_class, sub_node_paths: Array) -> Query:
-	push_warning(_DEPRECATED % ["query_half", "'get_query()' and 'half_iterate()'"])
-	return get_query(main_node_class, sub_node_paths)
-
-
-# (DEPRECATED, will be removed in 1.0) Change scene.
-func change_scene(path: String) -> void:
-	push_warning(_DEPRECATED % ["change_scene", "'get_tree().change_scene'"])
-	var current_scene := get_tree().current_scene
-##	var new_node := load(path).instantiate() as Node
-	var new_scene_node := load(path).instance() as Node
-	get_tree().current_scene.queue_free()
-##	new_scene_node.ready.connect(func(): query_ready.emit())
-	new_scene_node.connect("ready", self, "emit_signal", [ "query_ready" ])
-	current_scene.connect("tree_exiting", self, "_current_scene_tree_exiting", [ new_scene_node ])
-
-
-func _current_scene_tree_exiting(new_scene_node: Node) -> void:
-	get_tree().set_deferred("current_scene", new_scene_node)
-	get_tree().root.add_child(new_scene_node)
-
-
-# (DEPRECATED, will be removed in 1.0) Does nothing, since querying system is now reworked to work in any of hierarchy.
-func register_as_scene(_node: Node) -> void:
-	push_warning("'register_as_scene()' is now deprecated and will be removed in upcoming 1.0 version, since the query mechanics are changed and this function no longer serves any of purpose.")
-	pass
-
-
-# (DEPRECATED, will be removed in 1.0) Add specified node to a group, and perform query bindings. Consider adding groups with built-in functions and then use `QGodot.refresh_query_on_node()` on the main node instead.
-func add_node_to_group(node: Node, group_name: String) -> void:
-	push_warning(_DEPRECATED % ["add_node_to_group", "'Node.add_to_group()' following by 'refresh_query_on_node(node)'"])
-	node.add_to_group(group_name)
-	refresh_query_on_node(node)
-
-
-# (DEPRECATED, will be removed in 1.0) Remove specified node to a group, and perform query bindings. Consider removing groups with built-in functions and then use `QGodot.refresh_query_on_node()` on the main node instead.
-func remove_node_from_group(node: Node, group_name: String) -> void:
-	push_warning(_DEPRECATED % ["remove_node_from_group", "'Node.remove_from_group' following by 'refresh_query_on_node(node)'"])
-	node.remove_from_group(group_name)
-	refresh_query_on_node(node)
-
-
-# (DEPRECATED, will be removed in 1.0) Rename sub node and preform query bindings. Consider renaming names of sub nodes with built-in functions and then use `QGodot.refresh_query_on_node()` on the main node instead.
-func rename_sub_node(sub_node: Node, new_name: String) -> void:
-	push_warning(_DEPRECATED % ["rename_sub_node", "'Node.name = value' following by 'refresh_query_on_node(node)'"])
-	sub_node.name = new_name
-	refresh_query_on_node(__find_main_node(sub_node))
-
-
-# (DEPRECATED, will be removed in 1.0)
-func __set_switch(value: bool) -> void:
-	is_second_frame = value
-
-
-# (DEPRECATED, will be removed in 1.0)
-func __get_switch() -> bool:
-	return is_second_frame
-
-
-# (DEPRECATED, will be removed in 1.0)
-func __find_main_node(sub_node: Node) -> Node:
-	var parent := sub_node.get_parent()
-	if !sub_node.has_meta(_BOUND_QUERIES):
-		return __find_main_node(parent)
-	return parent
 
 
 func __query(main_node_class, sub_node_paths: Array) -> Query:
@@ -316,7 +227,7 @@ func _scene_tree_node_added(node: Node) -> void:
 	var main_node_class_name := __recognise_class_name_from_node(node)
 	node.add_to_group("____%s____" % main_node_class_name)
 	if main_node_class_name in _queries:
-		##	node.ready.connect(_main_node_ready.bindv([ node, main_node_class_name, __main_node_setup(node, main_node_class_name) ]), Object.CONNECT_ONESHOT)
+##		node.ready.connect(_main_node_ready.bindv([ node, main_node_class_name, __main_node_setup(node, main_node_class_name) ]), Object.CONNECT_ONESHOT)
 		node.connect("ready", self, "_main_node_ready", [ node, main_node_class_name, __main_node_setup(node) ], CONNECT_ONESHOT)
 
 
