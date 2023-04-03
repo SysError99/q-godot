@@ -227,7 +227,7 @@ func _scene_tree_node_added(node: Node) -> void:
 	var main_node_class_name := __recognise_class_name_from_node(node)
 	node.add_to_group("____%s____" % main_node_class_name)
 	if main_node_class_name in _queries:
-##		node.ready.connect(_main_node_ready.bindv([ node, main_node_class_name, __main_node_setup(node, main_node_class_name) ]), Object.CONNECT_ONESHOT)
+##		node.ready.connect(_main_node_ready.bindv([ node, main_node_class_name, __main_node_setup(node) ]), Object.CONNECT_ONESHOT)
 		node.connect("ready", self, "_main_node_ready", [ node, main_node_class_name, __main_node_setup(node) ], CONNECT_ONESHOT)
 
 
