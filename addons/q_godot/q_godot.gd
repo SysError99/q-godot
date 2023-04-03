@@ -33,7 +33,7 @@ class Query extends Object:
 		_sub_node_paths = sub_node_paths
 
 
-	func add_node(node: Node, bound_queries: Array) -> void:
+	func __add_node(node: Node, bound_queries: Array) -> void:
 		var binds := { "self": node }
 		var sub_node: Node
 		for sub_node_path in _sub_node_paths:
@@ -64,7 +64,7 @@ class Query extends Object:
 		_nodes.push_back(binds)
 	
 
-	func verify_node(node: Node, bound_queries: Array) -> void:
+	func __verify_node(node: Node, bound_queries: Array) -> void:
 		if node.has_meta(_instance_id):
 			for sub_node_path in _sub_node_paths:
 				if sub_node_path[0] == "-":
@@ -77,11 +77,11 @@ class Query extends Object:
 					continue
 				elif is_instance_valid(node.get_node_or_null(sub_node_path)):
 					continue
-				remove_node(node, bound_queries)
+				__remove_node(node, bound_queries)
 				break
 
 
-	func remove_node(node: Node, bound_queries: Array) -> void:
+	func __remove_node(node: Node, bound_queries: Array) -> void:
 		var binds := node.get_meta(_instance_id) as Dictionary
 		__array_erase_deferred(bound_queries, self)
 		node.remove_meta(_instance_id)
@@ -91,7 +91,7 @@ class Query extends Object:
 			_nodes_second_half.erase(binds)
 
 
-	func enable_half_query() -> void:
+	func __enable_half_query() -> void:
 		if _half_query_enabled:
 			return
 		_half_query_enabled = true
@@ -102,7 +102,7 @@ class Query extends Object:
 			_nodes_second_half = _nodes.slice(half_size, size)
 
 
-	func subscribe(system: Object, shared = null) -> void:
+	func __subscribe(system: Object, shared = null) -> void:
 		if system in _subscribed_systems:
 			return
 		for binds in _nodes:
@@ -141,7 +141,7 @@ class Query extends Object:
 
 # Bind a query to an object or an instantiable object or instantiated object. If you bind a query to instantiated object, `shared` parameter will be function name string, or else it will be a shared object. The `main_node_class` can be either `Script` reference (such as defined `class_name` with GDScript) or base class name as `String`.
 func bind_query(main_node_class, sub_node_paths: Array = [], system: Object = null, shared = null) -> void:
-	__query(main_node_class, sub_node_paths).subscribe(system, shared)
+	__query(main_node_class, sub_node_paths).__subscribe(system, shared)
 
 
 # Build a query from following parameters. The `main_node_class` can be either `Script` reference (such as defined `class_name` with GDScript) or base class name as `String`.
@@ -152,7 +152,7 @@ func query(main_node_class, sub_node_paths: Array = []) -> Array:
 # Get a query object from following parameters. The `main_node_class` can be either `Script` reference (such as defined `class_name` with GDScript) or base class name as `String`.
 func get_query(main_node_class, sub_node_paths: Array = []) -> Query:
 	var query := __query(main_node_class, sub_node_paths)
-	query.enable_half_query()
+	query.__enable_half_query()
 	return query
 
 
@@ -162,12 +162,12 @@ func refresh_query_on_node(node: Node) -> void:
 	var bound_queries := node.get_meta(_BOUND_QUERIES) as Array
 	var query: Query
 	for old_query in bound_queries:
-		old_query.verify_node(node, bound_queries)
+		old_query.__verify_node(node, bound_queries)
 	for query_name in queries:
 		query = queries[query_name]
 		if query in bound_queries:
 			continue
-		query.add_node(node, bound_queries)
+		query.__add_node(node, bound_queries)
 
 
 # Perform a clean-up in QGodot, very ideal to use before changing between scenes.
@@ -195,7 +195,7 @@ func __query(main_node_class, sub_node_paths: Array) -> Query:
 	for node in get_tree().get_nodes_in_group("____%s____" % main_node_class_name):
 		if not node.is_in_group(_BOUND_QUERIES):
 			__main_node_setup(node)
-		query.add_node(node, node.get_meta(_BOUND_QUERIES))
+		query.__add_node(node, node.get_meta(_BOUND_QUERIES))
 	queries[query_name] = query
 	return query
 
@@ -234,10 +234,10 @@ func _scene_tree_node_added(node: Node) -> void:
 func _main_node_ready(node: Node, main_node_class_name: String, bound_queries: Array) -> void:
 	var queries := _queries[main_node_class_name] as Dictionary
 	for query_name in queries:
-		queries[query_name].add_node(node, bound_queries)
+		queries[query_name].__add_node(node, bound_queries)
 
 
 func _main_node_exiting_tree(node: Node, bound_queries: Array) -> void:
 	for query in bound_queries:
-		query.remove_node(node, bound_queries)
+		query.__remove_node(node, bound_queries)
 	node.remove_meta(_BOUND_QUERIES)
