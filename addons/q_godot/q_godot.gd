@@ -92,6 +92,8 @@ class Query extends Object:
 
 
 	func enable_half_query() -> void:
+		if _half_query_enabled:
+			return
 		_half_query_enabled = true
 		var size := _nodes.size()
 		var half_size := size / 2
@@ -137,7 +139,7 @@ class Query extends Object:
 		return _nodes.size()
 
 
-# Bind a query to an object or an instantiable object. If you bind a query to instantiated object, 'shared' parameter will be function name string. The `main_node_class` can be either `Script` reference (such as defined `class_name` with GDScript) or base class name as `String`.
+# Bind a query to an object or an instantiable object or instantiated object. If you bind a query to instantiated object, `shared` parameter will be function name string, or else it will be a shared object. The `main_node_class` can be either `Script` reference (such as defined `class_name` with GDScript) or base class name as `String`.
 func bind_query(main_node_class, sub_node_paths: Array = [], system: Object = null, shared = null) -> void:
 	__query(main_node_class, sub_node_paths).subscribe(system, shared)
 
@@ -168,7 +170,7 @@ func refresh_query_on_node(node: Node) -> void:
 		query.add_node(node, bound_queries)
 
 
-# Perform massive query nuke in QGodot.
+# Perform a clean-up in QGodot, very ideal to use before changing between scenes.
 func flush() -> void:
 	for node in get_tree().get_nodes_in_group(_BOUND_QUERIES):
 		node.disconnect("tree_exiting", self, "_main_node_exiting_tree")
