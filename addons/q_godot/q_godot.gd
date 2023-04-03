@@ -117,8 +117,8 @@ class Query extends Object:
 			var system_inst := system.callv("new", bind_array) as Node
 			system_inst.set("shared", shared)
 ##			main_node.tree_exiting.connect(func(): system_inst.queue_free())
-			main_node.add_child(system_inst)
 			main_node.connect("tree_exiting", system_inst, "queue_free")
+			main_node.add_child(system_inst)
 		else:
 			system.callv(shared, binds.values())
 
