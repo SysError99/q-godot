@@ -57,8 +57,15 @@ class Query extends Object:
 				_nodes_first_half.push_back(binds)
 			else:
 				_nodes_second_half.push_back(binds)
-		for system_binds in _subscribed_systems:
+		var i := 0
+		var system_binds: Array
+		while i < _subscribed_systems.size():
+			system_binds = _subscribed_systems[i]
+			if not is_instance_valid(system_binds[0]):
+##				_subscribed_systems.remove_at(i)
+				_subscribed_systems.remove(i)
 			__system_handle(binds, system_binds[0], system_binds[1])
+			i += 1
 		node.set_meta(_instance_id, binds)
 		bound_queries.push_back(self)
 		_nodes.push_back(binds)
