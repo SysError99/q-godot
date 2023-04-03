@@ -285,6 +285,24 @@ refresh_query_on_node(enemy)
 
 ---
 
+## Excluding Nodes And Groups In Query
+In order if you wanted to exclude certain sub nodes and groups from query, simply add `-` before node path or group.
+
+```gdscript
+# Query that includes player.
+onready var npcs := QGodot.query("KinematicBody", ["player"])
+
+
+# Query that excludes player.
+onready var npcs := QGodot.query("KinematicBody", ["-player"])
+
+
+# Query that includes and excludes certain sub nodes.
+onready var wild_horses := QGodot.query("KinematicBody", ["HorseSound", "-Inventory/Mount"])
+```
+
+---
+
 ## Binding Query With Instantiable References
 Sometimes you wanted to iterate through nodes but using instantiable classes. This will slightly helps on speed since it doesn't require constant use of bindings to get sub nodes. Which means, `QGodot.bind_query()` will help us in this case. However, this will increase memory usage, and is slightly more tricky to use.
 

@@ -2,6 +2,7 @@ extends Node
 
 
 const _BOUND_QUERIES = "_Q"
+const _DEPRECATED = "'%s()' is now deprecated and will be removed in upcoming 1.0 version. Consider using %s instead."
 
 
 # (DEPRECATED, will be removed in 1.0) Signal that indicates if query is ready.
@@ -45,6 +46,13 @@ class Query extends Object:
 		var binds := { "self": node }
 		var sub_node: Node
 		for sub_node_path in _sub_node_paths:
+			if sub_node_path[0] == "-":
+				sub_node_path = sub_node_path.substr(1, sub_node_path.length())
+				if not node.is_in_group(sub_node_path):
+					continue
+				sub_node = node.get_node_or_null(sub_node_path)
+				if not is_instance_valid(sub_node):
+					continue
 			if node.is_in_group(sub_node_path):
 				continue
 			sub_node = node.get_node_or_null(sub_node_path)
@@ -68,6 +76,12 @@ class Query extends Object:
 	func verify_node(node: Node, bound_queries: Array) -> void:
 		if node.has_meta(_instance_id):
 			for sub_node_path in _sub_node_paths:
+				if sub_node_path[0] == "-":
+					sub_node_path = sub_node_path.substr(1, sub_node_path.length())
+					if not node.is_in_group(sub_node_path):
+						continue
+					if not is_instance_valid(node.get_node_or_null(sub_node_path)):
+						continue
 				if node.is_in_group(sub_node_path):
 					continue
 				elif is_instance_valid(node.get_node_or_null(sub_node_path)):
@@ -127,7 +141,7 @@ class Query extends Object:
 		return _nodes_second_half if _parent.get("is_second_frame") else _nodes_first_half
 
 
-	# (Deprecated, will be removed in 1.0) Half-iterate nodes in the query.
+	# (Deprecated, will be removed in 1.0) Half-iterate nodes in the query. Consider using 'half_iterate()' instead.
 	func iterate() -> Array:
 		return half_iterate()
 
@@ -181,17 +195,20 @@ func flush() -> void:
 
 # (DEPRECATED, will be removed in 1.0) Clean up everything before changing scene. Consider using `flush()` then change scene with `get_tree().change_scene()` instead.
 func flush_and_change_scene(path: String) -> void:
+	push_warning(_DEPRECATED % ["flush_and_change_scene", "'flush()' and 'get_tree().change_scene(path)'"])
 	flush()
 	change_scene(path)
 
 
 # (DEPRECATED, will be removed in 1.0) Get a query object that is half-iteratable. Consider using 'get_query()' instead.
 func query_half(main_node_class, sub_node_paths: Array) -> Query:
+	push_warning(_DEPRECATED % ["query_half", "'get_query()' and 'half_iterate()'"])
 	return get_query(main_node_class, sub_node_paths)
 
 
 # (DEPRECATED, will be removed in 1.0) Change scene.
 func change_scene(path: String) -> void:
+	push_warning(_DEPRECATED % ["change_scene", "'get_tree().change_scene'"])
 	var current_scene := get_tree().current_scene
 ##	var new_node := load(path).instantiate() as Node
 	var new_scene_node := load(path).instance() as Node
@@ -208,23 +225,27 @@ func _current_scene_tree_exiting(new_scene_node: Node) -> void:
 
 # (DEPRECATED, will be removed in 1.0) Does nothing, since querying system is now reworked to work in any of hierarchy.
 func register_as_scene(_node: Node) -> void:
+	push_warning("'register_as_scene()' is now deprecated and will be removed in upcoming 1.0 version, since the query mechanics are changed and this function no longer serves any of purpose.")
 	pass
 
 
 # (DEPRECATED, will be removed in 1.0) Add specified node to a group, and perform query bindings. Consider adding groups with built-in functions and then use `QGodot.refresh_query_on_node()` on the main node instead.
 func add_node_to_group(node: Node, group_name: String) -> void:
+	push_warning(_DEPRECATED % ["add_node_to_group", "'Node.add_to_group()' following by 'refresh_query_on_node(node)'"])
 	node.add_to_group(group_name)
 	refresh_query_on_node(node)
 
 
 # (DEPRECATED, will be removed in 1.0) Remove specified node to a group, and perform query bindings. Consider removing groups with built-in functions and then use `QGodot.refresh_query_on_node()` on the main node instead.
 func remove_node_from_group(node: Node, group_name: String) -> void:
+	push_warning(_DEPRECATED % ["remove_node_from_group", "'Node.remove_from_group' following by 'refresh_query_on_node(node)'"])
 	node.remove_from_group(group_name)
 	refresh_query_on_node(node)
 
 
 # (DEPRECATED, will be removed in 1.0) Rename sub node and preform query bindings. Consider renaming names of sub nodes with built-in functions and then use `QGodot.refresh_query_on_node()` on the main node instead.
 func rename_sub_node(sub_node: Node, new_name: String) -> void:
+	push_warning(_DEPRECATED % ["rename_sub_node", "'Node.name = value' following by 'refresh_query_on_node(node)'"])
 	sub_node.name = new_name
 	refresh_query_on_node(__find_main_node(sub_node))
 
@@ -239,7 +260,7 @@ func __get_switch() -> bool:
 	return is_second_frame
 
 
-# Depends by 'rename_sub_node()', should be removed in 1.0.
+# (DEPRECATED, will be removed in 1.0)
 func __find_main_node(sub_node: Node) -> Node:
 	var parent := sub_node.get_parent()
 	if !sub_node.has_meta(_BOUND_QUERIES):
