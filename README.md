@@ -298,7 +298,7 @@ onready var npcs := QGodot.query("KinematicBody", ["-player"])
 
 
 # Query that includes and excludes certain sub nodes.
-onready var wild_horses := QGodot.query("KinematicBody", ["HorseSound", "-Inventory/Mount"])
+onready var wild_horses := QGodot.query("KinematicBody", ["HorseSound", "-Inventory"])
 ```
 
 ---
