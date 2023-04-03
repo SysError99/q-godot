@@ -217,8 +217,6 @@ func __main_node_setup(node: Node) -> Array:
 func _enter_tree() -> void:
 ##	get_tree().node_added.connect(_scene_tree_node_added)
 	get_tree().connect("node_added", self, "_scene_tree_node_added")
-##	get_tree().root.ready.connect(func(): query_ready.emit())
-	get_tree().root.connect("ready", self, "emit_signal", [ "query_ready" ])
 
 
 func _process(_delta: float) -> void:
