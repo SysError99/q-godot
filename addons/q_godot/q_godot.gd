@@ -189,6 +189,11 @@ func flush() -> void:
 	_queries.clear()
 
 
+# Shorthand for `get_tree().get_nodes_in_group()` but will take the first found node.
+func get_first_node(group_name: String) -> Node:
+	return get_tree().get_nodes_in_group(group_name)[0]
+
+
 func __query(main_node_class, sub_node_paths: Array) -> Query:
 	var main_node_class_name := ("%d" % main_node_class.get_instance_id() if main_node_class is Object else main_node_class) as String
 	var query_name := main_node_class_name + "," + ",".join(sub_node_paths)

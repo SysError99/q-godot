@@ -345,3 +345,10 @@ class Movement extends Node:
 ```
 
 ---
+
+## Additional Features
+This won't fall to any of categories in how QGodot behaves, but it's good little additions.
+
+1. `get_first_node(group_name: String): Node` get first node that is in the specified group.
+
+---
