@@ -64,6 +64,7 @@ class Query extends Object:
 			if not is_instance_valid(system_binds[0]):
 ##				_subscribed_systems.remove_at(i)
 				_subscribed_systems.remove(i)
+				continue
 			__system_handle(binds, system_binds[0], system_binds[1])
 			i += 1
 		node.set_meta(_instance_id, binds)
