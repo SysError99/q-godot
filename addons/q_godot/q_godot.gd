@@ -13,7 +13,7 @@ var _queries := {}
 
 # Query reference.
 class Query extends Object:
-	var _instance_id := "_" + String(get_instance_id())
+	var _instance_id := "_%d" % get_instance_id()
 	var _parent: Node
 
 	var _parent_class_name := ""
@@ -132,7 +132,7 @@ class Query extends Object:
 
 
 	func __array_erase_deferred(array: Array, element) -> void:
-##		await _parent().get_tree().process_frame
+##		await _parent.get_tree().process_frame
 		yield(_parent.get_tree(), "idle_frame")
 		array.erase(element)
 
@@ -181,12 +181,18 @@ func refresh_query_on_node(node: Node) -> void:
 # Perform a clean-up in QGodot, very ideal to use before changing between scenes.
 func flush() -> void:
 	for node in get_tree().get_nodes_in_group(_BOUND_QUERIES):
+##		node.tree_exiting.disconnect(_main_node_exiting_tree)
 		node.disconnect("tree_exiting", self, "_main_node_exiting_tree")
 	for main_node_class_name in _queries:
 		var queries := _queries[main_node_class_name] as Dictionary
 		for query_name in queries:
 			queries[query_name].free()
 	_queries.clear()
+
+
+# Shorthand for `get_tree().get_nodes_in_group()` but will take the first found node.
+func get_first_node(group_name: String) -> Node:
+	return get_tree().get_nodes_in_group(group_name)[0]
 
 
 func __query(main_node_class, sub_node_paths: Array) -> Query:
@@ -217,7 +223,7 @@ func __main_node_setup(node: Node) -> Array:
 	var bound_queries := []
 	node.add_to_group(_BOUND_QUERIES)
 	node.set_meta(_BOUND_QUERIES, bound_queries)
-##	node.tree_exiting.connect(_main_node_exiting_tree.bindv([ node, bound_queries ]), Object.CONNECT_ONESHOT)
+##	node.tree_exiting.connect(_main_node_exiting_tree.bindv([ node, bound_queries ]), CONNECT_ONE_SHOT)
 	node.connect("tree_exiting", self, "_main_node_exiting_tree", [ node, bound_queries ], CONNECT_ONESHOT)
 	return bound_queries
 
@@ -235,7 +241,7 @@ func _scene_tree_node_added(node: Node) -> void:
 	var main_node_class_name := __recognise_class_name_from_node(node)
 	node.add_to_group("____%s____" % main_node_class_name)
 	if main_node_class_name in _queries:
-##		node.ready.connect(_main_node_ready.bindv([ node, main_node_class_name, __main_node_setup(node) ]), Object.CONNECT_ONESHOT)
+##		node.ready.connect(_main_node_ready.bindv([ node, main_node_class_name, __main_node_setup(node) ]), CONNECT_ONE_SHOT)
 		node.connect("ready", self, "_main_node_ready", [ node, main_node_class_name, __main_node_setup(node) ], CONNECT_ONESHOT)
 
 

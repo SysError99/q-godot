@@ -28,7 +28,6 @@ onready var query := QGodot.query("KinematicBody2D", ["Sprite"])
 
 
 func _ready() -> void:
-	yield(QGodot, "query_ready")
 	add_child(tween)
 	rand_seed(814995)
 
