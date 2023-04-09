@@ -154,7 +154,23 @@ class Enemy extends KinematicBody2D:
 onready var enemies := QGodot.query(Enemy, [ "Superweapon" ])
 ```
 
-*NOTE: QGodot DOES NOT support dynamic script assigning (with `Object.set_script()`) as it will cause unexpected behaviour in querying mechanism.*
+QGodot does also query custom nodes on queries that use default node names, it's for further flexibility:
+
+```gdscript
+
+class EnemyBoss extends KinematicBody:
+	...
+
+
+# Enemy bosses
+onready var enemy_bosses := QGodot.query(EnemyBoss, [ "Loot" ])
+
+
+# Any of monsters that don't need any of specific custom nodes, which means that 'EnemyBoss' nodes will also be included.
+onready var npcs := QGodot.query("KinematicBody", [ "Loot" ])
+```
+
+*NOTE II: QGodot DOES NOT support dynamic script assigning (with `Object.set_script()`) as it will cause unexpected behaviour in querying mechanism.*
 
 ---
 
