@@ -166,16 +166,17 @@ func get_query(main_node_class, sub_node_paths: Array = []) -> Query:
 
 # Refresh query on specified node.
 func refresh_query_on_node(node: Node) -> void:
-	var queries := _queries[__recognise_class_name_from_node(node)] as Dictionary
-	var bound_queries := node.get_meta(_BOUND_QUERIES) as Array
-	var query: Query
-	for old_query in bound_queries:
-		old_query.__verify_node(node, bound_queries)
-	for query_name in queries:
-		query = queries[query_name]
-		if query in bound_queries:
-			continue
-		query.__add_node(node, bound_queries)
+	for main_node_class_name in __recognise_class_names_from_node(node):
+		var queries := _queries[main_node_class_name] as Dictionary
+		var bound_queries := node.get_meta(_BOUND_QUERIES) as Array
+		var query: Query
+		for old_query in bound_queries:
+			old_query.__verify_node(node, bound_queries)
+		for query_name in queries:
+			query = queries[query_name]
+			if query in bound_queries:
+				continue
+			query.__add_node(node, bound_queries)
 
 
 # Perform a clean-up in QGodot, very ideal to use before changing between scenes.
@@ -214,9 +215,11 @@ func __query(main_node_class, sub_node_paths: Array) -> Query:
 	return query
 
 
-func __recognise_class_name_from_node(node: Node) -> String:
+func __recognise_class_names_from_node(node: Node) -> Array:
 	var node_script := node.get_script() as Script
-	return "%d" % node_script.get_instance_id() if node_script else node.get_class()
+	if node_script:
+		return [ "%d" % node_script.get_instance_id(), node.get_class() ]
+	return [ node.get_class() ]
 
 
 func __main_node_setup(node: Node) -> Array:
@@ -238,11 +241,11 @@ func _process(_delta: float) -> void:
 
 
 func _scene_tree_node_added(node: Node) -> void:
-	var main_node_class_name := __recognise_class_name_from_node(node)
-	node.add_to_group("____%s____" % main_node_class_name)
-	if main_node_class_name in _queries:
-##		node.ready.connect(_main_node_ready.bindv([ node, main_node_class_name, __main_node_setup(node) ]), CONNECT_ONE_SHOT)
-		node.connect("ready", self, "_main_node_ready", [ node, main_node_class_name, __main_node_setup(node) ], CONNECT_ONESHOT)
+	for main_node_class_name in __recognise_class_names_from_node(node):
+		node.add_to_group("____%s____" % main_node_class_name)
+		if main_node_class_name in _queries:
+##			node.ready.connect(_main_node_ready.bindv([ node, main_node_class_name, __main_node_setup(node) ]), CONNECT_ONE_SHOT)
+			node.connect("ready", self, "_main_node_ready", [ node, main_node_class_name, __main_node_setup(node) ], CONNECT_ONESHOT)
 
 
 func _main_node_ready(node: Node, main_node_class_name: String, bound_queries: Array) -> void:
