@@ -6,11 +6,12 @@ onready var label := $CanvasLayer/Label as Label
 
 class Icon extends KinematicBody2D:
 	const TARGET = Vector2(512, 300)
+	var sprite: Sprite
 	func _process(_delta) -> void:
 		var vel := position.direction_to(TARGET) * 10.0
 		move_and_slide(vel)
 		look_at(TARGET)
-
+		sprite.scale *= 1.001
 
 func _ready() -> void:
 	rand_seed(814995)
@@ -19,6 +20,7 @@ func _ready() -> void:
 		var clone := Icon.new()
 		var sprite := Sprite.new()
 		clone.name = "Icon%d" % x
+		clone.sprite = sprite
 		sprite.name = "Sprite"
 		sprite.texture = preload("res://icon.png")
 		clone.position = Vector2(randi() % 1024, randi() % 600)
