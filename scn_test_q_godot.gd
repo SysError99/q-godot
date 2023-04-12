@@ -47,9 +47,9 @@ func _ready() -> void:
 	# 	Movement
 	# )
 
+
 	add_child(TestSignalBinding.new())
-	QGodot.signal_add("test_signal", 1)
-	QGodot.emit_signal("test_signal", "Hello, subscriber!")
+	QGodot.signal_emit("test_signal", [ "Hello, subscribers!" ])
 
 
 	for x in 10000:

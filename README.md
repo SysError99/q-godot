@@ -365,7 +365,22 @@ class Movement extends Node:
 ---
 
 # Creating Global Signals
-*To be added*
+In case you wanted to add event-driven programming but handling signals on many of nodes sounds like a hassle than help. This add-on instead provides an easy-to-use global signal feature that is safe to use and very loosely tied. You longer need to worry about signal existence since it's handled automatically.
+
+For example, system node `A` loosely connnects to the `unit_killed` signal. Signal technially doesn't exist yet, but it awaits until the signal is created:
+```gdscript
+func _enter_tree() -> void:
+	QGodot.signal_connect("unit_killed", self, "_unit_killed")
+
+
+func _unit_killed(killer: KinematicBody2D, target: KinematicBody2D) -> void:
+	print("%s killed %s" % [killer.name, target.name])
+```
+
+Now, other system nodes can call function `signal_emit()` to emit signals. Now all awaiting system nodes will receive this signal:
+```gdscript
+QGodot.signal_emit("unit_killed", [unit, target])
+```
 
 ---
 
