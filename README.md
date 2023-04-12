@@ -25,15 +25,17 @@ This addon will NOT address any of performance benefits, unlike many of ECS libr
 ## How This Add-on Works
 In the world of programming, Entity Component System, or ECS, is another form of programming paradigm(?) that got rised an attention for quite awhile (however ECS by itself was actually used for decades, it just doesn't have any of names at the time). The way you think about ECS is a different approach compared to traditional object-oriented paradigm. Essentially, you *throw away* (almost) all concepts of trying to combine logic (function, method) with data (proprety) along with concept of 'messaging'. Instead, you make data and logic completely separated from each other, then try to manipulate each data without thinking how 'objects' communicate with each other. Now, you have 'entity', which is just a shell for containing multiple 'components' or data inside. Then, you have 'system' which is the logic of the software. Entities will be stored inside 'world' which resembles database of the software. You try to define entites their its compoments, then store them in world and use systems to manipulate/represent them.
 
-Godot, by itself, IS NOT an ECS game engine, and will NEVER be. Although it has very intutive 'Node' system, which is a form of object composition interface that makes them being able to communicate, but the way that it gets programmed still is around object-oriented, which could lead to complications if not controlled properly. E.g., you write functions for all related objects/nodes so they can communicate with each other, when it become more and more of requirements, you ended up with A LOT of functions that wrangled and become more difficult to make changes without destorying entire logic. In some of tasks, it's just not intuitive to code in object-oriented if you have certain different objects/nodes that you wanted to make changes on them, but adding more scripts to objects can also lead to complications of source management, especially if those objects don't really need to run specific scripts all the time.
+Godot, by itself, IS NOT an ECS game engine, and will NEVER be. Although it has very intutive 'Node' system, which is a form of object composition interface that makes them being able to communicate, but the way that it gets programmed still is around object-oriented, which could lead to complications if not controlled properly. E.g., you write functions for all related objects/nodes so they can communicate with each other. When requirements keep increasing, you ended up with A LOT of functions that wrangled and become more difficult to make changes at a risk of destorying entire logic. In some of tasks, it's just not intuitive to code in object-oriented if you have certain different objects/nodes that you wanted to make changes on them. Also, in good project management in object-oriented software development, adding more scripts can help organising projects, but it can also lead to complications of source management at a same time, especially if those objects don't really need to run specific scripts all the time and need to be swap around constantly.
 
-However, the most complicated thing in ECS is how to define concepts of 'world', 'entity', 'component', and the most important part is how to 'query' those stuffs out. As we all know that Godot isn't an ECS game engine, and basically every node is an object (or entity). Godot can certainly do something like ECS, but it become very cubersome to use the node sytem to query nodes as to simulate how querying works in ECS. It simply isn't intuitive enough to code in ECS way in Godot if we use its integrated functions in it. Not to mention, this way of code isn't efficient and tend to be slower than traditional object-oriented coding in Godot.
+However, the most complicated thing in ECS is how to define concepts of 'world', 'entity', 'component', and the most important part is how to 'query' those stuffs out to be processed and put result back. As we all know that Godot isn't an ECS game engine, and basically every node is an object (or entity). Godot can certainly do something like ECS, but it become very cubersome to use the node sytem to query nodes as to simulate how querying works in ECS. It simply isn't intuitive enough to code in ECS way in Godot if we use its integrated functions in it. Not to mention, this way of code isn't efficient and tend to be slower than traditional object-oriented coding in Godot because of overhead in GDScript's field access operations.
 
-This is where this add-on comes in, it adds intuitive way of how to code in Godot by applying ECS-like architecture to it. Instead of trying to add logic to the node itself, we separate them into 'system' nodes. Then we use these system nodes as our main ways to interact with nodes. However, since Godot's 'Node' system is very flexible by presenting itself in node tree, it become more challenging to implement ECS paradigm into the engine itself. I decided to go with a route that presented in the way that is as close as ECS as possible. This is what I went with.
+This is where this add-on comes in, it adds intuitive way of how to code in Godot by applying ECS-like architecture to it. Instead of trying to add logic to the node itself, we separate game logic into 'system' nodes. Then we use these system nodes as our main ways to interact with nodes instead. However, since Godot's 'Node' system is very flexible by presenting itself in node tree, it become more challenging to implement ECS paradigm into the engine itself since usually ECS is only about entity that contains components, but Godot's 'Node' can be nested infinitely, which presests the challenge on how to efficiently query nodes without the need to write a lot of code to just trying to find them.
+
+I decided to go with a route that presented in the way that is as close as ECS as possible. This is what I went with.
 
 - `scene` is a world in ECS. QGodot treats root scene as entire world.
-- `main_node` is an entity in ECS. This is node type that you use to store other sub nodes inside.
-- `sub_node` is a component in ECS. This is node type that is used to behave as data or another representation of the main node. Sub nodes can be nested in each other, which this add-on will also take advantage of them.
+- `main_node` is an entity in ECS. This is node type that you use to store other sub nodes inside. `main_node`s can exist anywhere in the scene tree.
+- `sub_node` is a component in ECS. This is node type that is used to behave as data or another representation of the main node. `sub_node`s exist inside the `main_node` at any of tree depth. QGodot will try its best to query the specified sub nodes that match the query criteria.
 
 This way it opens up possibilities to use ECS in Godot without the need to reconstruct entire game engine, and doesn't need to strictly use ECS all the time if it doesn't need to be that way. Also, this add-on can be used on top of existing projects to do certain tasks, so you don't need to rework entire project just to try out or use ECS in your object-oriented projects.
 
@@ -154,6 +156,22 @@ class Enemy extends KinematicBody2D:
 onready var enemies := QGodot.query(Enemy, [ "Superweapon" ])
 ```
 
+QGodot also does query custom nodes on queries that use default node names, This is for further flexibility:
+
+```gdscript
+
+class EnemyBoss extends KinematicBody:
+	...
+
+
+# Enemy bosses
+onready var enemy_bosses := QGodot.query(EnemyBoss, [ "Loot" ])
+
+
+# Any of monsters that don't need any of specific custom nodes, which means that 'EnemyBoss' nodes will also be included.
+onready var npcs := QGodot.query("KinematicBody", [ "Loot" ])
+```
+
 *NOTE: QGodot DOES NOT support dynamic script assigning (with `Object.set_script()`) as it will cause unexpected behaviour in querying mechanism.*
 
 ---
@@ -195,7 +213,7 @@ func entity_entered(parent: KinematicBody2D, icon: Sprite) -> void:
 ---
 
 ## Binding Query That Will Only Be Iterated Half Entities Each Frame
-If performance is a concern, and you don't really want to iterate all entities in single frame, you can also split query into half and iterate all of them in two frames. You can use `get_query()` to get `Query` object, then use `Query.half_iterate()` to retrieve half of array for each frame.
+If performance is a concern, and you don't really want to iterate all main nodes in single frame, you can also split query into half and iterate all of them in two frames. You can use `get_query()` to get `Query` object, then use `Query.half_iterate()` to retrieve half of array for each frame.
 
 ```gdscript
 onready var query := QGodot.get_query("KinematicBody2D", ["Icon"])
@@ -211,9 +229,9 @@ func _process(delta: float) -> void:
 		entity.look_at(TARGET)
 ```
 
-*Note: due to how it works, this should NOT be used with entities that has critical physics calculation elements since it may cause unexpected results.*
+*Note: due to how it works, this should NOT be used with main nodes that has critical physics calculation elements since it may cause unexpected results.*
 
-*Note II: in low frame (below 60), it will cause horrible jittery artifacts when there's a movement of entities.*
+*Note II: in low frame (below 60), it will cause horrible jittery artifacts when there's a movement of main nodes.*
 
 *Note III: you should always multiply value by 2 in movement vectors to compensate frame skipping.*
 
