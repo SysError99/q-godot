@@ -365,7 +365,7 @@ class Movement extends Node:
 ---
 
 # Creating Global Signals
-QGodot also supports 
+*To be added*
 
 ---
 
