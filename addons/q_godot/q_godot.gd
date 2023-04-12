@@ -9,7 +9,8 @@ var is_second_frame := false
 
 
 var _queries := {}
-# List of awaiting signals, { "name": [ object, function_name: String ][], }
+# List of awaiting signals, 
+# { [signal_name]: {"object": Object, "signal_function": String, "signal_binds": Array, "signal_flags": int, "signal_callable": Callable}[] }
 var _signal_awaiting_objects := {}
 
 
@@ -24,7 +25,7 @@ class Query extends Object:
 	var _nodes := []
 	var _nodes_first_half := []
 	var _nodes_second_half := []
-	var _subscribed_systems := [] 
+	var _subscribed_systems := []
 
 	var _half_query_enabled := false
 
