@@ -200,21 +200,21 @@ func get_first_node(group_name: String) -> Node:
 
 
 # Connect to specified signal safely. If the signal doesn't exist, await until other nodes create it.
-func signal_connect(signal_name: String, target: Object, function_name: String, binds = [], flags = 0) -> void:
+func signal_connect(signal_name: String, target_object: Object, function_name: String, binds = [], flags = 0) -> void:
 ##func signal_connect(signal_name: String, callable: Callable, flags = 0) -> void:
 	if not has_signal(signal_name):
 		if not signal_name in _signal_awaiting_objects:
 			_signal_awaiting_objects[signal_name] = []
 		for awaiting_object in _signal_awaiting_objects[signal_name]:
-			if awaiting_object["target"] == target and awaiting_object["function"] == function_name:
+			if awaiting_object["target"] == target_object and awaiting_object["function"] == function_name:
 ##			if awaiting_object["callable"] == callable:
 				printerr("'%s' already got pre-connected with '%s::%s'" % [signal_name, awaiting_object["target"], awaiting_object["function"]])
 ##				printerr("Callble '%s' already bound with signal %s" % [awaiting_object["callable"].get_method(), signal_name])
 				return
-		_signal_awaiting_objects[signal_name].push_back({ object = target, function = function_name, signal_binds = binds, signal_flags = flags })
+		_signal_awaiting_objects[signal_name].push_back({ target = target_object, function = function_name, signal_binds = binds, signal_flags = flags })
 ##		_signal_awaiting_objects[signal_name].push_back({ signal_callable = callable, signal_flags = flags })
 		return
-	connect(signal_name, target, function_name, binds, flags)
+	connect(signal_name, target_object, function_name, binds, flags)
 ##	connect(signal_name, callable, flags)
 
 
