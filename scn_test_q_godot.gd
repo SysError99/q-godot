@@ -7,6 +7,15 @@ const TARGET = Vector2(512, 300)
 var tween = Tween.new()
 
 
+class TestSignalBinding extends Node:
+	func _enter_tree() -> void:
+		QGodot.signal_connect("test_signal", self, "_test_signal_fired")
+
+
+	func _test_signal_fired(text: String) -> void:
+		print("TestSignalBinding: %s" % text)
+
+
 # class Movement extends Node:
 # 	const TARGET = Vector2(512, 300)
 # 	var parent: KinematicBody2D
@@ -37,6 +46,10 @@ func _ready() -> void:
 	# 	["Sprite"],
 	# 	Movement
 	# )
+
+	add_child(TestSignalBinding.new())
+	QGodot.signal_add("test_signal", 1)
+	QGodot.emit_signal("test_signal", "Hello, subscriber!")
 
 
 	for x in 10000:
