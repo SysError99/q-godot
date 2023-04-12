@@ -237,7 +237,7 @@ func _process(delta: float) -> void:
 
 ---
 
-## Adding New Sub Nodes To Main Node (Right Way)
+## Adding/Removing Sub Nodes And Groups In Main Nodes (Right Way)
 You should always try to add new sub nodes when the main node is not inside scene tree. Or QGodot will not be able recognise new sub nodes and perform proper query bindings.
 
 Assuming the main node (entity in ECS) is `enemy`, and sub node (component in ECS) is `superpower`.
@@ -258,10 +258,11 @@ get_tree().current_scene.add_child(enemy)
 enemy.add_child(superpower) # Adding sub nodes after adding main node to scene tree will result in QGodot not being able to detect new sub nodes!
 ```
 
-However, if you wanted to add sub nodes while **the main node is already in scene tree**, you can use `refresh_query_on_node()` to perform querying on the particular node again.
+However, if you wanted to add or remove sub nodes while **the main node is already in scene tree**, you can use `refresh_query_on_node()` to perform querying on the particular node again.
 
 ```gdscript
 enemy.add_to_group("dying")
+enemy.get_node("Superpower").queue_free()
 refresh_query_on_node(enemy)
 ```
 
