@@ -1,6 +1,8 @@
 # QGodot
 Advanced yet simple node querying library for Godot. Resembles a lot with Entity Component System (ECS) architecture.
 
+- #### [API Reference](https://github.com/SysError99/q-godot/blob/main/reference.md)
+
 ---
 
 ## This Project Is Still (mainly) On Godot 3.x!
@@ -382,6 +384,8 @@ Now, other system nodes can call function `signal_emit()` to emit signals. Now a
 ```gdscript
 QGodot.signal_emit("unit_killed", [unit, target])
 ```
+
+*CAUTION: DO NOT USE SAME SIGNAL NAME BUT WITH DIFFERENT PARAMETER LENGTH, OR IT WILL RESULT IN UNSUCCESSFUL SIGNAL CREATION AND EMISSION. `flush()` WILL NOT HELP.*
 
 ---
 
