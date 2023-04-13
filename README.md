@@ -1,10 +1,12 @@
 # QGodot
 Advanced yet simple node querying library for Godot. Resembles a lot with Entity Component System (ECS) architecture.
 
+- #### [API Reference](https://github.com/SysError99/q-godot/blob/main/reference.md)
+
 ---
 
 ## This Project Is Still (mainly) On Godot 3.x!
-However, I already made parts that are 4.0 compatible, simply uncomment lines with double number sign (`##`) and remove lines below it, and that should do it.
+However, I already made parts that are 4.0 compatible, simply uncomment lines with double number sign (`##`) and remove lines above it, and that should do it.
 
 Also, this project still doesn't target 4.0 just yet, since my main workflow is still on 3.x and I couldn't move it towards 4.0 easily since I still need to ship my games mainly on web platform, which Godot 4.0 still isn't mature enough (it has significant bugs on macOS/iOS platforms, which isn't feasible).
 
@@ -237,7 +239,7 @@ func _process(delta: float) -> void:
 
 ---
 
-## Adding New Sub Nodes To Main Node (Right Way)
+## Adding/Removing Sub Nodes And Groups In Main Nodes (Right Way)
 You should always try to add new sub nodes when the main node is not inside scene tree. Or QGodot will not be able recognise new sub nodes and perform proper query bindings.
 
 Assuming the main node (entity in ECS) is `enemy`, and sub node (component in ECS) is `superpower`.
@@ -258,10 +260,11 @@ get_tree().current_scene.add_child(enemy)
 enemy.add_child(superpower) # Adding sub nodes after adding main node to scene tree will result in QGodot not being able to detect new sub nodes!
 ```
 
-However, if you wanted to add sub nodes while **the main node is already in scene tree**, you can use `refresh_query_on_node()` to perform querying on the particular node again.
+However, if you wanted to add or remove sub nodes while **the main node is already in scene tree**, you can use `refresh_query_on_node()` to perform querying on the particular node again.
 
 ```gdscript
 enemy.add_to_group("dying")
+enemy.get_node("Superpower").queue_free()
 refresh_query_on_node(enemy)
 ```
 
@@ -361,6 +364,28 @@ class Movement extends Node:
  		parent.look_at(TARGET)
  		sprite.scale *= 1.001
 ```
+
+---
+
+# Creating Global Signals
+In case you wanted to add event-driven programming but handling signals on many of nodes sounds like a hassle than help. This add-on instead provides an easy-to-use global signal feature that is safe to use and very loosely tied. You longer need to worry about signal existence since it's handled automatically.
+
+For example, system node `A` loosely connnects to the `unit_killed` signal. Signal technially doesn't exist yet, but it awaits until the signal is created:
+```gdscript
+func _enter_tree() -> void:
+	QGodot.signal_connect("unit_killed", self, "_unit_killed")
+
+
+func _unit_killed(killer: KinematicBody2D, target: KinematicBody2D) -> void:
+	print("%s killed %s" % [killer.name, target.name])
+```
+
+Now, other system nodes can call function `signal_emit()` to emit signals. Now all awaiting system nodes will receive this signal:
+```gdscript
+QGodot.signal_emit("unit_killed", [unit, target])
+```
+
+*CAUTION: DO NOT USE SAME SIGNAL NAME BUT WITH DIFFERENT PARAMETER LENGTH, OR IT WILL RESULT IN UNSUCCESSFUL SIGNAL CREATION AND EMISSION. `flush()` WILL NOT HELP.*
 
 ---
 

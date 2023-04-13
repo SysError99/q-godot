@@ -9,6 +9,9 @@ var is_second_frame := false
 
 
 var _queries := {}
+# List of awaiting signals, 
+# { [signal_name]: {"object": Object, "signal_function": String, "signal_binds": Array, "signal_flags": int, "signal_callable": Callable}[] }
+var _signal_awaiting_objects := {}
 
 
 # Query reference.
@@ -22,7 +25,7 @@ class Query extends Object:
 	var _nodes := []
 	var _nodes_first_half := []
 	var _nodes_second_half := []
-	var _subscribed_systems := [] 
+	var _subscribed_systems := []
 
 	var _half_query_enabled := false
 
@@ -62,8 +65,8 @@ class Query extends Object:
 		while i < _subscribed_systems.size():
 			system_binds = _subscribed_systems[i]
 			if not is_instance_valid(system_binds[0]):
-##				_subscribed_systems.remove_at(i)
 				_subscribed_systems.remove(i)
+##				_subscribed_systems.remove_at(i)
 				continue
 			__system_handle(binds, system_binds[0], system_binds[1])
 			i += 1
@@ -124,17 +127,22 @@ class Query extends Object:
 			var main_node := bind_array[0] as Node
 			var system_inst := system.callv("new", bind_array) as Node
 			system_inst.set("shared", shared)
-##			main_node.tree_exiting.connect(func(): system_inst.queue_free())
 			main_node.connect("tree_exiting", system_inst, "queue_free")
+##			main_node.tree_exiting.connect(func(): system_inst.queue_free())
 			main_node.add_child(system_inst)
 		else:
 			system.callv(shared, binds.values())
 
 
 	func __array_erase_deferred(array: Array, element) -> void:
-##		await _parent.get_tree().process_frame
 		yield(_parent.get_tree(), "idle_frame")
+##		await _parent.get_tree().process_frame
 		array.erase(element)
+
+
+	# Iterate all nodes in this query.
+	func iterate() -> Array:
+		return _nodes
 
 
 	# Half-iterate nodes in the query.
@@ -182,8 +190,8 @@ func refresh_query_on_node(node: Node) -> void:
 # Perform a clean-up in QGodot, very ideal to use before changing between scenes.
 func flush() -> void:
 	for node in get_tree().get_nodes_in_group(_BOUND_QUERIES):
-##		node.tree_exiting.disconnect(_main_node_exiting_tree)
 		node.disconnect("tree_exiting", self, "_main_node_exiting_tree")
+##		node.tree_exiting.disconnect(_main_node_exiting_tree)
 	for main_node_class_name in _queries:
 		var queries := _queries[main_node_class_name] as Dictionary
 		for query_name in queries:
@@ -194,6 +202,59 @@ func flush() -> void:
 # Shorthand for `get_tree().get_nodes_in_group()` but will take the first found node.
 func get_first_node(group_name: String) -> Node:
 	return get_tree().get_nodes_in_group(group_name)[0]
+
+
+# Connect to specified signal safely. If the signal doesn't exist, await until other nodes create it.
+func signal_connect(signal_name: String, target_object: Object, function_name: String, binds = [], flags = 0) -> void:
+##func signal_connect(signal_name: String, callable: Callable, flags = 0) -> void:
+	if not has_signal(signal_name):
+		if not signal_name in _signal_awaiting_objects:
+			_signal_awaiting_objects[signal_name] = []
+		for awaiting_object in _signal_awaiting_objects[signal_name]:
+			if awaiting_object["target"] == target_object and awaiting_object["function"] == function_name:
+##			if awaiting_object["callable"] == callable:
+				printerr("'%s' already got pre-connected with '%s::%s'" % [signal_name, awaiting_object["target"], awaiting_object["function"]])
+##				printerr("Callble '%s' already bound with signal %s" % [awaiting_object["callable"].get_method(), signal_name])
+				return
+		_signal_awaiting_objects[signal_name].push_back({ target = target_object, function = function_name, signal_binds = binds, signal_flags = flags })
+##		_signal_awaiting_objects[signal_name].push_back({ signal_callable = callable, signal_flags = flags })
+		return
+	connect(signal_name, target_object, function_name, binds, flags)
+##	connect(signal_name, callable, flags)
+
+
+# Disconnect to specified signal safely. If the signal doesn't exist but there is the target node in the awaiting list, remove it from the list.
+func signal_disconnect(signal_name: String, target: Object, function_name: String) -> void:
+##func signal_disconnect(signal_name: String, callable: Callable) -> void:
+	if has_signal(signal_name):
+		disconnect(signal_name, target, function_name)
+##		disconnect(signal_name, callable)
+	elif signal_name in _signal_awaiting_objects:
+		var awaiting_objects := _signal_awaiting_objects[signal_name] as Array
+		var i := 0
+		while i < awaiting_objects.size():
+			var awaiting_object := awaiting_objects[i] as Dictionary
+			if awaiting_object["target"] == target:
+##			if awaiting_object["callable"] == callable:
+				awaiting_objects.remove(i)
+##				awaiting_objects.remove_at(i)
+				continue
+			i += 1
+
+
+# Safely fires signal, if the signal doesn't exist, it will create a new one.
+func signal_emit(signal_name: String, args_array: Array) -> void:
+	if not has_signal(signal_name):
+		var args := []
+		for i in args_array.size():
+			args.push_back({ name = "arg_%d" % i , type = TYPE_MAX, })
+		add_user_signal(signal_name, args)
+		if signal_name in _signal_awaiting_objects:
+			for awaiting_object in _signal_awaiting_objects[signal_name]:
+				connect(signal_name, awaiting_object["target"], awaiting_object["function"], awaiting_object["signal_binds"], awaiting_object["signal_flags"])
+##				connect(signal_name, awaiting_object["signal_callable"], awaiting_object["signal_flags"])
+			_signal_awaiting_objects.erase(signal_name)
+	callv("emit_signal", [ signal_name ] + args_array)
 
 
 func __query(main_node_class, sub_node_paths: Array) -> Query:
@@ -226,14 +287,14 @@ func __main_node_setup(node: Node) -> Array:
 	var bound_queries := []
 	node.add_to_group(_BOUND_QUERIES)
 	node.set_meta(_BOUND_QUERIES, bound_queries)
-##	node.tree_exiting.connect(_main_node_exiting_tree.bindv([ node, bound_queries ]), CONNECT_ONE_SHOT)
 	node.connect("tree_exiting", self, "_main_node_exiting_tree", [ node, bound_queries ], CONNECT_ONESHOT)
+##	node.tree_exiting.connect(_main_node_exiting_tree.bindv([ node, bound_queries ]), CONNECT_ONE_SHOT)
 	return bound_queries
 
 
 func _enter_tree() -> void:
-##	get_tree().node_added.connect(_scene_tree_node_added)
 	get_tree().connect("node_added", self, "_scene_tree_node_added")
+##	get_tree().node_added.connect(_scene_tree_node_added)
 
 
 func _process(_delta: float) -> void:
@@ -244,8 +305,8 @@ func _scene_tree_node_added(node: Node) -> void:
 	for main_node_class_name in __recognise_class_names_from_node(node):
 		node.add_to_group("____%s____" % main_node_class_name)
 		if main_node_class_name in _queries:
-##			node.ready.connect(_main_node_ready.bindv([ node, main_node_class_name, __main_node_setup(node) ]), CONNECT_ONE_SHOT)
 			node.connect("ready", self, "_main_node_ready", [ node, main_node_class_name, __main_node_setup(node) ], CONNECT_ONESHOT)
+##			node.ready.connect(_main_node_ready.bindv([ node, main_node_class_name, __main_node_setup(node) ]), CONNECT_ONE_SHOT)
 
 
 func _main_node_ready(node: Node, main_node_class_name: String, bound_queries: Array) -> void:
