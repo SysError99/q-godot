@@ -367,7 +367,7 @@ class Movement extends Node:
 
 ---
 
-# Creating Global Signals
+## Creating Global Signals
 In case you wanted to add event-driven programming but handling signals on many of nodes sounds like a hassle than help. This add-on instead provides an easy-to-use global signal feature that is safe to use and very loosely tied. You longer need to worry about signal existence since it's handled automatically.
 
 For example, system node `A` loosely connnects to the `unit_killed` signal. Signal technially doesn't exist yet, but it awaits until the signal is created:
