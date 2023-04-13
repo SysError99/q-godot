@@ -140,6 +140,11 @@ class Query extends Object:
 		array.erase(element)
 
 
+	# Iterate all nodes in this query.
+	func iterate() -> Array:
+		return _nodes
+
+
 	# Half-iterate nodes in the query.
 	func half_iterate() -> Array:
 		return _nodes_second_half if _parent.get("is_second_frame") else _nodes_first_half
