@@ -170,7 +170,7 @@ get_tree().change_scene("res://scn/scn_battle_result.tscn")
 This section contains functionalites related to QGodot's integrated global signals.
 
 #### `signal(signal_name: String): SignalAwaiter`
-Create an awaiter for the target signal. You must yield() for the "completed" signal. Note that return value must only have one parameter or the awaiter will fail!.
+Create an awaiter for the target signal. You must `yield()` for the `completed` signal. Note that return value must only have one parameter or the awaiter will fail!.
 
 ```gdscript
 var input = yield(QGodot.signal("input_prompted"), "completed")
