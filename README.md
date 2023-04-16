@@ -389,6 +389,24 @@ QGodot.signal_emit("unit_killed", [unit, target])
 
 ---
 
+## Coroutine With Global Signals
+For the clean, procedural code, you can also `yield()` global signals on demand withot the need to manually create state manager objects. Simply use `signal()` to generate an awaiter, and `yield` for `completed` signal.
+
+```gdscript
+yield(QGodot.signal("level_finished"), "completed")
+```
+
+On the emitter, you can use `signal_emit()` as normal. However, this time it ONLY supports ONE PARAMETER. If you try to push it more than one, it will FAIL to emit and show an error on the debuging console.
+
+```gdscript
+QGodot.signal_emit("level_finished", [ 1 ]) #✔️ supported
+QGodot.signal_emit("level_finished", [ 1, "good score" ]) #❌ NOT supported, will cause an error
+```
+
+*CAUTION: DO NOT USE SAME SIGNAL NAME BUT WITH DIFFERENT PARAMETER LENGTH, OR IT WILL RESULT IN UNSUCCESSFUL SIGNAL CREATION AND EMISSION. `flush()` WILL NOT HELP.*
+
+---
+
 ## Additional Features
 This won't fall to any of categories in how QGodot behaves, but it's good little additions.
 

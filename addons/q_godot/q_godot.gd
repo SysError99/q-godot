@@ -155,6 +155,14 @@ class Query extends Object:
 		return _nodes.size()
 
 
+class SignalAwaiter extends Object:
+	signal completed(result)
+	func _completed(result) -> void:
+		emit_signal("completed", result)
+##		completed.emit(result)
+		free()
+
+
 # Bind a query to an instantiable object or instantiated object. If you bind a query to instantiated object, `shared` parameter will be function name string, or else it will be a shared object. The `main_node_class` can be either `Script` reference (such as defined `class_name` with GDScript) or base class name as `String`.
 func bind_query(main_node_class, sub_node_paths: Array = [], system: Object = null, shared = null) -> void:
 	__query(main_node_class, sub_node_paths).__subscribe(system, shared)
@@ -204,6 +212,14 @@ func get_first_node(group_name: String) -> Node:
 	return get_tree().get_nodes_in_group(group_name)[0]
 
 
+# Create an awaiter for the target signal. You must yield() for the "completed" signal. Note that return value must only have one parameter or the awaiter will fail!.
+func signal(signal_name: String) -> SignalAwaiter:
+	var awaiter := SignalAwaiter.new()
+	signal_connect(signal_name, awaiter, "_completed")
+##	signal_connect(signal_name, awaiter._completed)
+	return awaiter
+
+
 # Connect to specified signal safely. If the signal doesn't exist, await until other nodes create it.
 func signal_connect(signal_name: String, target_object: Object, function_name: String, binds = [], flags = 0) -> void:
 ##func signal_connect(signal_name: String, callable: Callable, flags = 0) -> void:
@@ -243,7 +259,7 @@ func signal_disconnect(signal_name: String, target: Object, function_name: Strin
 
 
 # Safely fires signal, if the signal doesn't exist, it will create a new one.
-func signal_emit(signal_name: String, args_array: Array) -> void:
+func signal_emit(signal_name: String, args_array: Array = []) -> void:
 	if not has_signal(signal_name):
 		var args := []
 		for i in args_array.size():
