@@ -178,7 +178,7 @@ onready var npcs := QGodot.query("KinematicBody", [ "Loot" ])
 
 ---
 
-## Changing Scene
+## Flushing Before Changing Between Scenes
 This is proper way to clean up everything before changing scene.
 
 ```gdscript
@@ -214,7 +214,7 @@ func entity_entered(parent: KinematicBody2D, icon: Sprite) -> void:
 
 ---
 
-## Binding Query That Will Only Be Iterated Half Entities Each Frame
+## Half-iterating Nodes In Single Frame (For Performance Boost)
 If performance is a concern, and you don't really want to iterate all main nodes in single frame, you can also split query into half and iterate all of them in two frames. You can use `get_query()` to get `Query` object, then use `Query.half_iterate()` to retrieve half of array for each frame.
 
 ```gdscript
@@ -402,8 +402,6 @@ On the emitter, you can use `signal_emit()` as normal. However, this time it ONL
 QGodot.signal_emit("level_finished", [ 1 ]) #✔️ supported
 QGodot.signal_emit("level_finished", [ 1, "good score" ]) #❌ NOT supported, will cause an error
 ```
-
-*CAUTION: DO NOT USE SAME SIGNAL NAME BUT WITH DIFFERENT PARAMETER LENGTH, OR IT WILL RESULT IN UNSUCCESSFUL SIGNAL CREATION AND EMISSION. `flush()` WILL NOT HELP.*
 
 ---
 
