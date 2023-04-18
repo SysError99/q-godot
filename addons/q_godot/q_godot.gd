@@ -160,7 +160,7 @@ class SignalAwaiter extends Object:
 	func _completed(result) -> void:
 		emit_signal("completed", result)
 ##		completed.emit(result)
-		free()
+		call_deferred("free")
 
 
 # Bind a query to an instantiable object or instantiated object. If you bind a query to instantiated object, `shared` parameter will be function name string, or else it will be a shared object. The `main_node_class` can be either `Script` reference (such as defined `class_name` with GDScript) or base class name as `String`.
