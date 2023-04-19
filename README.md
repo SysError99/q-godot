@@ -178,6 +178,35 @@ onready var npcs := QGodot.query("KinematicBody", [ "Loot" ])
 
 ---
 
+## Searching For Nodes In Query With Main Node Names
+You can also search for particular nodes and sub nodes in the query by using main node name (similar to how you do it with `get_node()` or `get_tree().get_nodes_in_group()`). This will be very useful in online games that you need to constantly stream data from server to client. However, this sacrifices the RPC performance benefits in exchange of ease of use (for ones who like manual data control flow than trying to comprehend how RPC paradigm works). This is done by using a dictionary `by_name` to search for nodes in query.
+
+This example demonstrates how to find nodes with names using `by_name` of query.
+
+```gdscript
+onready var players := QGodot.get_query("KinematicBody", ["Inventory"])
+onready var world := QGodot.get_first_node("world") # Player container.
+
+
+# Assuming that data is received and passed as Dictionary (mostly is from JSON)
+func _data_received(data: Dictionary) -> void:
+	var id = data["id"]
+	var player: KinematicBody
+	if not id in players.by_name:
+		## New player.
+		player = preload("res://obj/player.tscn").instance()
+		player.global_translation = Vector3(data["x"], data["y"], data["z"])
+		player.name = id
+		world.add_child(player)
+		return
+	## Player already exists.
+	var binds := players.by_name[id]
+	player = binds["self"]
+	player.global_translation = Vector3(data["x"], data["y"], data["z"])
+```
+
+---
+
 ## Flushing Before Changing Between Scenes
 This is proper way to clean up everything before changing scene.
 

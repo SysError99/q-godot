@@ -16,6 +16,8 @@ var _signal_awaiting_objects := {}
 
 # Query reference.
 class Query extends Object:
+	var by_name := {}
+
 	var _instance_id := "_%d" % get_instance_id()
 	var _parent: Node
 
@@ -73,10 +75,22 @@ class Query extends Object:
 		node.set_meta(_instance_id, binds)
 		bound_queries.push_back(self)
 		_nodes.push_back(binds)
-	
+		if node.name in by_name:
+			printerr("'%s' already exists in the query '%s'!", [node.name, "%s::[%s]" % [_parent_class_name, ",".join(_sub_node_paths)]])
+			printerr("Make sure there are no main nodes with same names exist.")
+			printerr("BEWARE, THIS WILL CAUSE CATASTROPHE LATER, PLEASE FIX!")
+			return
+		by_name[node.name] = binds
+
 
 	func __verify_node(node: Node, bound_queries: Array) -> void:
 		if node.has_meta(_instance_id):
+			if not node.name in by_name:
+				for node_name in by_name:
+					if by_name[node_name]["self"] == node:
+						by_name.erase(node_name)
+						break
+				by_name[node.name] = node
 			for sub_node_path in _sub_node_paths:
 				if sub_node_path[0] == "-":
 					sub_node_path = sub_node_path.substr(1, sub_node_path.length())
@@ -96,6 +110,7 @@ class Query extends Object:
 		var binds := node.get_meta(_instance_id) as Dictionary
 		__array_erase_deferred(bound_queries, self)
 		node.remove_meta(_instance_id)
+		by_name.erase(node.name)
 		_nodes.erase(binds)
 		if _half_query_enabled:
 			_nodes_first_half.erase(binds)

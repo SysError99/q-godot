@@ -3,6 +3,7 @@ This provides all functions that QGodot offers.
 
 - [`QGodot` Singleton](#qgodot-singleton)
 	- [Querying](#querying)
+		- [by_name: Dictionary<String, Dictionary>]()
 		- [query(node_name, sub_node_paths): Array](#querynode_name-stringscript-sub_node_paths-arraystring-array)
 		- [get_query(node_name, sub_node_paths): Query](#get_querymain_node-stringscript-sub_node_paths-arraystring-query)
 		- [bind_query(main_node, sub_node_paths, target, method): void](#bind_querymain_node-stringscript-sub_node_paths-arraystring-target_or_script-object-method_or_shared-stringobject)
@@ -29,6 +30,31 @@ This is a main singleton that handles functionality of QGodot.
 
 ### Querying
 This section contains all of functions related to querying system.
+
+#### `by_name: Dictionary<String, Dictionary>`
+This contains all nodes in this query, assigned with names of main nodes.
+
+```gdscript
+onready var players := QGodot.get_query("KinematicBody", ["Inventory"])
+onready var world := QGodot.get_first_node("world") # Player container.
+
+
+# Assuming that data is received and passed as Dictionary (mostly is from JSON)
+func _data_received(data: Dictionary) -> void:
+	var id = data["id"]
+	var player: KinematicBody
+	if not id in players.by_name:
+		## New player.
+		player = preload("res://obj/player.tscn").instance()
+		player.global_translation = Vector3(data["x"], data["y"], data["z"])
+		player.name = id
+		world.add_child(player)
+		return
+	## Player already exists.
+	var binds := players.by_name[id]
+	player = binds["self"]
+	player.global_translation = Vector3(data["x"], data["y"], data["z"])
+```
 
 #### `query(node_name: String|Script, sub_node_paths: Array[String]): Array`
 This give an array of nodes matching specified main node class names and all node paths.
