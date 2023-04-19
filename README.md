@@ -205,6 +205,8 @@ func _data_received(data: Dictionary) -> void:
 	player.translation = Vector3(data["x"], data["y"], data["z"])
 ```
 
+*NOTE: If there are more than one main node with same name, the mechanism will be MESSED UP. Make sure that all nodes have unique names.*
+
 ---
 
 ## Flushing Before Changing Between Scenes

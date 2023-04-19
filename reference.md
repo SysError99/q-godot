@@ -241,6 +241,8 @@ An object that holds list of nodes and ways to handle them.
 #### `by_name: Dictionary<String, Dictionary>`
 This contains all nodes in this query, assigned with names of main nodes.
 
+*NOTE: If there are more than one main node with same name, the mechanism will be MESSED UP. Make sure that all nodes have unique names.*
+
 ```gdscript
 onready var players := QGodot.get_query("KinematicBody", ["Inventory"])
 onready var world := QGodot.get_first_node("world") # Player container.
