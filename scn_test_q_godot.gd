@@ -13,7 +13,8 @@ class TestSignalBinding extends Node:
 
 		yield(get_tree().create_timer(5), "timeout")
 		QGodot.signal_emit("another_test_signal", [ 1234 ])
-
+		yield(get_tree().create_timer(5), "timeout")
+		QGodot.signal_emit("another_test_signal", [ 5678 ])
 
 	func _test_signal_fired(text: String) -> void:
 		print("TestSignalBinding: %s" % text)
@@ -68,6 +69,8 @@ func _ready() -> void:
 
 	print(query.size())
 	var value_from_another_signal = yield(QGodot.signal("another_test_signal"), "completed")
+	print("value is %d" % value_from_another_signal)
+	value_from_another_signal = yield(QGodot.signal("another_test_signal"), "completed")
 	print("value is %d" % value_from_another_signal)
 
 
