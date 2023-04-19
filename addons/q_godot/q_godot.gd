@@ -9,9 +9,11 @@ var is_second_frame := false
 
 
 var _queries := {}
+var _zero_param_signals := []
 # List of awaiting signals, 
 # { [signal_name]: {"object": Object, "signal_function": String, "signal_binds": Array, "signal_flags": int, "signal_callable": Callable}[] }
 var _signal_awaiting_objects := {}
+var _signal_awaiting_awaiters := {}
 
 
 # Query reference.
@@ -176,6 +178,10 @@ class SignalAwaiter extends Object:
 		emit_signal("completed", result)
 ##		completed.emit(result)
 		call_deferred("free")
+	func _completed_() -> void:
+		emit_signal("completed", null)
+##		completed.emit(result)
+		call_deferred("free")
 
 
 # Bind a query to an instantiable object or instantiated object. If you bind a query to instantiated object, `shared` parameter will be function name string, or else it will be a shared object. The `main_node_class` can be either `Script` reference (such as defined `class_name` with GDScript) or base class name as `String`.
@@ -230,8 +236,13 @@ func get_first_node(group_name: String) -> Node:
 # Create an awaiter for the target signal. You must `yield()` for the `completed` signal. Note that return value must only have one parameter or the awaiter will fail!.
 func signal(signal_name: String) -> SignalAwaiter:
 	var awaiter := SignalAwaiter.new()
-	signal_connect(signal_name, awaiter, "_completed")
-##	signal_connect(signal_name, awaiter._completed)
+	if not has_signal(signal_name):
+		if not signal_name in _signal_awaiting_awaiters:
+			_signal_awaiting_awaiters[signal_name] = []
+		_signal_awaiting_awaiters[signal_name].push_back(awaiter)
+		return awaiter
+	connect(signal_name, awaiter, "_completed_" if signal_name in _zero_param_signals else "_completed")
+##	connect(signal_name, awaiter._completed_ if signal_name in _zero_param_signals else awaiter._completed)
 	return awaiter
 
 
@@ -280,6 +291,18 @@ func signal_emit(signal_name: String, args_array: Array = []) -> void:
 		for i in args_array.size():
 			args.push_back({ name = "arg_%d" % i , type = TYPE_MAX, })
 		add_user_signal(signal_name, args)
+		if signal_name in _signal_awaiting_awaiters:
+			match args_array.size():
+				0:
+					_zero_param_signals.push_back(signal_name)
+					for awaiter in _signal_awaiting_awaiters[signal_name]:
+						connect(signal_name, awaiter, "_completed_")
+##						connect(signal_name, awaiter._completed_)
+				1:
+					for awaiter in _signal_awaiting_awaiters[signal_name]:
+						connect(signal_name, awaiter, "_completed")
+##						connect(signal_name, awaiter._completed)
+			_signal_awaiting_awaiters.erase(signal_name)
 		if signal_name in _signal_awaiting_objects:
 			for awaiting_object in _signal_awaiting_objects[signal_name]:
 				connect(signal_name, awaiting_object["target"], awaiting_object["function"], awaiting_object["signal_binds"], awaiting_object["signal_flags"])
