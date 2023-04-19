@@ -202,7 +202,7 @@ func _data_received(data: Dictionary) -> void:
 	## Player already exists.
 	var binds := players.by_name[id]
 	player = binds["self"]
-	player.global_translation = Vector3(data["x"], data["y"], data["z"])
+	player.translation = Vector3(data["x"], data["y"], data["z"])
 ```
 
 ---
