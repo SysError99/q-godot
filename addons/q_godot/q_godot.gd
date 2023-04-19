@@ -16,6 +16,8 @@ var _signal_awaiting_objects := {}
 
 # Query reference.
 class Query extends Object:
+	var by_name := {}
+
 	var _instance_id := "_%d" % get_instance_id()
 	var _parent: Node
 
@@ -73,10 +75,22 @@ class Query extends Object:
 		node.set_meta(_instance_id, binds)
 		bound_queries.push_back(self)
 		_nodes.push_back(binds)
-	
+		if node.name in by_name:
+			printerr("'%s' already exists in the query '%s'!", [node.name, "%s::[%s]" % [_parent_class_name, ",".join(_sub_node_paths)]])
+			printerr("Make sure there are no main nodes with same names exist.")
+			printerr("BEWARE, THIS WILL CAUSE CATASTROPHE LATER, PLEASE FIX!")
+			return
+		by_name[node.name] = binds
+
 
 	func __verify_node(node: Node, bound_queries: Array) -> void:
 		if node.has_meta(_instance_id):
+			if not node.name in by_name:
+				for node_name in by_name:
+					if by_name[node_name]["self"] == node:
+						by_name.erase(node_name)
+						break
+				by_name[node.name] = node
 			for sub_node_path in _sub_node_paths:
 				if sub_node_path[0] == "-":
 					sub_node_path = sub_node_path.substr(1, sub_node_path.length())
@@ -96,6 +110,7 @@ class Query extends Object:
 		var binds := node.get_meta(_instance_id) as Dictionary
 		__array_erase_deferred(bound_queries, self)
 		node.remove_meta(_instance_id)
+		by_name.erase(node.name)
 		_nodes.erase(binds)
 		if _half_query_enabled:
 			_nodes_first_half.erase(binds)
@@ -155,6 +170,14 @@ class Query extends Object:
 		return _nodes.size()
 
 
+class SignalAwaiter extends Object:
+	signal completed(result)
+	func _completed(result) -> void:
+		emit_signal("completed", result)
+##		completed.emit(result)
+		call_deferred("free")
+
+
 # Bind a query to an instantiable object or instantiated object. If you bind a query to instantiated object, `shared` parameter will be function name string, or else it will be a shared object. The `main_node_class` can be either `Script` reference (such as defined `class_name` with GDScript) or base class name as `String`.
 func bind_query(main_node_class, sub_node_paths: Array = [], system: Object = null, shared = null) -> void:
 	__query(main_node_class, sub_node_paths).__subscribe(system, shared)
@@ -204,6 +227,14 @@ func get_first_node(group_name: String) -> Node:
 	return get_tree().get_nodes_in_group(group_name)[0]
 
 
+# Create an awaiter for the target signal. You must `yield()` for the `completed` signal. Note that return value must only have one parameter or the awaiter will fail!.
+func signal(signal_name: String) -> SignalAwaiter:
+	var awaiter := SignalAwaiter.new()
+	signal_connect(signal_name, awaiter, "_completed")
+##	signal_connect(signal_name, awaiter._completed)
+	return awaiter
+
+
 # Connect to specified signal safely. If the signal doesn't exist, await until other nodes create it.
 func signal_connect(signal_name: String, target_object: Object, function_name: String, binds = [], flags = 0) -> void:
 ##func signal_connect(signal_name: String, callable: Callable, flags = 0) -> void:
@@ -243,7 +274,7 @@ func signal_disconnect(signal_name: String, target: Object, function_name: Strin
 
 
 # Safely fires signal, if the signal doesn't exist, it will create a new one.
-func signal_emit(signal_name: String, args_array: Array) -> void:
+func signal_emit(signal_name: String, args_array: Array = []) -> void:
 	if not has_signal(signal_name):
 		var args := []
 		for i in args_array.size():

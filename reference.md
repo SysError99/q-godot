@@ -3,6 +3,7 @@ This provides all functions that QGodot offers.
 
 - [`QGodot` Singleton](#qgodot-singleton)
 	- [Querying](#querying)
+		- [by_name: Dictionary<String, Dictionary>]()
 		- [query(node_name, sub_node_paths): Array](#querynode_name-stringscript-sub_node_paths-arraystring-array)
 		- [get_query(node_name, sub_node_paths): Query](#get_querymain_node-stringscript-sub_node_paths-arraystring-query)
 		- [bind_query(main_node, sub_node_paths, target, method): void](#bind_querymain_node-stringscript-sub_node_paths-arraystring-target_or_script-object-method_or_shared-stringobject)
@@ -10,6 +11,7 @@ This provides all functions that QGodot offers.
 		- [refresh_query_on_node(node): void](#refresh_query_on_nodenode-node-void)
 		- [flush(): void](#flush-void)
 	- [Global Signals](#global-signals)
+		- [signal(signal_name): SignalAwaiter](#signalsignal_name-string-signalawaiter)
 		- [signal_emit(signal_name, params): void](#signal_emitsignal_name-string-params-array-void)
 		- [signal_connect(signal_name, target, function_name): void](#signal_connectsignal_name-string-target-object-function_name-string-binds---flags--0)
 		- [signal_disconnect(signal_name, target, function_name): void](#signal_disconnectsignal_name-string-target-object-function_name-string-void)
@@ -28,6 +30,31 @@ This is a main singleton that handles functionality of QGodot.
 
 ### Querying
 This section contains all of functions related to querying system.
+
+#### `by_name: Dictionary<String, Dictionary>`
+This contains all nodes in this query, assigned with names of main nodes.
+
+```gdscript
+onready var players := QGodot.get_query("KinematicBody", ["Inventory"])
+onready var world := QGodot.get_first_node("world") # Player container.
+
+
+# Assuming that data is received and passed as Dictionary (mostly is from JSON)
+func _data_received(data: Dictionary) -> void:
+	var id = data["id"]
+	var player: KinematicBody
+	if not id in players.by_name:
+		## New player.
+		player = preload("res://obj/player.tscn").instance()
+		player.global_translation = Vector3(data["x"], data["y"], data["z"])
+		player.name = id
+		world.add_child(player)
+		return
+	## Player already exists.
+	var binds := players.by_name[id]
+	player = binds["self"]
+	player.global_translation = Vector3(data["x"], data["y"], data["z"])
+```
 
 #### `query(node_name: String|Script, sub_node_paths: Array[String]): Array`
 This give an array of nodes matching specified main node class names and all node paths.
@@ -167,6 +194,19 @@ get_tree().change_scene("res://scn/scn_battle_result.tscn")
 
 ### Global Signals
 This section contains functionalites related to QGodot's integrated global signals.
+
+#### `signal(signal_name: String): SignalAwaiter`
+Create an awaiter for the target signal. You must `yield()` for the `completed` signal. Note that return value must only have one parameter or the awaiter will fail!.
+
+```gdscript
+var input = yield(QGodot.signal("input_prompted"), "completed")
+```
+
+Then, to emit a signal:
+
+```gdscript
+QGodot.signal_emit("input_prompted", [ 1234 ])
+```
 
 #### `signal_emit(signal_name: String, params: Array): void`
 Emits a signal. If the signal doesn't exist, create a new one and connects all awaiting lists to the signal.

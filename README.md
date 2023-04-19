@@ -178,7 +178,36 @@ onready var npcs := QGodot.query("KinematicBody", [ "Loot" ])
 
 ---
 
-## Changing Scene
+## Searching For Nodes In Query With Main Node Names
+You can also search for particular nodes and sub nodes in the query by using main node name (similar to how you do it with `get_node()` or `get_tree().get_nodes_in_group()`). This will be very useful in online games that you need to constantly stream data from server to client. However, this sacrifices the RPC performance benefits in exchange of ease of use (for ones who like manual data control flow than trying to comprehend how RPC paradigm works). This is done by using a dictionary `by_name` to search for nodes in query.
+
+This example demonstrates how to find nodes with names using `by_name` of query.
+
+```gdscript
+onready var players := QGodot.get_query("KinematicBody", ["Inventory"])
+onready var world := QGodot.get_first_node("world") # Player container.
+
+
+# Assuming that data is received and passed as Dictionary (mostly is from JSON)
+func _data_received(data: Dictionary) -> void:
+	var id = data["id"]
+	var player: KinematicBody
+	if not id in players.by_name:
+		## New player.
+		player = preload("res://obj/player.tscn").instance()
+		player.global_translation = Vector3(data["x"], data["y"], data["z"])
+		player.name = id
+		world.add_child(player)
+		return
+	## Player already exists.
+	var binds := players.by_name[id]
+	player = binds["self"]
+	player.global_translation = Vector3(data["x"], data["y"], data["z"])
+```
+
+---
+
+## Flushing Before Changing Between Scenes
 This is proper way to clean up everything before changing scene.
 
 ```gdscript
@@ -214,7 +243,7 @@ func entity_entered(parent: KinematicBody2D, icon: Sprite) -> void:
 
 ---
 
-## Binding Query That Will Only Be Iterated Half Entities Each Frame
+## Half-iterating Nodes In Single Frame (For Performance Boost)
 If performance is a concern, and you don't really want to iterate all main nodes in single frame, you can also split query into half and iterate all of them in two frames. You can use `get_query()` to get `Query` object, then use `Query.half_iterate()` to retrieve half of array for each frame.
 
 ```gdscript
@@ -386,6 +415,22 @@ QGodot.signal_emit("unit_killed", [unit, target])
 ```
 
 *CAUTION: DO NOT USE SAME SIGNAL NAME BUT WITH DIFFERENT PARAMETER LENGTH, OR IT WILL RESULT IN UNSUCCESSFUL SIGNAL CREATION AND EMISSION. `flush()` WILL NOT HELP.*
+
+---
+
+## Coroutine With Global Signals
+For the clean, procedural code, you can also `yield()` global signals on demand withot the need to manually create state manager objects. Simply use `signal()` to generate an awaiter, and `yield` for `completed` signal.
+
+```gdscript
+yield(QGodot.signal("level_finished"), "completed")
+```
+
+On the emitter, you can use `signal_emit()` as normal. However, this time it ONLY supports ONE PARAMETER. If you try to push it more than one, it will FAIL to emit and show an error on the debuging console.
+
+```gdscript
+QGodot.signal_emit("level_finished", [ 1 ]) #✔️ supported
+QGodot.signal_emit("level_finished", [ 1, "good score" ]) #❌ NOT supported, will cause an error
+```
 
 ---
 
