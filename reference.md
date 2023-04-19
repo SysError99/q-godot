@@ -253,7 +253,7 @@ func _data_received(data: Dictionary) -> void:
 	if not id in players.by_name:
 		## New player.
 		player = preload("res://obj/player.tscn").instance()
-		player.global_translation = Vector3(data["x"], data["y"], data["z"])
+		player.translation = Vector3(data["x"], data["y"], data["z"])
 		player.name = id
 		world.add_child(player)
 		return
