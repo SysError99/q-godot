@@ -283,10 +283,12 @@ func signal_disconnect(signal_name: String, target: Object, function_name: Strin
 func signal_emit(signal_name: String, args_array: Array = []) -> void:
 	if not has_signal(signal_name):
 		var args := []
+		var awaiter_exists := false
 		for i in args_array.size():
 			args.push_back({ name = "arg_%d" % i , type = TYPE_MAX, })
 		add_user_signal(signal_name, args)
 		if signal_name in _signal_awaiting_awaiters:
+			awaiter_exists = true
 			match args_array.size():
 				0:
 					_zero_param_signals.push_back(signal_name)
@@ -299,10 +301,13 @@ func signal_emit(signal_name: String, args_array: Array = []) -> void:
 ##						connect(signal_name, awaiter._completed)
 			_signal_awaiting_awaiters.erase(signal_name)
 		if signal_name in _signal_awaiting_objects:
+			awaiter_exists = true
 			for awaiting_object in _signal_awaiting_objects[signal_name]:
 				connect(signal_name, awaiting_object["target"], awaiting_object["function"], awaiting_object["signal_binds"], awaiting_object["signal_flags"])
 ##				connect(signal_name, awaiting_object["signal_callable"], awaiting_object["signal_flags"])
 			_signal_awaiting_objects.erase(signal_name)
+		if not awaiter_exists:
+			printerr("Signal '%s' emitted but no awaiters exist. Have a check if any of connected nodes have 'signal_connect' in proper place (ideally, in '_enter_tree' block).")
 	callv("emit_signal", [ signal_name ] + args_array)
 
 
