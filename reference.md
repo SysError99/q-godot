@@ -108,7 +108,9 @@ func _ready():
 			"Sprite",
 			"CollsionShape2D",
 			"wall", # This is godot group, will not be included in the callback parameter.
-		]
+		],
+		self,
+		"_static_body_entered"
 	)
 
 
