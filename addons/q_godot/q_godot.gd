@@ -175,7 +175,7 @@ class SignalAwaiter extends Object:
 		call_deferred("free")
 	func _completed_() -> void:
 		emit_signal("completed", null)
-##		completed.emit(result)
+##		completed.emit(null)
 		call_deferred("free")
 
 
