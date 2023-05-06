@@ -10,7 +10,7 @@ This provides all functions that QGodot offers.
 		- [refresh_query_on_node(node): void](#refresh_query_on_nodenode-node-void)
 		- [flush(): void](#flush-void)
 	- [Global Signals](#global-signals)
-		- [signal(signal_name): SignalAwaiter](#signalsignal_name-string-signalawaiter)
+		- [to_signal(signal_name): SignalAwaiter](#signalsignal_name-string-signalawaiter)
 		- [signal_emit(signal_name, params): void](#signal_emitsignal_name-string-params-array-void)
 		- [signal_connect(signal_name, target, function_name): void](#signal_connectsignal_name-string-target-object-function_name-string-binds---flags--0)
 		- [signal_disconnect(signal_name, target, function_name): void](#signal_disconnectsignal_name-string-target-object-function_name-string-void)
@@ -174,11 +174,11 @@ get_tree().change_scene("res://scn/scn_battle_result.tscn")
 ### Global Signals
 This section contains functionalites related to QGodot's integrated global signals.
 
-#### `signal(signal_name: String): SignalAwaiter`
+#### `to_signal(signal_name: String): SignalAwaiter`
 Create an awaiter for the target signal. You must `yield()` for the `completed` signal. Note that return value must only have one parameter or the awaiter will fail!.
 
 ```gdscript
-var input = yield(QGodot.signal("input_prompted"), "completed")
+var input = yield(QGodot.to_signal("input_prompted"), "completed")
 ```
 
 Then, to emit a signal:
