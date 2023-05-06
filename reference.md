@@ -88,9 +88,11 @@ onready var tamed_horses := QGodot.query(
 
 onready var other_players := QGodot.query(
 	Player, # If defined class is a custom class, use defined 'class_name' or 'Script' type of class instances instead.
-	"Status",
-	"Inventory",
-	"-local_player", # group name exclusion
+	[
+		"Status",
+		"Inventory",
+		"-local_player", # group name exclusion
+	]
 )
 ```
 
@@ -158,7 +160,7 @@ Performs querying on specified node after its tree structure and grouping altern
 ```gdscript
 horse.add_child("Inventory")
 horse.add_to_group("uncontrollable")
-refresh_query_on_node(horse)
+QGodot.refresh_query_on_node(horse)
 ```
 
 #### `flush(): void`
@@ -191,7 +193,7 @@ Emits a signal. If the signal doesn't exist, create a new one and connects all a
 *CAUTION: DO NOT USE SAME SIGNAL NAME BUT WITH DIFFERENT PARAMETER LENGTH, OR IT WILL RESULT IN UNSUCCESSFUL SIGNAL CREATION AND EMISSION. `flush()` WILL NOT HELP.*
 
 ```gdscript
-QGodot.emit_signal("unit_killed", [killer, target])
+QGodot.signal_emit("unit_killed", [killer, target])
 ```
 
 #### `signal_connect(signal_name: String, target: Object, function_name: String, binds = [], flags = 0)`
@@ -243,7 +245,7 @@ An object that holds list of nodes and ways to handle them.
 #### `by_name: Dictionary<String, Dictionary>`
 This contains all nodes in this query, assigned with names of main nodes.
 
-*NOTE: If there are more than one main node with same name, the mechanism will be MESSED UP. Make sure that all nodes have unique names.*
+*NOTE: If there is more than one main node with same name, the mechanism will be MESSED UP. Make sure that all nodes have unique names.*
 
 ```gdscript
 onready var players := QGodot.get_query("KinematicBody", ["Inventory"])
