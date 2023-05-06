@@ -230,6 +230,7 @@ func get_first_node(group_name: String) -> Node:
 
 # Create an awaiter for the target signal. You must `yield()` for the `completed` signal. Note that return value must only have one parameter or the awaiter will fail!.
 func signal(signal_name: String) -> SignalAwaiter:
+##func to_signal(signal_name: String) -> SignalAwaiter:
 	var awaiter := SignalAwaiter.new()
 	if not has_signal(signal_name):
 		if not signal_name in _signal_awaiting_awaiters:
@@ -249,9 +250,9 @@ func signal_connect(signal_name: String, target_object: Object, function_name: S
 			_signal_awaiting_objects[signal_name] = []
 		for awaiting_object in _signal_awaiting_objects[signal_name]:
 			if awaiting_object["target"] == target_object and awaiting_object["function"] == function_name:
-##			if awaiting_object["callable"] == callable:
+##			if awaiting_object["signal_callable"] == callable:
 				printerr("'%s' already got pre-connected with '%s::%s'" % [signal_name, awaiting_object["target"], awaiting_object["function"]])
-##				printerr("Callble '%s' already bound with signal %s" % [awaiting_object["callable"].get_method(), signal_name])
+##				printerr("Callble '%s' already bound with signal %s" % [awaiting_object["signal_callable"].get_method(), signal_name])
 				return
 		_signal_awaiting_objects[signal_name].push_back({ target = target_object, function = function_name, signal_binds = binds, signal_flags = flags })
 ##		_signal_awaiting_objects[signal_name].push_back({ signal_callable = callable, signal_flags = flags })
@@ -272,7 +273,7 @@ func signal_disconnect(signal_name: String, target: Object, function_name: Strin
 		while i < awaiting_objects.size():
 			var awaiting_object := awaiting_objects[i] as Dictionary
 			if awaiting_object["target"] == target:
-##			if awaiting_object["callable"] == callable:
+##			if awaiting_object["signal_callable"] == callable:
 				awaiting_objects.remove(i)
 ##				awaiting_objects.remove_at(i)
 				continue
