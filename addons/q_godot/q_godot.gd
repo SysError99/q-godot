@@ -230,6 +230,7 @@ func get_first_node(group_name: String) -> Node:
 
 # Create an awaiter for the target signal. You must `yield()` for the `completed` signal. Note that return value must only have one parameter or the awaiter will fail!.
 func signal(signal_name: String) -> SignalAwaiter:
+##func to_signal(signal_name: String) -> SignalAwaiter:
 	var awaiter := SignalAwaiter.new()
 	if not has_signal(signal_name):
 		if not signal_name in _signal_awaiting_awaiters:
