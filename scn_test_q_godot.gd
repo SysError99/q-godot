@@ -68,9 +68,9 @@ func _ready() -> void:
 
 
 	print(query.size())
-	var value_from_another_signal = yield(QGodot.signal("another_test_signal"), "completed")
+	var value_from_another_signal = yield(QGodot.to_signal("another_test_signal"), "completed")
 	print("value is %d" % value_from_another_signal)
-	value_from_another_signal = yield(QGodot.signal("another_test_signal"), "completed")
+	value_from_another_signal = yield(QGodot.to_signal("another_test_signal"), "completed")
 	print("value is %d" % value_from_another_signal)
 
 
