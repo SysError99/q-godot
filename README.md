@@ -219,8 +219,8 @@ get_tree().change_scene("res://next_scene.tscn")
 
 ---
 
-## One-shot Query Binding
-Sometimes you don't really want to iterate all nodes in every given frame, such as, you wanted to do event-driven programming (using `Signal`), you can do one-shot binding instead:
+## Binding Events When Main Nodes Enter Scene Tree
+Sometimes you don't really want to iterate all nodes in every given frame, such as, you just wanted to detect if new nodes fitting query criteria have entered the scene tree, you can do one-shot binding instead:
 
 ```gdscript
 QGodot.bind_query(
@@ -296,7 +296,7 @@ However, if you wanted to add or remove sub nodes while **the main node is alrea
 ```gdscript
 enemy.add_to_group("dying")
 enemy.get_node("Superpower").queue_free()
-refresh_query_on_node(enemy)
+QGodot.refresh_query_on_node(enemy)
 ```
 
 ---
@@ -332,7 +332,7 @@ Adding and removing groups while the main node is on scene tree is exactly the s
 ```gdscript
 enemy.add_child(load("res://weapons/superweapon.tscn").instance())
 enemy.add_to_group("high_atk")
-refresh_query_on_node(enemy)
+QGodot.refresh_query_on_node(enemy)
 ```
 
 ---
