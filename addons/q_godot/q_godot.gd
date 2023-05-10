@@ -307,7 +307,7 @@ func signal_emit(signal_name: String, args_array: Array = []) -> void:
 ##				connect(signal_name, awaiting_object["signal_callable"], awaiting_object["signal_flags"])
 			_signal_awaiting_objects.erase(signal_name)
 		if not awaiter_exists:
-			printerr("Signal '%s' emitted but no awaiters exist. Have a check if any of connected nodes have 'signal_connect' in proper place (ideally, in '_enter_tree' block).")
+			printerr("Signal '%s' emitted but no awaiters exist. Have a check if any of connected nodes have 'signal_connect' in proper place (ideally, in '_enter_tree' block)." % signal_name)
 	callv("emit_signal", [ signal_name ] + args_array)
 
 
