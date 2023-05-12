@@ -183,6 +183,10 @@ class SignalAwaiter extends Object:
 class System extends Node:
 	var __: Node
 
+	# Tells if current frame is second frame.
+	func is_second_frame() -> bool:
+		return __.get("is_second_frame")
+
 
 	func _init() -> void:
 		connect("tree_entered", self, "_tree_entered")
