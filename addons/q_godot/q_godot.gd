@@ -2,6 +2,7 @@ extends Node
 
 
 const _BOUND_QUERIES = "_Q"
+const _QGODOT = "_QGODOT"
 
 
 # Tells if current frame is second frame.
@@ -179,6 +180,74 @@ class SignalAwaiter extends Object:
 		call_deferred("free")
 
 
+class System extends Node:
+	var __: Node
+
+	# Tells if current frame is second frame.
+	func is_second_frame() -> bool:
+		return __.get("is_second_frame")
+
+
+	func _init() -> void:
+		connect("tree_entered", self, "_tree_entered")
+
+
+	func _tree_entered() -> void:
+		__ = get_tree().get_meta(_QGODOT)
+
+
+	# Bind a query to an instantiable object or instantiated object. If you bind a query to instantiated object, `shared` parameter will be function name string, or else it will be a shared object. The `main_node_class` can be either `Script` reference (such as defined `class_name` with GDScript) or base class name as `String`.
+	func bind_query(main_node_class, sub_node_paths: Array = [], system: Object = null, shared = null) -> void:
+		__.call("bind_query", main_node_class, sub_node_paths, system, shared)
+
+	
+	# Build a query from following parameters. The `main_node_class` can be either `Script` reference (such as defined `class_name` with GDScript) or base class name as `String`.
+	func query(main_node_class, sub_node_paths: Array = []) -> Array:
+		return __.call("query", main_node_class, sub_node_paths)
+
+
+	# Get a query object from following parameters. The `main_node_class` can be either `Script` reference (such as defined `class_name` with GDScript) or base class name as `String`.
+	func get_query(main_node_class, sub_node_paths: Array = []) -> Query:
+		return __.call("get_query", main_node_class, sub_node_paths)
+	
+	
+	# Refresh query on specified node.
+	func refresh_query_on_node(node: Node) -> void:
+		__.call("refresh_query_on_node", node)
+	
+	
+	# Perform a clean-up in QGodot, very ideal to use before changing between scenes.
+	func flush() -> void:
+		__.call("flush")
+	
+	
+	# Shorthand for `get_tree().get_nodes_in_group()` but will take the first found node.
+	func get_first_node(group_name: String) -> Node:
+		return __.call("get_first_node", group_name)
+	
+	
+	# Create an awaiter for the target signal. You must `yield()` for the `completed` signal. Note that return value must only have one parameter or the awaiter will fail!.
+	func to_signal(signal_name: String) -> SignalAwaiter:
+		return __.call("to_signal", signal_name)
+
+
+	# Connect to specified signal safely. If the signal doesn't exist, await until other nodes create it.
+	func signal_connect(signal_name: String, target_object: Object, function_name: String, binds = [], flags = 0) -> void:
+	##func signal_connect(signal_name: String, callable: Callable, flags = 0) -> void:
+		__.call("signal_connect", signal_name, target_object, function_name, binds, flags)
+	
+
+	# Disconnect to specified signal safely. If the signal doesn't exist but there is the target node in the awaiting list, remove it from the list.
+	func signal_disconnect(signal_name: String, target: Object, function_name: String) -> void:
+	##func signal_disconnect(signal_name: String, callable: Callable) -> void:
+		__.call("signal_disconnect", signal_name, target, function_name)
+	
+	
+	# Safely fires signal, if the signal doesn't exist, it will create a new one.
+	func signal_emit(signal_name: String, args_array: Array = []) -> void:
+		__.call("signal_emit", signal_name, args_array)
+
+
 # Bind a query to an instantiable object or instantiated object. If you bind a query to instantiated object, `shared` parameter will be function name string, or else it will be a shared object. The `main_node_class` can be either `Script` reference (such as defined `class_name` with GDScript) or base class name as `String`.
 func bind_query(main_node_class, sub_node_paths: Array = [], system: Object = null, shared = null) -> void:
 	__query(main_node_class, sub_node_paths).__subscribe(system, shared)
@@ -347,6 +416,7 @@ func __main_node_setup(node: Node) -> Array:
 
 
 func _enter_tree() -> void:
+	get_tree().set_meta(_QGODOT, self)
 	get_tree().connect("node_added", self, "_scene_tree_node_added")
 ##	get_tree().node_added.connect(_scene_tree_node_added)
 
