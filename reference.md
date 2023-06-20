@@ -22,6 +22,7 @@ This provides all functions that QGodot offers.
 	- [iterate(): Array](#iterate-array)
 	- [half_iterate(): Array](#half_iterate-array)
 	- [size(): int](#size-int)
+- [Class `System`](#class-system)
 
 ---
 
@@ -342,3 +343,29 @@ func _process(delta):
 
 #### `size(): int`
 Get number of nodes in the query.
+
+
+## Class `System`
+This class introduces shorter way to write code by omitting `QGodot` singleton calls from code. Simply extend any system classes with `QGodot.System`. Now `QGodot` singleton calls can be omitted.
+
+However, due to weakness of GDScript in Godot 3.x, I have to make change on `is_second_frame` to become function. Which means, instead of `QGodot.is_second_frame`, you need to use `is_second_frame()` instead
+
+```gdscript
+extends QGodot.System
+
+# 'QGodot.query' gets shortened to just 'query'
+onready var owned_horses := query("KinematicBody2D", ["Inventory", "horse"]) 
+
+
+func _ready() -> void:
+	# 'QGodot.to_signal' gets shortened to just 'to_signal'
+	yield(to_signal("game_loaded"), "completed")
+	print("Game is fully loaded!")
+
+
+func _process(_delta: float) -> void:
+	# Only API reference that has been changed, you must call it as function instead
+	# 'QGodot.is_second_frame' -> 'is_second_frame()'
+	if is_second_frame():
+		print("This is second frame.")
+```

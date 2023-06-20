@@ -440,5 +440,25 @@ QGodot.signal_emit("level_finished", [ 1, "good score" ]) #❌ NOT supported, wi
 This won't fall to any of categories in how QGodot behaves, but it's good little additions.
 
 1. `get_first_node(group_name: String): Node` get first node that is in the specified group.
+2. `System` a class that helps making code shorter by omitting `QGodot` singleton calls altogether, making code far cleaner to read. Simply extend any system classes with `QGodot.System`. Now all functions from `QGodot` should be available, except for `is_second_frame` which has changed to a function `is_second_frame()` instead.
+```gdscript
+extends QGodot.System
+
+# 'QGodot.query' gets shortened to just 'query'
+onready var owned_horses := query("KinematicBody2D", ["Inventory", "horse"]) 
+
+
+func _ready() -> void:
+	# 'QGodot.to_signal' gets shortened to just 'to_signal'
+	yield(to_signal("game_loaded"), "completed")
+	print("Game is fully loaded!")
+
+
+func _process(_delta: float) -> void:
+	# Only API reference that has been changed, you must call it as function instead
+	# 'QGodot.is_second_frame' -> 'is_second_frame()'
+	if is_second_frame():
+		print("This is second frame.")
+```
 
 ---
