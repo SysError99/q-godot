@@ -342,7 +342,7 @@ In order if you wanted to exclude certain sub nodes and groups from query, simpl
 
 ```gdscript
 # Query that includes player.
-onready var npcs := QGodot.query("KinematicBody", ["player"])
+onready var players := QGodot.query("KinematicBody", ["player"])
 
 
 # Query that excludes player.
