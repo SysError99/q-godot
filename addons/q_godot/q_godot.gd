@@ -34,6 +34,8 @@ class Query extends Object:
 
 	var _half_query_enabled := false
 
+	var _instantiated_systems := {}
+
 
 	func _init(parent: Node, main_node_class_name: String, sub_node_paths: Array) -> void:
 		_parent = parent
@@ -84,11 +86,12 @@ class Query extends Object:
 	func __verify_node(node: Node, bound_queries: Array) -> void:
 		if node.has_meta(_instance_id):
 			if not node.name in by_name:
+				var binds := node.get_meta(_instance_id) as Dictionary
 				for node_name in by_name:
 					if by_name[node_name]["self"] == node:
 						by_name.erase(node_name)
 						break
-				by_name[node.name] = node
+				by_name[node.name] = binds
 			for sub_node_path in _sub_node_paths:
 				if sub_node_path[0] == "-":
 					sub_node_path = sub_node_path.substr(1, sub_node_path.length())
@@ -113,6 +116,14 @@ class Query extends Object:
 		if _half_query_enabled:
 			_nodes_first_half.erase(binds)
 			_nodes_second_half.erase(binds)
+
+		if _instantiated_systems.has(node):
+			for system_inst in _instantiated_systems[node]:
+				if is_instance_valid(system_inst):
+					if node.is_connected("tree_exiting", system_inst, "queue_free"):
+						node.disconnect("tree_exiting", system_inst, "queue_free")
+					system_inst.queue_free()
+			_instantiated_systems.erase(node)
 
 
 	func __enable_half_query() -> void:
@@ -143,6 +154,10 @@ class Query extends Object:
 			main_node.connect("tree_exiting", system_inst, "queue_free")
 ##			main_node.tree_exiting.connect(func(): system_inst.queue_free())
 			main_node.add_child(system_inst)
+
+			if not _instantiated_systems.has(main_node):
+				_instantiated_systems[main_node] = []
+			_instantiated_systems[main_node].push_back(system_inst)
 		else:
 			system.callv(shared, binds.values())
 
