@@ -2,6 +2,7 @@ extends Node
 
 
 const _BOUND_QUERIES = "_Q"
+const _QGODOT_COMP = "_C"
 const _QGODOT = "_QGODOT"
 
 
@@ -263,6 +264,11 @@ class System extends Node:
 		__.call("signal_emit", signal_name, args_array)
 
 
+	# Get value from component node.
+	func get_value_from_component(node: Node, default_value = null):
+		return __.call("get_value_from_component", node, default_value)
+
+
 # Bind a query to an instantiable object or instantiated object. If you bind a query to instantiated object, `shared` parameter will be function name string, or else it will be a shared object. The `main_node_class` can be either `Script` reference (such as defined `class_name` with GDScript) or base class name as `String`.
 func bind_query(main_node_class, sub_node_paths: Array = [], system: Object = null, shared = null) -> void:
 	__query(main_node_class, sub_node_paths).__subscribe(system, shared)
@@ -458,3 +464,8 @@ func _main_node_exiting_tree(node: Node, bound_queries: Array) -> void:
 	for query in bound_queries:
 		query.__remove_node(node, bound_queries)
 	node.remove_meta(_BOUND_QUERIES)
+
+
+# Get value from component node.
+func get_value_from_component(node: Node, default_value = null):
+	return node.get_meta(_QGODOT_COMP, default_value)
