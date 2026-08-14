@@ -264,14 +264,34 @@ class System extends Node:
 		__.call("signal_emit", signal_name, args_array)
 
 
+	# Create a new component.
+	func create_component(root: Node, component_name: String ,class_object_or_pck = null) -> Node:
+		return __.call("create_component", root, component_name, class_object_or_pck)
+
+
+	# Assign existing component node to a node.
+	func assign_component(obj: Node, root: Node, component_name = ""):
+		__.call("assign_component", obj, root, component_name)
+
+
+	# Delete specified component.
+	func delete_component(node: Node, component_name: String):
+		__.call("assign_component", node, component_name)
+
+
 	# Get value from component node.
-	func get_value_from_component(node: Node, default_value = null):
-		return __.call("get_value_from_component", node, default_value)
+	func get_value_from_component(root: Node, component_name: String, default_value = null):
+		return __.call("get_value_from_component", root, component_name, default_value)
+
+
+	# Get value from component node. If it doesn't exist, set a default value and return one.
+	func put_value_for_component(root: Node, component_name: String, value):
+		return __.call("set_value_to_component", root, component_name, value)
 
 
 	# Set value to component node.
-	func set_value_to_component(node: Node, value):
-		__.call("set_value_to_component", node, value)
+	func set_value_to_component(root: Node, component_name: String, value):
+		__.call("set_value_to_component", root, component_name, value)
 
 
 # Bind a query to an instantiable object or instantiated object. If you bind a query to instantiated object, `shared` parameter will be function name string, or else it will be a shared object. The `main_node_class` can be either `Script` reference (such as defined `class_name` with GDScript) or base class name as `String`.
@@ -471,11 +491,66 @@ func _main_node_exiting_tree(node: Node, bound_queries: Array) -> void:
 	node.remove_meta(_BOUND_QUERIES)
 
 
+# Create a new component.
+func create_component(root: Node, component_name: String, class_object_or_pck = null, value = null) -> Node:
+	if !class_object_or_pck:
+		class_object_or_pck = Node
+	var node: Node
+	if class_object_or_pck is PackedScene:
+		node = class_object_or_pck.instance()
+	else:
+		node = class_object_or_pck.new()
+	if value != null:
+		pass
+	node.name = component_name
+	root.add_child(node)
+	return node
+
+
+# Assign existing component node to a node.
+func assign_component(obj: Node, root: Node, component_name = ""):
+	if !component_name:
+		component_name = obj.name
+	if obj.is_inside_tree():
+		obj.get_parent().remove_child(obj)
+	obj.name = component_name
+	root.add_child(obj)
+
+
+# Delete specified component.
+func delete_component(node: Node, component_name: String):
+	var child = node.get_node_or_null(component_name)
+	if !child:
+		printerr("Component '" + component_name + "' does not exist in '" + node.name + "' node.")
+		return
+	node.remove_child(child)
+	child.queue_free()
+
+
 # Get value from component node.
-func get_value_from_component(node: Node, default_value = null):
+func get_value_from_component(root: Node, component_name: String, default_value = null):
+	var node = root.get_node_or_null(component_name)
+	if !node:
+		printerr("Component '" + component_name + "' does not exist in '" + node.name + "' node.")
+		return null
 	return node.get_meta(_QGODOT_COMP, default_value)
 
 
+# Get value from component node. If it doesn't exist, set a default value and return one.
+func put_value_for_component(root: Node, component_name: String, value):
+	var node = root.get_node_or_null(component_name)
+	if !node:
+		printerr("Component '" + component_name + "' does not exist in '" + node.name + "' node.")
+		return null
+	if !node.has_meta(_QGODOT_COMP):
+		node.set_meta(_QGODOT_COMP, value)
+	return node.get_meta(_QGODOT_COMP, value)
+
+
 # Set value to component node.
-func set_value_to_component(node: Node, value):
+func set_value_to_component(root: Node, component_name: String, value):
+	var node = root.get_node_or_null(component_name)
+	if !node:
+		printerr("Component '" + component_name + "' does not exist in '" + node.name + "' node.")
+		return null
 	node.set_meta(_QGODOT_COMP, value)
