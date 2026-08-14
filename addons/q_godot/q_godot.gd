@@ -257,8 +257,8 @@ class System extends Node:
 	func signal_disconnect(signal_name: String, target: Object, function_name: String) -> void:
 	##func signal_disconnect(signal_name: String, callable: Callable) -> void:
 		__.call("signal_disconnect", signal_name, target, function_name)
-	
-	
+
+
 	# Safely fires signal, if the signal doesn't exist, it will create a new one.
 	func signal_emit(signal_name: String, args_array: Array = []) -> void:
 		__.call("signal_emit", signal_name, args_array)
@@ -267,6 +267,11 @@ class System extends Node:
 	# Get value from component node.
 	func get_value_from_component(node: Node, default_value = null):
 		return __.call("get_value_from_component", node, default_value)
+
+
+	# Set value to component node.
+	func set_value_to_component(node: Node, value):
+		__.call("set_value_to_component", node, value)
 
 
 # Bind a query to an instantiable object or instantiated object. If you bind a query to instantiated object, `shared` parameter will be function name string, or else it will be a shared object. The `main_node_class` can be either `Script` reference (such as defined `class_name` with GDScript) or base class name as `String`.
@@ -469,3 +474,8 @@ func _main_node_exiting_tree(node: Node, bound_queries: Array) -> void:
 # Get value from component node.
 func get_value_from_component(node: Node, default_value = null):
 	return node.get_meta(_QGODOT_COMP, default_value)
+
+
+# Set value to component node.
+func set_value_to_component(node: Node, value):
+	node.set_meta(_QGODOT_COMP, value)
